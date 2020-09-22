@@ -1,0 +1,594 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>isentropic_models &#8212; thermosystems 0.0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="nav-item nav-item-0"><a href="../index.html">thermosystems 0.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">isentropic_models</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for isentropic_models</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Import necessary packages here</span>
+
+<span class="c1"># ============================================================================</span>
+<span class="c1"># ============================================================================</span>
+<span class="c1"># Date:    September 17, 2020</span>
+<span class="c1"># Purpose: This file contains classes describing the performance of</span>
+<span class="c1">#          gas flow systems as classes</span>
+
+<span class="c1"># Source Code Metadata</span>
+<span class="n">__author__</span> <span class="o">=</span> <span class="s2">&quot;Jonathan A. Webb&quot;</span>
+<span class="n">__copyright__</span> <span class="o">=</span> <span class="s2">&quot;Copyright 2020, Jon Webb Inc.&quot;</span>
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;1.0&quot;</span>
+
+<span class="c1"># REFERENCES</span>
+<span class="c1">#</span>
+<span class="c1"># 1. Hill, P. and Peterson C., &quot;Mechanics and Thermodynamics of Propulsion,&quot;</span>
+<span class="c1">#    Addison Wesley Publishing Company, Reading, MA, 1992</span>
+<span class="c1"># ============================================================================</span>
+<span class="c1"># ============================================================================</span>
+<span class="c1"># This class describes stagnation conditions based on static conditions</span>
+
+
+<div class="viewcode-block" id="Stagnation"><a class="viewcode-back" href="../Stagnation.html#isentropic_models.Stagnation">[docs]</a><span class="k">class</span> <span class="nc">Stagnation</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class contains equations for generic adiabatic-isentropic</span>
+<span class="sd">    relationships that describe the effect of work or heat addition</span>
+<span class="sd">    on the properties of a gaseous flow field.  All functions are</span>
+<span class="sd">    encoded as class methods and all relationships are derived from</span>
+<span class="sd">    the following references</span>
+
+<span class="sd">    1. Hill, P. and Peterson, C., &quot;Mechanics and Thermodynamics of Propulsion,&quot;</span>
+<span class="sd">       Addison Wesley Publishing Co., Reading, MA, 1992</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Stagnation.stagnation_pressure"><a class="viewcode-back" href="../Stagnation.html#isentropic_models.Stagnation.stagnation_pressure">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">stagnation_pressure</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">static_pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                            <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param static_pressure: The static pressure in units of Pascals</span>
+<span class="sd">        :param mach_number: The Mach number</span>
+<span class="sd">        :param gamma: Ratio of specific heats</span>
+<span class="sd">        :return stag_pres: The stagnation pressure in units of Pascals</span>
+
+<span class="sd">        This function determines the stagnation pressure</span>
+<span class="sd">        using the relationship from pg. 72 or reference 1 shown</span>
+<span class="sd">        below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           P_o = P\\left[1+\\frac{\gamma-1}{\gamma}M^2\\right]^{\gamma/\\left(\gamma-1\\right)}</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stag_pres</span> <span class="o">=</span> <span class="n">static_pressure</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="p">((</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span>
+                                       <span class="n">mach_number</span> <span class="o">**</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">/</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">stag_pres</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Stagnation.stagnation_temperature"><a class="viewcode-back" href="../Stagnation.html#isentropic_models.Stagnation.stagnation_temperature">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">stagnation_temperature</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">static_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                               <span class="n">mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                               <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param static_temperature: The static temperature in units of Kelvins</span>
+<span class="sd">        :param mach_number: The Mach number</span>
+<span class="sd">        :param gamma: Ratio of specific heats</span>
+<span class="sd">        :return stag_temp: The stagnation temperature</span>
+
+<span class="sd">        This function determines the stagnation temperature</span>
+<span class="sd">        using the relationship from pg. 72 or reference 1,</span>
+<span class="sd">        shown below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           T_o=T\\left(1+\\frac{\gamma-1}{2}M^2\\right)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stag_temp</span> <span class="o">=</span> <span class="n">static_temperature</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="p">((</span><span class="n">gamma</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span>
+                                          <span class="n">mach_number</span> <span class="o">**</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stag_temp</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Stagnation.static_pressure"><a class="viewcode-back" href="../Stagnation.html#isentropic_models.Stagnation.static_pressure">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">static_pressure</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">stagnation_pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                        <span class="n">mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                        <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param stagnation_pressure: The stagnation pressure in units</span>
+<span class="sd">                                       of Pascals</span>
+<span class="sd">        :param mach_number: The Mach number</span>
+<span class="sd">        :param gamma: Ratio of specific heats</span>
+<span class="sd">        :return static_pres: The static pressure in units of Pascals</span>
+
+<span class="sd">        This function determines the static pressure</span>
+<span class="sd">        using the relationship from pg. 72 or reference 1, shown</span>
+<span class="sd">        below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           P = \\frac{P_o}{\\left[1+\\frac{\gamma-1}{2}M^2\\right]^{\gamma/\\left(\gamma-1\\right)}}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">denominator</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="p">((</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">mach_number</span> <span class="o">**</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">denominator</span> <span class="o">=</span> <span class="n">denominator</span> <span class="o">**</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">/</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">stagnation_pressure</span> <span class="o">/</span> <span class="n">denominator</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Stagnation.static_temperature"><a class="viewcode-back" href="../Stagnation.html#isentropic_models.Stagnation.static_temperature">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">static_temperature</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                           <span class="n">mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                           <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param stagnation_temperature: The stagnation temperature in units</span>
+<span class="sd">                                       of Kelvins</span>
+<span class="sd">        :param mach_number: The Mach number</span>
+<span class="sd">        :param gamma: Ratio of specific heats</span>
+<span class="sd">        :return static_temp: The static temperature in units of Kelvins</span>
+
+<span class="sd">        This function determines the static temperature</span>
+<span class="sd">        using the relationship from pg. 72 or reference 1,</span>
+<span class="sd">        shown below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           T = \\frac{T_o}{\\left(1+\\frac{\gamma-1}{2}M^2\\right)}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">denominator</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="p">((</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">mach_number</span> <span class="o">**</span> <span class="mf">2.0</span>
+        <span class="k">return</span> <span class="n">stagnation_temperature</span> <span class="o">/</span> <span class="n">denominator</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Stagnation.pressure_based_mach"><a class="viewcode-back" href="../Stagnation.html#isentropic_models.Stagnation.pressure_based_mach">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">pressure_based_mach</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">stag_pres</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">stat_pres</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                            <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param stag_pres: The stagnation pressure in units of Pascals</span>
+<span class="sd">        :param stat_pres: The static pressure in units of Pascals</span>
+<span class="sd">        :param gamma: The ratio of specific heats</span>
+<span class="sd">        :return mach_number: The Mach number</span>
+
+<span class="sd">        This function determines the mach number</span>
+<span class="sd">        using the relationship from pg. 72 or reference 1,</span>
+<span class="sd">        shown below.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           M = \sqrt[]{\\frac{\\left(P_o/P\\right)^{\\left(\gamma-1\\right)/\gamma} - 1}{\\frac{\gamma-1}{2}}}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">one</span> <span class="o">=</span> <span class="p">((</span><span class="n">stag_pres</span> <span class="o">/</span> <span class="n">stat_pres</span><span class="p">)</span> <span class="o">**</span> <span class="p">((</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">gamma</span><span class="p">))</span> <span class="o">-</span> <span class="mf">1.0</span>
+        <span class="k">return</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">one</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">))</span> <span class="o">**</span> <span class="mf">0.5</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Stagnation.temperature_based_mach"><a class="viewcode-back" href="../Stagnation.html#isentropic_models.Stagnation.temperature_based_mach">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">temperature_based_mach</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">stag_temp</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">stat_temp</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                               <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param stag_temp: The stagnation temperature in units of Kelvins</span>
+<span class="sd">        :param stat_temp: The static temperature in units of Kelvins</span>
+<span class="sd">        :param gamma: The ratio of specific heats</span>
+<span class="sd">        :return mach_number: The Mach number</span>
+
+<span class="sd">        This function determines the mach number</span>
+<span class="sd">        using the relationship from pg. 72 or reference 1,</span>
+<span class="sd">        shown below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           M = \sqrt[]{\\frac{\\left(T_o/T\\right) - 1}{\\frac{\gamma-1}{2}}}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">one</span> <span class="o">=</span> <span class="p">(</span><span class="n">stag_temp</span> <span class="o">/</span> <span class="n">stat_temp</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span>
+        <span class="n">two</span> <span class="o">=</span> <span class="n">one</span> <span class="o">/</span> <span class="p">((</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">two</span> <span class="o">**</span> <span class="mf">0.5</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Stagnation.speed_of_sound"><a class="viewcode-back" href="../Stagnation.html#isentropic_models.Stagnation.speed_of_sound">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">speed_of_sound</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">static_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                       <span class="n">molar_mass</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param gamma: The ratio of specific heat</span>
+<span class="sd">        :param static_temperature: The static temperature in units of Kelvins</span>
+<span class="sd">        :param molar_mass: Molar mass of the fluid in units of J/mol-K</span>
+<span class="sd">        :return sos: The speed of sound in meters per second</span>
+
+<span class="sd">        This function determines the speed of sound</span>
+<span class="sd">        using the relationship from pg. 68 or reference 1,</span>
+<span class="sd">        shown below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           a = \sqrt[]{\gamma R T}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">universal_gas_constant</span> <span class="o">=</span> <span class="mf">8.314</span>  <span class="c1"># J/K-mol</span>
+        <span class="n">gas_constant</span> <span class="o">=</span> <span class="n">universal_gas_constant</span> <span class="o">/</span> <span class="n">molar_mass</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">*</span> <span class="n">gas_constant</span> <span class="o">*</span> <span class="n">static_temperature</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Stagnation.mach_number"><a class="viewcode-back" href="../Stagnation.html#isentropic_models.Stagnation.mach_number">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">mach_number</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">static_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                    <span class="n">molar_mass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">velocity</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param gamma: The ratio of specific heats</span>
+<span class="sd">        :param static_temperature: The static temperature in units of Kelvins</span>
+<span class="sd">        :param molar_mass: The molar mass of the fluid in units of J/mol-K</span>
+<span class="sd">        :param velocity: The magnitude of the velocity in units of</span>
+<span class="sd">                         meters per second</span>
+<span class="sd">        :return mach_number: The Mach number</span>
+
+<span class="sd">        This function determines the mach number</span>
+<span class="sd">        using the relationship from pg. 68 or reference 1, shown below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           M = \\frac{u}{\sqrt[]{\gamma R T}}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sos</span> <span class="o">=</span> <span class="n">Stagnation</span><span class="o">.</span><span class="n">speed_of_sound</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span> <span class="n">static_temperature</span><span class="p">,</span> <span class="n">molar_mass</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">velocity</span> <span class="o">/</span> <span class="n">sos</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Stagnation.temp_exit_mach"><a class="viewcode-back" href="../Stagnation.html#isentropic_models.Stagnation.temp_exit_mach">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">temp_exit_mach</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">exit_mach</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">inlet_mach</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                       <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">stag_inlet_temp</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                       <span class="n">stag_exit_temp</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param exit_mach: Mach number at exit</span>
+<span class="sd">        :param inlet_mach: Mach number at inlet</span>
+<span class="sd">        :param gamma: Ratio of specific heats</span>
+<span class="sd">        :param stag_inlet_temp: Stagnation temperature at inlet in units</span>
+<span class="sd">                                of Kelvins</span>
+<span class="sd">        :param stag_exit_temp: Stagnation temperature at exit in units</span>
+<span class="sd">                               of Kelvins</span>
+<span class="sd">        :return delta: The difference between the right hand and left</span>
+<span class="sd">                       hand side of the equation</span>
+
+<span class="sd">        This function assumes energy addition or loss between the</span>
+<span class="sd">        entrance and exit of a component.  This function is to be</span>
+<span class="sd">        iteratively solved for determine the inlet mach number with</span>
+<span class="sd">        knowledge of the exit mach number and the stagnation temperatures</span>
+<span class="sd">        at both ends of the component.  A component could be a combustion</span>
+<span class="sd">        chamber, or any component with isentropic losses.  This equation</span>
+<span class="sd">        was derived from page 75 or Ref. 1., shown below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \\frac{T_{o1}}{T_{o2}} = \\left[\\frac{1 + \gamma M^2_2}{1 + \gamma M^2_1}</span>
+<span class="sd">           \\left(\\frac{M_1}{M_2}\\right)\\right]^2\\left(\\frac{1 + \\frac{\gamma-1}{2}M^2_1}</span>
+<span class="sd">           {1 + \\frac{\gamma-1}{2}M^2_2}\\right)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">one</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">exit_mach</span> <span class="o">**</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">inlet_mach</span> <span class="o">**</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">two</span> <span class="o">=</span> <span class="p">(</span><span class="n">one</span> <span class="o">*</span> <span class="p">(</span><span class="n">inlet_mach</span> <span class="o">/</span> <span class="n">exit_mach</span><span class="p">))</span> <span class="o">**</span> <span class="mf">2.0</span>
+        <span class="n">three</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="p">((</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">inlet_mach</span> <span class="o">**</span> <span class="mf">2.0</span>
+        <span class="n">four</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="p">((</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">exit_mach</span> <span class="o">**</span> <span class="mf">2.0</span>
+        <span class="n">five</span> <span class="o">=</span> <span class="n">three</span> <span class="o">/</span> <span class="n">four</span>
+        <span class="k">return</span> <span class="n">two</span> <span class="o">*</span> <span class="n">five</span> <span class="o">-</span> <span class="p">(</span><span class="n">stag_inlet_temp</span> <span class="o">/</span> <span class="n">stag_exit_temp</span><span class="p">)</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Stagnation.press_exit_mach"><a class="viewcode-back" href="../Stagnation.html#isentropic_models.Stagnation.press_exit_mach">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">press_exit_mach</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">exit_mach</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">inlet_mach</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                        <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">stag_inlet_pres</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                        <span class="n">stag_exit_pres</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param exit_mach: Mach number at exit</span>
+<span class="sd">        :param inlet_mach: Mach number at inlet</span>
+<span class="sd">        :param gamma: Ratio of specific heats</span>
+<span class="sd">        :param stag_inlet_pres: Stagnation pressure at inlet, in units</span>
+<span class="sd">                                of Pascals</span>
+<span class="sd">        :param stag_exit_pres: Stagnation pressure at exit, in units of</span>
+<span class="sd">                               Pascals</span>
+<span class="sd">        :return delta: The difference between the right hand and left</span>
+<span class="sd">                       hand side of the equation</span>
+
+<span class="sd">        This function assumes energy addition or loss between the</span>
+<span class="sd">        entrance and exit of a component.  This function is to be</span>
+<span class="sd">        iteratively solved for determine the inlet mach number with</span>
+<span class="sd">        knowledge of the exit mach number and the stagnation pressures</span>
+<span class="sd">        at both ends of the component.  A component could be a combustion</span>
+<span class="sd">        chamber, or any component with isentropic losses.  This equation</span>
+<span class="sd">        was derived from page 75 or Ref. 1., shown below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \\frac{P_{o1}}{P_{o2}} = \\left[\\frac{1 + \gamma M^2_2}{1 + \gamma M^2_1}</span>
+<span class="sd">           \\right]\\left(\\frac{1 + \\frac{\gamma-1}{2}M^2_1}</span>
+<span class="sd">           {1 + \\frac{\gamma-1}{2}M^2_2}\\right)^{\gamma/\\left(\gamma-1\\right)}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">one</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">exit_mach</span> <span class="o">**</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">inlet_mach</span> <span class="o">**</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">two</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="p">((</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">inlet_mach</span> <span class="o">**</span> <span class="mf">2.0</span>
+        <span class="n">three</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="p">((</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">exit_mach</span> <span class="o">**</span> <span class="mf">2.0</span>
+        <span class="n">four</span> <span class="o">=</span> <span class="p">(</span><span class="n">two</span> <span class="o">/</span> <span class="n">three</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">/</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">one</span> <span class="o">*</span> <span class="n">four</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">stag_inlet_pres</span> <span class="o">/</span> <span class="n">stag_exit_pres</span><span class="p">)</span></div></div>
+<span class="c1"># ============================================================================</span>
+<span class="c1"># ============================================================================</span>
+<span class="c1"># This class describes the performance of a diffuser</span>
+
+
+<div class="viewcode-block" id="DiffuserNozzle"><a class="viewcode-back" href="../Diffuser_Nozzle.html#isentropic_models.DiffuserNozzle">[docs]</a><span class="k">class</span> <span class="nc">DiffuserNozzle</span><span class="p">(</span><span class="n">Stagnation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class contains functions that determine the exit conditions for</span>
+<span class="sd">    a diffuser or nozzle assuming knowledge of the inlet properties.  These</span>
+<span class="sd">    relationships are developed for sub-sonic, incompressible flows and</span>
+<span class="sd">    assume a negligible change the ratio of specific heats throughout the</span>
+<span class="sd">    process.  All relationships are developed from the following references.</span>
+
+<span class="sd">    1. Hill, P. and Peterson, C., &quot;Mechanics and Thermodynamics of Propulsion,&quot;</span>
+<span class="sd">       Addison Wesley Publishing Co., Reading, MA, 1992</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">efficiency</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">inlet_area</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">exit_area</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param efficiency: The isentropic efficiency of the diffuser or nozzle</span>
+<span class="sd">        :param inlet_area: The diffuser or nozzle inlet area in units of</span>
+<span class="sd">                           square meters</span>
+<span class="sd">        :param exit_area: The diffuser or nozzle exit area in units of</span>
+<span class="sd">                          square meters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">efficiency</span> <span class="o">=</span> <span class="n">efficiency</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inlet_area</span> <span class="o">=</span> <span class="n">inlet_area</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exit_area</span> <span class="o">=</span> <span class="n">exit_area</span>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="DiffuserNozzle.exit_stagnation_pressure"><a class="viewcode-back" href="../Diffuser_Nozzle.html#isentropic_models.DiffuserNozzle.exit_stagnation_pressure">[docs]</a>    <span class="k">def</span> <span class="nf">exit_stagnation_pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                 <span class="n">inlet_static_pres</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                 <span class="n">inlet_mach_number</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param gamma: Ratio of specific heats</span>
+<span class="sd">        :param inlet_static_pres: The stagnation tempressure at the entrance</span>
+<span class="sd">                                  to the diffuser or nozzle, in units of Pa</span>
+<span class="sd">        :param inlet_mach_number: The Mach number at the diffuser or</span>
+<span class="sd">                                  nozzle inlet</span>
+<span class="sd">        :return exit_stag_pres: The stagnation pressure at the exit of the</span>
+<span class="sd">                                diffuser or nozzle, in units of Pa</span>
+
+<span class="sd">        This function determines the diffuser or nozzle outlet stagnation</span>
+<span class="sd">        temperature using the relationship from pg. 225 or reference 1,</span>
+<span class="sd">        shown below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           P_{o}=\\left[\eta M^2_{inlet}\\frac{\gamma - 1}{2}\\right]^{\gamma / \\left(\gamma - 1\\right)}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">gamma_factor</span> <span class="o">=</span> <span class="n">gamma</span> <span class="o">/</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">exit_stag_pres</span> <span class="o">=</span> <span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">efficiency</span> <span class="o">*</span> <span class="p">((</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span>
+                          <span class="n">inlet_mach_number</span> <span class="o">**</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">**</span> <span class="n">gamma_factor</span>
+        <span class="k">return</span> <span class="n">exit_stag_pres</span> <span class="o">*</span> <span class="n">inlet_static_pres</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="DiffuserNozzle.exit_stagnation_temperature"><a class="viewcode-back" href="../Diffuser_Nozzle.html#isentropic_models.DiffuserNozzle.exit_stagnation_temperature">[docs]</a>    <span class="k">def</span> <span class="nf">exit_stagnation_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">inlet_static_temp</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                    <span class="n">inlet_static_pres</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                    <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param gamma: The ratio of specific heats</span>
+<span class="sd">        :param inlet_static_temp: The diffuser or nozzle inlet static</span>
+<span class="sd">                                  temperature in units of Kelvins</span>
+<span class="sd">        :param inlet_static_pres: The diffuser or nozzle inlet static</span>
+<span class="sd">                                  pressure in units of Pascals</span>
+<span class="sd">        :param inlet_mach_number: The diffuser or nozzle inlet Mach number</span>
+<span class="sd">        :return exit_stag_temp: The diffuser or nozzle exit stagnation</span>
+<span class="sd">                                temperature in units of Kelvins</span>
+
+<span class="sd">        This function determines the diffuser or nozzle  outlet stagnation</span>
+<span class="sd">        temperature using the relationship from pg. 225 or reference 1,</span>
+<span class="sd">        shown below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           T_{o2} = T_{o1}\\left(\\frac{P_{o2}}{P_{o1}}\\right)^{\\frac{\gamma-1}{\gamma}}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">exit_stag_pres</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_stagnation_pressure</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span> <span class="n">inlet_static_pres</span><span class="p">,</span>
+                                                       <span class="n">inlet_mach_number</span><span class="p">)</span>
+        <span class="n">ratio</span> <span class="o">=</span> <span class="p">(</span><span class="n">exit_stag_pres</span> <span class="o">/</span> <span class="n">inlet_static_pres</span><span class="p">)</span> <span class="o">**</span> <span class="p">((</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">gamma</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">inlet_static_temp</span> <span class="o">*</span> <span class="n">ratio</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="DiffuserNozzle.exit_velocity"><a class="viewcode-back" href="../Diffuser_Nozzle.html#isentropic_models.DiffuserNozzle.exit_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">exit_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_velocity</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param inlet_velocity: The diffuser inlet velocity in units of meters</span>
+<span class="sd">                               per second</span>
+<span class="sd">        :return exit_velocity: The diffuser exit velocity in units of meters</span>
+
+<span class="sd">        This function determines the fluid velocity leaving the diffuser</span>
+<span class="sd">        via equation a re-arrangement of the law of continuity described</span>
+<span class="sd">        on page 28 of Ref. 1, shown below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           u_2 = \\frac{u_1A_1}{A_2}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">inlet_velocity</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">inlet_area</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_area</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="DiffuserNozzle.exit_static_temperature"><a class="viewcode-back" href="../Diffuser_Nozzle.html#isentropic_models.DiffuserNozzle.exit_static_temperature">[docs]</a>    <span class="k">def</span> <span class="nf">exit_static_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                <span class="n">inlet_static_temp</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                <span class="n">inlet_static_pres</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                <span class="n">inlet_velocity</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param specific_heat: The specific heat at constant pressure in units</span>
+<span class="sd">                              of Joules/kg-K</span>
+<span class="sd">        :param gamma: Ratio of specific heats</span>
+<span class="sd">        :param inlet_static_temp: The static temperature at the inlet</span>
+<span class="sd">                                  of the diffuser or nozzle in units of</span>
+<span class="sd">                                  Kelvins</span>
+<span class="sd">        :param inlet_static_pres: The static pressure at the inlet of the</span>
+<span class="sd">                                  diffuser or nozzle in units of Pascals</span>
+<span class="sd">        :param inlet_mach_number: The Mach number at the inlet of the</span>
+<span class="sd">                                  diffuser or nozzle</span>
+<span class="sd">        :param inlet_velocity: The velocity at the inlet to the diffuser or</span>
+<span class="sd">                               nozzle</span>
+<span class="sd">        :return static_temp: The static temperature at the diffuser or nozzle</span>
+<span class="sd">                             exit, in units of Kelvins</span>
+
+<span class="sd">        This function determines the fluid static temperature leaving the</span>
+<span class="sd">        diffuser or nozzle.  The equation is derived from Eq. 3.9 on page</span>
+<span class="sd">        70 of Ref. 1, shown below.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           T_2 = T_{o2}-\\frac{u^2}{2c_p}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stag_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_stagnation_temperature</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span> <span class="n">inlet_static_temp</span><span class="p">,</span>
+                                                     <span class="n">inlet_static_pres</span><span class="p">,</span>
+                                                     <span class="n">inlet_mach_number</span><span class="p">)</span>
+        <span class="n">velocity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_velocity</span><span class="p">(</span><span class="n">inlet_velocity</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stag_temp</span> <span class="o">-</span> <span class="p">((</span><span class="n">velocity</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">specific_heat</span><span class="p">)</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="DiffuserNozzle.exit_mach_number"><a class="viewcode-back" href="../Diffuser_Nozzle.html#isentropic_models.DiffuserNozzle.exit_mach_number">[docs]</a>    <span class="k">def</span> <span class="nf">exit_mach_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                         <span class="n">inlet_static_temp</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">inlet_static_pres</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                         <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">inlet_velocity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                         <span class="n">molar_mass</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param specific_heat: The specific heat at constant pressure in units</span>
+<span class="sd">                              of Joules/kg-K</span>
+<span class="sd">        :param gamma: Ratio of specific heats</span>
+<span class="sd">        :param inlet_static_temp: The static temperature at the inlet to the</span>
+<span class="sd">                                  diffuser or nozzle, in units of Kelvins</span>
+<span class="sd">        :param inlet_static_pres: The static pressure at the inlet to the</span>
+<span class="sd">                                  diffuser or nozzle, in units of Pascals</span>
+<span class="sd">        :param inlet_mach_number: The Mach number at the inlet to the diffuser</span>
+<span class="sd">                                  or nozzle</span>
+<span class="sd">        :param inlet_velocity: The velocity at the inlet to the diffuser or</span>
+<span class="sd">                               nozzle, in units of m/s</span>
+<span class="sd">        :param molar_mass: The molar mass of the fluid in units of J/mol-K</span>
+<span class="sd">        :return mach_number: The Mach number at the exit to the diffuser or</span>
+<span class="sd">                             nozzle</span>
+
+<span class="sd">        This function calculates the Mach number at the diffuser or nozzle</span>
+<span class="sd">        exit.  This function assumes sub-sonic, incompressible flow and uses</span>
+<span class="sd">        Eq. 3.7 and 3.8 from page 69 of Ref. 1, shown below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           M_2 = \\frac{u_2}{\sqrt[]{\gamma R T_2}}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stat_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_static_temperature</span><span class="p">(</span><span class="n">specific_heat</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span>
+                                                 <span class="n">inlet_static_temp</span><span class="p">,</span>
+                                                 <span class="n">inlet_static_pres</span><span class="p">,</span>
+                                                 <span class="n">inlet_mach_number</span><span class="p">,</span>
+                                                 <span class="n">inlet_velocity</span><span class="p">)</span>
+        <span class="n">velocity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_velocity</span><span class="p">(</span><span class="n">inlet_velocity</span><span class="p">)</span>
+        <span class="n">mach_number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mach_number</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span> <span class="n">stat_temp</span><span class="p">,</span> <span class="n">molar_mass</span><span class="p">,</span> <span class="n">velocity</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mach_number</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="DiffuserNozzle.exit_static_pressure"><a class="viewcode-back" href="../Diffuser_Nozzle.html#isentropic_models.DiffuserNozzle.exit_static_pressure">[docs]</a>    <span class="k">def</span> <span class="nf">exit_static_pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">inlet_static_pres</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                             <span class="n">inlet_mach_number</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                             <span class="n">inlet_static_temp</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">inlet_velocity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                             <span class="n">molar_mass</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param gamma: Ratio of specific heats</span>
+<span class="sd">        :param inlet_static_pres: The static temperature at the inlet to</span>
+<span class="sd">                                  the diffuser or nozzle, in units of Kelvins</span>
+<span class="sd">        :param inlet_mach_number: The Mach number at the diffuser/nozzle</span>
+<span class="sd">                                  inlet</span>
+<span class="sd">        :param specific_heat: The specific heat at constant pressure in units</span>
+<span class="sd">                              of Joules/kg-K</span>
+<span class="sd">        :param inlet_static_temp: The static temperature at the inlet</span>
+<span class="sd">                                  of the diffuser or nozzle, in units of</span>
+<span class="sd">                                  Kelvins</span>
+<span class="sd">        :param inlet_velocity: The velocity at the inlet to the diffuser or</span>
+<span class="sd">                               nozzle in units of m/s</span>
+<span class="sd">        :param molar_mass: The molar mass of the fluid in units of J/mol-K</span>
+<span class="sd">        :return stat_pres: The static pressure at the exit to the diffuser</span>
+<span class="sd">                           or nozzle in units of Pascals</span>
+
+<span class="sd">        This function calculates the static pressure at the exit of the</span>
+<span class="sd">        diffuser or nozzle.  This function assumes sub-sonic, incompressible</span>
+<span class="sd">        flow, assuming the following relationship</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           P = \\frac{P_o}{\\left[1+\\frac{\gamma-1}{2}M^2\\right]^{\gamma/\\left(\gamma-1\\right)}}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stag_pres</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_stagnation_pressure</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span> <span class="n">inlet_static_pres</span><span class="p">,</span>
+                                                  <span class="n">inlet_mach_number</span><span class="p">)</span>
+        <span class="n">mach_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_mach_number</span><span class="p">(</span><span class="n">specific_heat</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span>
+                                         <span class="n">inlet_static_temp</span><span class="p">,</span> <span class="n">inlet_static_pres</span><span class="p">,</span>
+                                         <span class="n">inlet_mach_number</span><span class="p">,</span> <span class="n">inlet_velocity</span><span class="p">,</span>
+                                         <span class="n">molar_mass</span><span class="p">)</span>
+        <span class="n">stat_pres</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">static_pressure</span><span class="p">(</span><span class="n">stag_pres</span><span class="p">,</span> <span class="n">mach_num</span><span class="p">,</span> <span class="n">gamma</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stat_pres</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="DiffuserNozzle.exit_density"><a class="viewcode-back" href="../Diffuser_Nozzle.html#isentropic_models.DiffuserNozzle.exit_density">[docs]</a>    <span class="k">def</span> <span class="nf">exit_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_velocity</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param inlet_velocity: The velocity at the inlet to the diffuser or</span>
+<span class="sd">                               nozzle, in units of m/s</span>
+<span class="sd">        :param mass_flow_rate: The fluid mass flow rate in units of</span>
+<span class="sd">                               kg/s</span>
+<span class="sd">        :return exit_density: The fluid density at the diffuser/nozzle exit</span>
+<span class="sd">                              im units of kg/s</span>
+
+<span class="sd">        This function calculates the fluid density at the ext to the diffuser</span>
+<span class="sd">        or nozzle with the following relationship.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \\rho = \\frac{\dot{m}}{uA}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">velocity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_velocity</span><span class="p">(</span><span class="n">inlet_velocity</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mass_flow_rate</span> <span class="o">/</span> <span class="p">(</span><span class="n">velocity</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_area</span><span class="p">)</span></div></div>
+<span class="c1"># ============================================================================</span>
+<span class="c1"># ============================================================================</span>
+<span class="c1"># eof</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="nav-item nav-item-0"><a href="../index.html">thermosystems 0.0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">isentropic_models</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Jonathan A. Webb.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

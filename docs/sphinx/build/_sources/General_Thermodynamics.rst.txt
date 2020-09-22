@@ -1,0 +1,5 @@
+General Thermodynamics
+======================
+
+.. autoclass:: isentropic_models.Stagnation
+   :members

@@ -1,0 +1,303 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Diffuser/Nozzle &#8212; thermosystems 0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Stagnation" href="Stagnation.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="Stagnation.html" title="Stagnation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">thermosystems 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Diffuser/Nozzle</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="diffuser-nozzle">
+<h1>Diffuser/Nozzle<a class="headerlink" href="#diffuser-nozzle" title="Permalink to this headline">¶</a></h1>
+<p>This section documents the <code class="docutils literal notranslate"><span class="pre">DiffuserNozzle</span></code> class encoded in the
+<code class="docutils literal notranslate"><span class="pre">isentropic_models.py</span></code> file.  This class contains models for
+all generic adiabatic-isentropic process that may be relevant
+to the determination of exit properties for a fluid leaving
+a diffuser or a nozzle.  This class assumes sub-sonic, incompressible
+gas flow.</p>
+<dl class="py class">
+<dt id="isentropic_models.DiffuserNozzle">
+<em class="property">class </em><code class="sig-prename descclassname">isentropic_models.</code><code class="sig-name descname">DiffuserNozzle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">efficiency</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">inlet_area</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">exit_area</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/isentropic_models.html#DiffuserNozzle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#isentropic_models.DiffuserNozzle" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class contains functions that determine the exit conditions for
+a diffuser or nozzle assuming knowledge of the inlet properties.  These
+relationships are developed for sub-sonic, incompressible flows and
+assume a negligible change the ratio of specific heats throughout the
+process.  All relationships are developed from the following references.</p>
+<ol class="arabic simple">
+<li><p>Hill, P. and Peterson, C., “Mechanics and Thermodynamics of Propulsion,”
+Addison Wesley Publishing Co., Reading, MA, 1992</p></li>
+</ol>
+<dl class="py method">
+<dt id="isentropic_models.DiffuserNozzle.exit_density">
+<code class="sig-name descname">exit_density</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inlet_velocity</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">mass_flow_rate</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/isentropic_models.html#DiffuserNozzle.exit_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#isentropic_models.DiffuserNozzle.exit_density" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inlet_velocity</strong> – The velocity at the inlet to the diffuser or
+nozzle, in units of m/s</p></li>
+<li><p><strong>mass_flow_rate</strong> – The fluid mass flow rate in units of
+kg/s</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return exit_density</dt>
+<dd class="field-even"><p>The fluid density at the diffuser/nozzle exit
+im units of kg/s</p>
+</dd>
+</dl>
+<p>This function calculates the fluid density at the ext to the diffuser
+or nozzle with the following relationship.</p>
+<div class="math notranslate nohighlight">
+\[\rho = \frac{\dot{m}}{uA}\]</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="isentropic_models.DiffuserNozzle.exit_mach_number">
+<code class="sig-name descname">exit_mach_number</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">specific_heat</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">inlet_static_temp</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">inlet_static_pres</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">inlet_mach_number</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">inlet_velocity</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">molar_mass</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/isentropic_models.html#DiffuserNozzle.exit_mach_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#isentropic_models.DiffuserNozzle.exit_mach_number" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>specific_heat</strong> – The specific heat at constant pressure in units
+of Joules/kg-K</p></li>
+<li><p><strong>gamma</strong> – Ratio of specific heats</p></li>
+<li><p><strong>inlet_static_temp</strong> – The static temperature at the inlet to the
+diffuser or nozzle, in units of Kelvins</p></li>
+<li><p><strong>inlet_static_pres</strong> – The static pressure at the inlet to the
+diffuser or nozzle, in units of Pascals</p></li>
+<li><p><strong>inlet_mach_number</strong> – The Mach number at the inlet to the diffuser
+or nozzle</p></li>
+<li><p><strong>inlet_velocity</strong> – The velocity at the inlet to the diffuser or
+nozzle, in units of m/s</p></li>
+<li><p><strong>molar_mass</strong> – The molar mass of the fluid in units of J/mol-K</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return mach_number</dt>
+<dd class="field-even"><p>The Mach number at the exit to the diffuser or
+nozzle</p>
+</dd>
+</dl>
+<p>This function calculates the Mach number at the diffuser or nozzle
+exit.  This function assumes sub-sonic, incompressible flow and uses
+Eq. 3.7 and 3.8 from page 69 of Ref. 1, shown below</p>
+<div class="math notranslate nohighlight">
+\[M_2 = \frac{u_2}{\sqrt[]{\gamma R T_2}}\]</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="isentropic_models.DiffuserNozzle.exit_stagnation_pressure">
+<code class="sig-name descname">exit_stagnation_pressure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gamma</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">inlet_static_pres</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">inlet_mach_number</span></em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/isentropic_models.html#DiffuserNozzle.exit_stagnation_pressure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#isentropic_models.DiffuserNozzle.exit_stagnation_pressure" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gamma</strong> – Ratio of specific heats</p></li>
+<li><p><strong>inlet_static_pres</strong> – The stagnation tempressure at the entrance
+to the diffuser or nozzle, in units of Pa</p></li>
+<li><p><strong>inlet_mach_number</strong> – The Mach number at the diffuser or
+nozzle inlet</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return exit_stag_pres</dt>
+<dd class="field-even"><p>The stagnation pressure at the exit of the
+diffuser or nozzle, in units of Pa</p>
+</dd>
+</dl>
+<p>This function determines the diffuser or nozzle outlet stagnation
+temperature using the relationship from pg. 225 or reference 1,
+shown below</p>
+<div class="math notranslate nohighlight">
+\[P_{o}=\left[\eta M^2_{inlet}\frac{\gamma - 1}{2}\right]^{\gamma / \left(\gamma - 1\right)}\]</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="isentropic_models.DiffuserNozzle.exit_stagnation_temperature">
+<code class="sig-name descname">exit_stagnation_temperature</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gamma</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">inlet_static_temp</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">inlet_static_pres</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">inlet_mach_number</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/isentropic_models.html#DiffuserNozzle.exit_stagnation_temperature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#isentropic_models.DiffuserNozzle.exit_stagnation_temperature" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gamma</strong> – The ratio of specific heats</p></li>
+<li><p><strong>inlet_static_temp</strong> – The diffuser or nozzle inlet static
+temperature in units of Kelvins</p></li>
+<li><p><strong>inlet_static_pres</strong> – The diffuser or nozzle inlet static
+pressure in units of Pascals</p></li>
+<li><p><strong>inlet_mach_number</strong> – The diffuser or nozzle inlet Mach number</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return exit_stag_temp</dt>
+<dd class="field-even"><p>The diffuser or nozzle exit stagnation
+temperature in units of Kelvins</p>
+</dd>
+</dl>
+<p>This function determines the diffuser or nozzle  outlet stagnation
+temperature using the relationship from pg. 225 or reference 1,
+shown below</p>
+<div class="math notranslate nohighlight">
+\[T_{o2} = T_{o1}\left(\frac{P_{o2}}{P_{o1}}\right)^{\frac{\gamma-1}{\gamma}}\]</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="isentropic_models.DiffuserNozzle.exit_static_pressure">
+<code class="sig-name descname">exit_static_pressure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gamma</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">inlet_static_pres</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">inlet_mach_number</span></em>, <em class="sig-param"><span class="n">specific_heat</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">inlet_static_temp</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">inlet_velocity</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">molar_mass</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/isentropic_models.html#DiffuserNozzle.exit_static_pressure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#isentropic_models.DiffuserNozzle.exit_static_pressure" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gamma</strong> – Ratio of specific heats</p></li>
+<li><p><strong>inlet_static_pres</strong> – The static temperature at the inlet to
+the diffuser or nozzle, in units of Kelvins</p></li>
+<li><p><strong>inlet_mach_number</strong> – The Mach number at the diffuser/nozzle
+inlet</p></li>
+<li><p><strong>specific_heat</strong> – The specific heat at constant pressure in units
+of Joules/kg-K</p></li>
+<li><p><strong>inlet_static_temp</strong> – The static temperature at the inlet
+of the diffuser or nozzle, in units of
+Kelvins</p></li>
+<li><p><strong>inlet_velocity</strong> – The velocity at the inlet to the diffuser or
+nozzle in units of m/s</p></li>
+<li><p><strong>molar_mass</strong> – The molar mass of the fluid in units of J/mol-K</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return stat_pres</dt>
+<dd class="field-even"><p>The static pressure at the exit to the diffuser
+or nozzle in units of Pascals</p>
+</dd>
+</dl>
+<p>This function calculates the static pressure at the exit of the
+diffuser or nozzle.  This function assumes sub-sonic, incompressible
+flow, assuming the following relationship</p>
+<div class="math notranslate nohighlight">
+\[P = \frac{P_o}{\left[1+\frac{\gamma-1}{2}M^2\right]^{\gamma/\left(\gamma-1\right)}}\]</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="isentropic_models.DiffuserNozzle.exit_static_temperature">
+<code class="sig-name descname">exit_static_temperature</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">specific_heat</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">inlet_static_temp</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">inlet_static_pres</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">inlet_mach_number</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">inlet_velocity</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/isentropic_models.html#DiffuserNozzle.exit_static_temperature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#isentropic_models.DiffuserNozzle.exit_static_temperature" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>specific_heat</strong> – The specific heat at constant pressure in units
+of Joules/kg-K</p></li>
+<li><p><strong>gamma</strong> – Ratio of specific heats</p></li>
+<li><p><strong>inlet_static_temp</strong> – The static temperature at the inlet
+of the diffuser or nozzle in units of
+Kelvins</p></li>
+<li><p><strong>inlet_static_pres</strong> – The static pressure at the inlet of the
+diffuser or nozzle in units of Pascals</p></li>
+<li><p><strong>inlet_mach_number</strong> – The Mach number at the inlet of the
+diffuser or nozzle</p></li>
+<li><p><strong>inlet_velocity</strong> – The velocity at the inlet to the diffuser or
+nozzle</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return static_temp</dt>
+<dd class="field-even"><p>The static temperature at the diffuser or nozzle
+exit, in units of Kelvins</p>
+</dd>
+</dl>
+<p>This function determines the fluid static temperature leaving the
+diffuser or nozzle.  The equation is derived from Eq. 3.9 on page
+70 of Ref. 1, shown below.</p>
+<div class="math notranslate nohighlight">
+\[T_2 = T_{o2}-\frac{u^2}{2c_p}\]</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="isentropic_models.DiffuserNozzle.exit_velocity">
+<code class="sig-name descname">exit_velocity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">inlet_velocity</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; float<a class="reference internal" href="_modules/isentropic_models.html#DiffuserNozzle.exit_velocity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#isentropic_models.DiffuserNozzle.exit_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>inlet_velocity</strong> – The diffuser inlet velocity in units of meters
+per second</p>
+</dd>
+<dt class="field-even">Return exit_velocity</dt>
+<dd class="field-even"><p>The diffuser exit velocity in units of meters</p>
+</dd>
+</dl>
+<p>This function determines the fluid velocity leaving the diffuser
+via equation a re-arrangement of the law of continuity described
+on page 28 of Ref. 1, shown below</p>
+<div class="math notranslate nohighlight">
+\[u_2 = \frac{u_1A_1}{A_2}\]</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Stagnation.html"
+                        title="previous chapter">Stagnation</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/Diffuser_Nozzle.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="Stagnation.html" title="Stagnation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">thermosystems 0.0.1 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Diffuser/Nozzle</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Jonathan A. Webb.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

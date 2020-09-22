@@ -1,0 +1,112 @@
+\chapter{Component Effects on Fluid}
+
+This chapter will describe the mathematical theory used to model the effect each component has
+on a fluid.  The components of interest in this chapter are those that are
+common in gas-flow thermodynamic systems such as jet engines and electrical power plants.
+All models describe in this document assume adiabatic, isentropic conditions.
+
+\section{Background}
+A full survey of thermodynamics is beyond the scope of this document; however, the following
+relationships form the basis for all the adiabatic-isentropic relationships described in this document.
+
+All equations in the {\emph{Thermodynamic Systems}} code assume ideal gas conditions, 
+which are achieved by assuming one dimensional flow.  An ideal gas can be approximated by
+Equation \ref{eq:ideal_gas} where $\rho$ is density, $R$ is the gas constant and $T$ is the static
+temperature.  The constant $R_o$ is the ideal gas constant of 8.314 J/(kg$\cdot$mole) and $M$
+is the molar mass of the fluid in units of grams per mole.
+
+\begin{equation}
+\label{eq:ideal_gas}
+p=\rho RT
+\end{equation}
+
+\noindent where
+
+\begin{equation}
+R=\frac{R_o}{M}
+\end{equation}
+
+\noindent In addition, ideal, non-compressible flow is assumed, which implies the rule of continuity in Equation \ref{eq:continuity}, 
+where $\dot{m}$ represents the mass flow rate, $u$ represents the flow velocity, and $A$ represents
+the cross-sectional area of the flow-channel.  The subscripts $1$ and $2$ imply the up-stream and down-stream conditions respectively.
+
+\begin{equation}
+\label{eq:continuity}
+\dot{m}_1 = \dot{m}_2 = \rho_1u_1A_1 = \rho_2u_2A_2
+\end{equation}
+
+In an adiabatic system the stagnation conditions can be estimated from the fluid Mach number via equations \ref{eq:stag_pressure} 
+and \ref{eq:stag_temperature} where $M$ represents the Mach number, $\gamma$ represents the ratio of specific heats ($c_p/c_v$), $P_o$ 
+is stagnation pressure, $P$ is static pressure, $T$ is static temperature and $T_o$ represents the stagnation temperature.
+The terms $c_p$ and $c_v$ represents the specific heats at constant pressure and volume respectively.  
+
+\begin{equation}
+\label{eq:stag_pressure}
+\frac{P_o}{P}=\left(1 + \frac{\gamma - 1}{2}M^2\right)^{1/\left(\gamma-1\right)}
+\end{equation}
+
+\begin{equation}
+\label{eq:stag_temperature}
+\frac{T_o}{T}=1 + \frac{\gamma-1}{2}M^2
+\end{equation}
+
+\noindent where;
+
+\begin{equation}
+\label{eq:mach}
+M = \frac{u}{\sqrt[]{\gamma R T}}
+\end{equation}
+
+\noindent Assuming that the ratio of specific heats ($\gamma$) is constant across a 
+process where work is done, then we can assume a relationship between
+the stagnation conditions at the entrance and exit to the work process.
+
+\begin{equation}
+\label{eq:stag}
+\frac{P_{o1}}{P_{o2}}=\left(\frac{T_{o1}}{T_{o2}}\right)^{\gamma/\left(\gamma-1\right)}
+\end{equation}
+
+\section{Diffuser/Nozzle}
+A diffuser slows the fluid velocity by increasing the flow area and a nozzle executes the inverse.  According to Equation \ref{eq:continuity}, 
+assuming the fluid density does not change, which is consistent with non-compressible flow, an increase in the 
+area of a piping system will necessitate a decrease in the fluid velocity.   In theory, no work is executed in a nozzle
+or a diffuser, which implies that the stagnation conditions should be equal at the entrance and the exit
+to a diffuser or nozzle.  However, real systems will always incur some thermodynamic losses, which will
+decrease the stagnation conditions across the nozzle or diffuser, which can be approximated through
+isentropic efficiencies ($\eta$) 
+
+\subsection{Fluid Stagnation Pressure and Temperature}
+The stagnation pressure at the diffuser exit can be determined via Eq. \ref{eq:dif_stag_pressure} 
+where $\eta_d$ is the isentropic efficiency of the diffuser.  The value of $\eta_d$ can be replaced
+with $\eta_n$ for a nozzle.
+
+\begin{equation}
+\label{eq:dif_stag_pressure}
+P_{o2}=P_{o1}\left(\eta_d\left[\frac{\gamma-1}{2}\right]M^2+1\right)^{\gamma/\left(\gamma-1\right)}
+\end{equation}
+
+\noindent The stagnation temperature is determined via Eq. \ref{eq:stag}
+
+\subsection{Fluid Static Pressure and Temperature}
+The static temperature (T) is calculated via Eq. \ref{eq:diff_stat_temp} where the derivation of the velocity is described
+in Section \ref{dif:mach}.
+
+\begin{equation}
+\label{eq:diff_stat_temp}
+T = T_o-\frac{u^2}{2c_p}
+\end{equation}
+
+\noindent The static pressure is determine via Eq. \ref{eq:stag_pressure} where the stagnation pressure ($P_o$) is
+determined via Eq. \ref{eq:dif_stag_pressure} and the Mach number ($M$) is determined through the method 
+described in Section \ref{dif:mach}
+
+\subsection{Fluid Velocity and Mach Number} \label{dif:mach}
+The fluid velocity ($u$) leaving the diffuser or nozzle is determined via Eq. \ref{eq:continuity} and the Mach number ($M$) is calculated
+using Eq. \ref{eq:mach}.  The static temperature ($T$) used in Eq. \ref{eq:mach} is calculated from \ref{eq:diff_stat_temp}.  The calculation of velocity
+and Mach number assume that the flow is subsonic and non-compressible.
+
+\subsection{Fluid Density}
+The fluid density is determined with a-priori knowledge of the mass flow rate ($\dot{m}$) and Eq. \ref{eq:continuity}.  The fluid velocity $u$ 
+required in Eq. \ref{eq:continuity} is determined in Section \ref{dif:mach}.
+
+\section{Compressor}
