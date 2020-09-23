@@ -9,4 +9,5 @@
 \contentsline {subsection}{\numberline {1.3.1}Fluid Stagnation Pressure and Temperature}{3}{subsection.1.3.1}
 \contentsline {subsection}{\numberline {1.3.2}Fluid Static Pressure and Temperature}{3}{subsection.1.3.2}
 \contentsline {subsection}{\numberline {1.3.3}Fluid Velocity and Mach Number}{3}{subsection.1.3.3}
-\contentsline {subsection}{\numberline {1.3.4}Fluid Density}{3}{subsection.1.3.4}
+\contentsline {subsection}{\numberline {1.3.4}Fluid Density}{4}{subsection.1.3.4}
+\contentsline {subsection}{\numberline {1.3.5}Compressor Work}{4}{subsection.1.3.5}

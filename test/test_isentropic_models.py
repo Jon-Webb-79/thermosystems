@@ -240,10 +240,11 @@ def test_diff_exit_density():
 # Test the Compressor class
 
 
-compressor_ratio = 1.4
+compressor_ratio = 3.2
 inlet_stag_pressure = 6000000.0
 inlet_stag_temperature = 800.0
 efficiency = 0.9
+inlet_mach_number = 0.1
 comp = Compressor(compressor_ratio, efficiency)
 
 
@@ -264,6 +265,30 @@ def test_comp_exit_stag_temperature():
     """
     exit_stag_temp = comp.exit_stagnation_temperature(inlet_stag_temperature, gamma)
     assert isclose(exit_stag_temp, 889.69, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_comp_work():
+    """
+
+    This function tests the compressor_work() function
+    """
+    mass_flow_rate = 1.10
+    specific_heat = 1.0
+    comp_work = comp.compressor_work(mass_flow_rate, specific_heat,
+                                     inlet_stag_temperature, gamma)
+    assert isclose(109.628, comp_work, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_comp_mach_number():
+    """
+
+    This function tests the compressor_mach_number() function
+    """
+    mach = comp.exit_mach_number(inlet_mach_number, inlet_stag_temperature,
+                                 gamma, 0.001, 0.999)
+    assert isclose(mach[0], 0.120615, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # eof

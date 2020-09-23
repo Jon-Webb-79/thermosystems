@@ -150,9 +150,26 @@ T_{o2}=T_{o1}\left[1 + \frac{1}{\eta_c}\left(p_{cr}^{\frac{\gamma-1}{\gamma}}\ri
 % --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \subsection{Fluid Velocity and Mach Number}
+The compressor exit Mach number cannot be directly calculated and instead must be iteratively solved for as a root for 
+Equation \ref{eq:com_mach_number} with knowledge of the inlet stagnation temperature, outlet stagnation temperature, and inlet mach number.
+
+\begin{equation}
+\label{eq:com_mach_number}
+\frac{T_{o2}}{T_{o1}} = \left[\frac{1 + \gamma M^2_2}{1 + \gamma M^2_1} \right]^2 \left(\frac{1 + \frac{\gamma-1}{2}M^2_2}{1 + \frac{\gamma - 1}{2}M^2_1} \right)
+\end{equation}
 % --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \subsection{Fluid Density}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{Compressor Work}
+The compressor does work on the system in order to change the stagnation conditions.  The work done by the compressor on the fluid
+is modeled via Eq. \ref{eq:comp_work}.
+
+\begin{equation}
+\label{eq:comp_work}
+W = \dot{m}c_p\left(T_{o2} - T_{o1}\right)
+\end{equation}
 % ===========================================================================================================
 % ===========================================================================================================
 

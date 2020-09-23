@@ -1,4 +1,6 @@
 # Import necessary packages here
+from scipy.optimize import bisect
+from typing import Tuple, Any
 
 # ============================================================================
 # ============================================================================
@@ -580,6 +582,66 @@ class Compressor(Stagnation):
         stag_temp = inlet_stagnation_temperature * ((1.0 + (1.0 / self.efficiency) *
                     (self.compression_ratio ** ((gamma - 1.0) / gamma) - 1.0)))
         return stag_temp
+# ----------------------------------------------------------------------------
+
+    def compressor_work(self, mass_flow_rate: float, specific_heat: float,
+                        inlet_stagnation_temperature: float, gamma:float) -> float:
+        """
+
+        :param mass_flow_rate: The mass flow rate in units of kg/s
+        :param specific_heat: The specific heat at constant pressure,
+                              in units of J/kg-K
+        :param inlet_stagnation_temperature: The stagnation temperature at
+                                             the compressor inlet
+        :param gamma: Ratio of specific heats
+        :return work: The work done on the fluid in units of Watts
+
+        This function calculates the work done on the fluid by a compressor
+        using Equation 5.43 on page 172 of Ref 1 shown below.
+
+        .. math::
+           W = \\dot{m}c_p\\left(T_{o2} - T_{o1}\\right)
+        """
+        exit_stag_temp = self.exit_stagnation_temperature(inlet_stagnation_temperature,
+                                                          gamma)
+        work = mass_flow_rate * specific_heat * (exit_stag_temp -
+                                                 inlet_stagnation_temperature)
+        return work / self.efficiency
+# ----------------------------------------------------------------------------
+
+    def exit_mach_number(self, inlet_mach_number: float,
+                         inlet_stagnation_temperature: float,
+                         gamma: float, upper: float = 0.001,
+                         lower: float = 0.999) -> Tuple[float, Any]:
+        """
+
+        :param inlet_mach_number: The mach number at the compressor inlet
+        :param inlet_stagnation_temperature: The stagnation temperature at the
+                                             compressor inlet in units of
+                                             Kelvins
+        :param gamma: Ratio of specific heats
+        :param upper: The upper bounds of the possible solution for Mach number,
+                      defaulted to 0.999
+        :param lower: The lower bounds of the possible solution for Mach number,
+                      defaulted to 0.001
+        :return mach: The mach number at the compressor exit
+
+        This function determines the Mach number at the compressor exit using
+        Eq. 3.19 from page 75 of Ref. 1 as shown below.  The function cannot directly
+        solve for the exit Mach number and instead uses the bisect method to
+        solve for the root value.
+
+        .. math::
+           \\frac{T_{o2}}{T_{o1}} = \\left[\\frac{1+\gamma M^2_2}{1+\gamma M^2_1}
+           \\left(\\frac{M_2}{M_1} \\right)\\right]^2 \\left(\\frac{1+\\frac{\gamma-1}{2}M^2_2}
+           {1+\\frac{\gamma-1}{2}M^2_1} \\right)
+        """
+        exit_stag_temp = self.exit_stagnation_temperature(inlet_stagnation_temperature,
+                                                          gamma)
+        mach = bisect(self.temp_exit_mach, lower, upper,
+                      args=(inlet_mach_number, gamma, inlet_stagnation_temperature,
+                            exit_stag_temp), full_output=True)
+        return mach
 # ============================================================================
 # ============================================================================
 # eof
