@@ -4,6 +4,8 @@ This chapter will describe the mathematical theory used to model the effect each
 on a fluid.  The components of interest in this chapter are those that are
 common in gas-flow thermodynamic systems such as jet engines and electrical power plants.
 All models describe in this document assume adiabatic, isentropic conditions.
+% ===========================================================================================================
+% ===========================================================================================================
 
 \section{Background}
 A full survey of thermodynamics is beyond the scope of this document; however, the following
@@ -65,6 +67,7 @@ the stagnation conditions at the entrance and exit to the work process.
 \label{eq:stag}
 \frac{P_{o1}}{P_{o2}}=\left(\frac{T_{o1}}{T_{o2}}\right)^{\gamma/\left(\gamma-1\right)}
 \end{equation}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \section{Diffuser/Nozzle}
 A diffuser slows the fluid velocity by increasing the flow area and a nozzle executes the inverse.  According to Equation \ref{eq:continuity}, 
@@ -73,7 +76,11 @@ area of a piping system will necessitate a decrease in the fluid velocity.   In 
 or a diffuser, which implies that the stagnation conditions should be equal at the entrance and the exit
 to a diffuser or nozzle.  However, real systems will always incur some thermodynamic losses, which will
 decrease the stagnation conditions across the nozzle or diffuser, which can be approximated through
-isentropic efficiencies ($\eta$) 
+isentropic efficiencies ($\eta$) .  The isentropic efficiency, inlet area and exit area can be considered as attributes of a diffuser.
+The models described in this section were derived from 
+\textit{Mechanics and Thermodynamics of Propulsion} by Hill and Peterson\cite{Hill} and a 
+Masters Thesis by Webb\cite{Webb}.  All models calculate exit conditions with an assumption that the inlet conditions are known.
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \subsection{Fluid Stagnation Pressure and Temperature}
 The stagnation pressure at the diffuser exit can be determined via Eq. \ref{eq:dif_stag_pressure} 
@@ -86,6 +93,7 @@ P_{o2}=P_{o1}\left(\eta_d\left[\frac{\gamma-1}{2}\right]M^2+1\right)^{\gamma/\le
 \end{equation}
 
 \noindent The stagnation temperature is determined via Eq. \ref{eq:stag}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \subsection{Fluid Static Pressure and Temperature}
 The static temperature (T) is calculated via Eq. \ref{eq:diff_stat_temp} where the derivation of the velocity is described
@@ -99,14 +107,60 @@ T = T_o-\frac{u^2}{2c_p}
 \noindent The static pressure is determine via Eq. \ref{eq:stag_pressure} where the stagnation pressure ($P_o$) is
 determined via Eq. \ref{eq:dif_stag_pressure} and the Mach number ($M$) is determined through the method 
 described in Section \ref{dif:mach}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \subsection{Fluid Velocity and Mach Number} \label{dif:mach}
 The fluid velocity ($u$) leaving the diffuser or nozzle is determined via Eq. \ref{eq:continuity} and the Mach number ($M$) is calculated
 using Eq. \ref{eq:mach}.  The static temperature ($T$) used in Eq. \ref{eq:mach} is calculated from \ref{eq:diff_stat_temp}.  The calculation of velocity
 and Mach number assume that the flow is subsonic and non-compressible.
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \subsection{Fluid Density}
 The fluid density is determined with a-priori knowledge of the mass flow rate ($\dot{m}$) and Eq. \ref{eq:continuity}.  The fluid velocity $u$ 
 required in Eq. \ref{eq:continuity} is determined in Section \ref{dif:mach}.
+% ===========================================================================================================
+% ===========================================================================================================
 
 \section{Compressor}
+A compressor does work upon a system and increases the stagnation conditions (i.e. $T_o$, $P_o$), and thereby the fluid density.  There
+are isentropic losses in a compressor, which are approximated by the term $\eta_c$. The isentropic efficiency and compression 
+ratio (i.e $P_{cr}=P_{o2}/P_{o1}$) are considered as compressor attributes. The models described in this section were derived 
+from \textit{Mechanics and Thermodynamics of Propulsion} by Hill and Peterson\cite{Hill} and a Masters Thesis by Webb\cite{Webb}.
+All models calculate exit conditions with an assumption that the inlet conditions are known.
+
+\subsection{Fluid Stagnation Pressure and Temperature}
+The stagnation pressure is determined with knowledge of the inlet stagnation pressure and the compression ratio ($P_{cr}$) and is
+shown in Eq. \ref{eq:comp_stag_pressure}.
+
+\begin{equation}
+\label{eq:comp_stag_pressure}
+P_{o2} = P_{o1}P_{cr}
+\end{equation}
+
+The stagnation temperature at the compressor exit can also be expressed in terms of the inlet stagnation temperature and the 
+compression ration as shown in Eq. \ref{eq:comp_stag_temp}
+
+\begin{equation}
+\label{eq:comp_stag_temp}
+T_{o2}=T_{o1}\left[1 + \frac{1}{\eta_c}\left(p_{cr}^{\frac{\gamma-1}{\gamma}}\right)-1\right]
+\end{equation}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{Fluid Static Pressure and Temperature}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{Fluid Velocity and Mach Number}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{Fluid Density}
+% ===========================================================================================================
+% ===========================================================================================================
+
+
+\begin{thebibliography}{2}
+
+\bibitem{Hill} Hill, P. and Peterson, C., \emph{Machanics and Thermodynamics of Propulsion}, Addison-Wesley, Reading, MA, 1992.
+
+\bibitem{Webb} Webb, J., A., \emph{Radioisotope Heated Air-breathing Engine Design for Flight Applications on Titan}, A M.S. Thesis at
+                         the Idaho State University, Dept. of Nuclear Engineering, 2009.
+\end{thebibliography}
