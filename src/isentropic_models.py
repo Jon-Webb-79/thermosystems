@@ -515,4 +515,71 @@ class DiffuserNozzle(Stagnation):
         return mass_flow_rate / (velocity * self.exit_area)
 # ============================================================================
 # ============================================================================
+# This class describes the performance of a compressor
+
+
+class Compressor(Stagnation):
+    """
+    This class contains functions that determine the exit conditions for
+    a gas compressor assuming knowledge of the inlet properties.  These
+    relationships are developed for sub-sonic, incompressible flows and
+    assume a negligible change the ratio of specific heats throughout the
+    process.  All relationships are developed from the following references.
+
+    1. Hill, P. and Peterson, C., "Mechanics and Thermodynamics of Propulsion,"
+       Addison Wesley Publishing Co., Reading, MA, 1992
+    """
+    def __init__(self, compression_ratio: float, efficiency: float):
+        """
+
+        :param compression_ratio: The ratio of outlet stagnation pressure
+                                  to inlet stagnation pressure
+        :param efficiency: The compressor isentropic efficiency
+        """
+        self.compression_ratio = compression_ratio
+        self.efficiency = efficiency
+# ----------------------------------------------------------------------------
+
+    def exit_stagnation_pressure(self, inlet_stagnation_pressure: float) -> float:
+        """
+
+        :param inlet_stagnation_pressure: The inlet stagnation pressure in units
+                               of Pascals
+        :return outlet_stagnation_pressure: The stagnation pressure
+                                            leaving the compressure in
+                                            units of Pascals
+
+        This function calculates the stagnation pressure leaving the compressor
+        using Equation 5.30 from page 161 of Ref. 1, shown below
+
+        .. math::
+           p_{cr}=\\frac{P_{oexit}}{P_{oinlet}}
+
+        """
+        return self.compression_ratio * inlet_stagnation_pressure
+# ----------------------------------------------------------------------------
+
+    def exit_stagnation_temperature(self, inlet_stagnation_temperature: float,
+                                    gamma: float) -> float:
+        """
+
+        :param inlet_stagnation_temperature: The stagnation temperature at the
+                                             compressor inlet in units of Kelvins
+        :param gamma: Ratio of specific heats
+        :return exit_stag_temp: The stagnation temperature at the exit of the
+                                compressor in units of Kelvins
+
+        This function calculates the stagnation temperature leaving the
+        compressor using Equation 5.40 from page 171 of Ref. 1 shown
+        below
+
+        .. math::
+           T_{oexit} = T_{oinlet}\\left[1 + \\frac{1}{\eta_c}
+           \\left(p_{cr}^{\\frac{\gamma-1}{\gamma}}\\right) - 1\\right]
+        """
+        stag_temp = inlet_stagnation_temperature * ((1.0 + (1.0 / self.efficiency) *
+                    (self.compression_ratio ** ((gamma - 1.0) / gamma) - 1.0)))
+        return stag_temp
+# ============================================================================
+# ============================================================================
 # eof

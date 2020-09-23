@@ -552,6 +552,73 @@
         <span class="k">return</span> <span class="n">mass_flow_rate</span> <span class="o">/</span> <span class="p">(</span><span class="n">velocity</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_area</span><span class="p">)</span></div></div>
 <span class="c1"># ============================================================================</span>
 <span class="c1"># ============================================================================</span>
+<span class="c1"># This class describes the performance of a compressor</span>
+
+
+<div class="viewcode-block" id="Compressor"><a class="viewcode-back" href="../Compressor.html#isentropic_models.Compressor">[docs]</a><span class="k">class</span> <span class="nc">Compressor</span><span class="p">(</span><span class="n">Stagnation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class contains functions that determine the exit conditions for</span>
+<span class="sd">    a gas compressor assuming knowledge of the inlet properties.  These</span>
+<span class="sd">    relationships are developed for sub-sonic, incompressible flows and</span>
+<span class="sd">    assume a negligible change the ratio of specific heats throughout the</span>
+<span class="sd">    process.  All relationships are developed from the following references.</span>
+
+<span class="sd">    1. Hill, P. and Peterson, C., &quot;Mechanics and Thermodynamics of Propulsion,&quot;</span>
+<span class="sd">       Addison Wesley Publishing Co., Reading, MA, 1992</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compression_ratio</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">efficiency</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param compression_ratio: The ratio of outlet stagnation pressure</span>
+<span class="sd">                                  to inlet stagnation pressure</span>
+<span class="sd">        :param efficiency: The compressor isentropic efficiency</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">compression_ratio</span> <span class="o">=</span> <span class="n">compression_ratio</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">efficiency</span> <span class="o">=</span> <span class="n">efficiency</span>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Compressor.exit_stagnation_pressure"><a class="viewcode-back" href="../Compressor.html#isentropic_models.Compressor.exit_stagnation_pressure">[docs]</a>    <span class="k">def</span> <span class="nf">exit_stagnation_pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param inlet_stagnation_pressure: The inlet stagnation pressure in units</span>
+<span class="sd">                               of Pascals</span>
+<span class="sd">        :return outlet_stagnation_pressure: The stagnation pressure</span>
+<span class="sd">                                            leaving the compressure in</span>
+<span class="sd">                                            units of Pascals</span>
+
+<span class="sd">        This function calculates the stagnation pressure leaving the compressor</span>
+<span class="sd">        using Equation 5.30 from page 161 of Ref. 1, shown below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           p_{cr}=\\frac{P_{oexit}}{P_{oinlet}}</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compression_ratio</span> <span class="o">*</span> <span class="n">inlet_stagnation_pressure</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Compressor.exit_stagnation_temperature"><a class="viewcode-back" href="../Compressor.html#isentropic_models.Compressor.exit_stagnation_temperature">[docs]</a>    <span class="k">def</span> <span class="nf">exit_stagnation_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                    <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param inlet_stagnation_temperature: The stagnation temperature at the</span>
+<span class="sd">                                             compressor inlet in units of Kelvins</span>
+<span class="sd">        :param gamma: Ratio of specific heats</span>
+<span class="sd">        :return exit_stag_temp: The stagnation temperature at the exit of the</span>
+<span class="sd">                                compressor in units of Kelvins</span>
+
+<span class="sd">        This function calculates the stagnation temperature leaving the</span>
+<span class="sd">        compressor using Equation 5.40 from page 171 of Ref. 1 shown</span>
+<span class="sd">        below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           T_{oexit} = T_{oinlet}\\left[1 + \\frac{1}{\eta_c}</span>
+<span class="sd">           \\left(p_{cr}^{\\frac{\gamma-1}{\gamma}}\\right) - 1\\right]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stag_temp</span> <span class="o">=</span> <span class="n">inlet_stagnation_temperature</span> <span class="o">*</span> <span class="p">((</span><span class="mf">1.0</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">efficiency</span><span class="p">)</span> <span class="o">*</span>
+                    <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compression_ratio</span> <span class="o">**</span> <span class="p">((</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="n">gamma</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">stag_temp</span></div></div>
+<span class="c1"># ============================================================================</span>
+<span class="c1"># ============================================================================</span>
 <span class="c1"># eof</span>
 </pre></div>
 

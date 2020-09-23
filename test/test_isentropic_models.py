@@ -1,5 +1,5 @@
 # Import modules here
-from src.isentropic_models import DiffuserNozzle, Stagnation
+from src.isentropic_models import DiffuserNozzle, Stagnation, Compressor
 
 from math import isclose
 # ==============================================================================
@@ -235,6 +235,35 @@ def test_diff_exit_density():
     mass_flow_rate = 3.0
     density = diff.exit_density(inlet_velocity, mass_flow_rate)
     assert isclose(0.4837, density, rel_tol=1.0e-3)
+# ==============================================================================
+# ==============================================================================
+# Test the Compressor class
+
+
+compressor_ratio = 1.4
+inlet_stag_pressure = 6000000.0
+inlet_stag_temperature = 800.0
+efficiency = 0.9
+comp = Compressor(compressor_ratio, efficiency)
+
+
+def test_comp_exit_stag_pressure():
+    """
+
+    This function tests the exit_stagnation_pressure() function
+    """
+    exit_stag_pres = comp.exit_stagnation_pressure(inlet_stag_pressure)
+    assert isclose(8400000.0, exit_stag_pres, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_comp_exit_stag_temperature():
+    """
+
+    This function tests the exit_stagnation_temperature() function
+    """
+    exit_stag_temp = comp.exit_stagnation_temperature(inlet_stag_temperature, gamma)
+    assert isclose(exit_stag_temp, 889.69, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # eof

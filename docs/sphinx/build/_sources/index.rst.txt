@@ -13,6 +13,7 @@ Welcome to thermosystems's documentation!
    Introduction
    Stagnation
    Diffuser_Nozzle
+   Compressor
 
 Indices and tables
 ==================
