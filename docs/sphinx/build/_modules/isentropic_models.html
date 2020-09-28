@@ -568,15 +568,18 @@
 <span class="sd">    1. Hill, P. and Peterson, C., &quot;Mechanics and Thermodynamics of Propulsion,&quot;</span>
 <span class="sd">       Addison Wesley Publishing Co., Reading, MA, 1992</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compression_ratio</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">efficiency</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compression_ratio</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">efficiency</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                 <span class="n">exit_area</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param compression_ratio: The ratio of outlet stagnation pressure</span>
 <span class="sd">                                  to inlet stagnation pressure</span>
 <span class="sd">        :param efficiency: The compressor isentropic efficiency</span>
+<span class="sd">        :param exit_area; The flow area at the compressor exit</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">compression_ratio</span> <span class="o">=</span> <span class="n">compression_ratio</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">efficiency</span> <span class="o">=</span> <span class="n">efficiency</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exit_area</span> <span class="o">=</span> <span class="n">exit_area</span>
 <span class="c1"># ----------------------------------------------------------------------------</span>
 
 <div class="viewcode-block" id="Compressor.exit_stagnation_pressure"><a class="viewcode-back" href="../Compressor.html#isentropic_models.Compressor.exit_stagnation_pressure">[docs]</a>    <span class="k">def</span> <span class="nf">exit_stagnation_pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -678,7 +681,110 @@
         <span class="n">mach</span> <span class="o">=</span> <span class="n">bisect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temp_exit_mach</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span>
                       <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">inlet_mach_number</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
                             <span class="n">exit_stag_temp</span><span class="p">),</span> <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">mach</span></div></div>
+        <span class="k">return</span> <span class="n">mach</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Compressor.exit_static_pressure"><a class="viewcode-back" href="../Compressor.html#isentropic_models.Compressor.exit_static_pressure">[docs]</a>    <span class="k">def</span> <span class="nf">exit_static_pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                             <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                             <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param inlet_stagnation_pressure: The stagnation pressure at the</span>
+<span class="sd">                                          compressor entrance in units of Pascals</span>
+<span class="sd">        :param inlet_stagnation_temperature: The stagnation temperature at the</span>
+<span class="sd">                                             compressor entrance in unites of Kelvins</span>
+<span class="sd">        :param gamma: The ratio of specific heats</span>
+<span class="sd">        :param inlet_mach_number: The Mach number at the compressor entrance</span>
+<span class="sd">        :return stat_press: The static pressure at the exit in units of Pascals</span>
+
+<span class="sd">        This function solves for the compressor exit static pressure using</span>
+<span class="sd">        the relationship from pg. 72 or reference 1, shown</span>
+<span class="sd">        below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           P = \\frac{P_o}{\\left[1+\\frac{\gamma-1}{2}M^2\\right]^{\gamma/\\left(\gamma-1\\right)}}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mach_number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_mach_number</span><span class="p">(</span><span class="n">inlet_mach_number</span><span class="p">,</span>
+                                            <span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                            <span class="n">gamma</span><span class="p">)</span>
+        <span class="n">exit_stag_pres</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_stagnation_pressure</span><span class="p">(</span><span class="n">inlet_stagnation_pressure</span><span class="p">)</span>
+        <span class="n">stat_press</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">static_pressure</span><span class="p">(</span><span class="n">exit_stag_pres</span><span class="p">,</span>
+                                          <span class="n">mach_number</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gamma</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stat_press</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Compressor.exit_static_temperature"><a class="viewcode-back" href="../Compressor.html#isentropic_models.Compressor.exit_static_temperature">[docs]</a>    <span class="k">def</span> <span class="nf">exit_static_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param inlet_stagnation_temperature: The stagnation temperature at the</span>
+<span class="sd">                                             compressor inlet in units of Kelvins</span>
+<span class="sd">        :param gamma: The ratio of specific heats</span>
+<span class="sd">        :param inlet_mach_number: The Mach number at the inlet to the compressor</span>
+<span class="sd">        :return stat_temp: The static temperature at the outlet of the compressor</span>
+
+<span class="sd">        This function determines the static temperature</span>
+<span class="sd">        using the relationship from pg. 72 or reference 1,</span>
+<span class="sd">        shown below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           T = \\frac{T_o}{\\left(1+\\frac{\gamma-1}{2}M^2\\right)}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mach_number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_mach_number</span><span class="p">(</span><span class="n">inlet_mach_number</span><span class="p">,</span>
+                                            <span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                            <span class="n">gamma</span><span class="p">)</span>
+        <span class="n">exit_stag_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_stagnation_temperature</span><span class="p">(</span><span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                                          <span class="n">gamma</span><span class="p">)</span>
+        <span class="n">stat_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">static_temperature</span><span class="p">(</span><span class="n">exit_stag_temp</span><span class="p">,</span> <span class="n">mach_number</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">gamma</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stat_temp</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Compressor.exit_velocity"><a class="viewcode-back" href="../Compressor.html#isentropic_models.Compressor.exit_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">exit_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                      <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">molar_mass</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param inlet_stagnation_temperature: The stagnation temperature at the</span>
+<span class="sd">                                             compressor inlet in units of Kelvins</span>
+<span class="sd">        :param gamma: The ratio of specific heats</span>
+<span class="sd">        :param inlet_mach_number: The Mach number at the compressor inlet</span>
+<span class="sd">        :param molar_mass: The fluid molar mass in units of J/mol-K</span>
+<span class="sd">        :return velocity: The fluid velocity in units of meters per second</span>
+
+<span class="sd">        This function determines the fluid velocity via the relationship shown</span>
+<span class="sd">        below.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           u = M\\sqrt[]{\gamma R T}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stat_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_static_temperature</span><span class="p">(</span><span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                                 <span class="n">gamma</span><span class="p">,</span> <span class="n">inlet_mach_number</span><span class="p">)</span>
+        <span class="n">sos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed_of_sound</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span> <span class="n">stat_temp</span><span class="p">,</span> <span class="n">molar_mass</span><span class="p">)</span>
+        <span class="n">mach_number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_mach_number</span><span class="p">(</span><span class="n">inlet_mach_number</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">,</span> <span class="n">gamma</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mach_number</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">sos</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Compressor.exit_density"><a class="viewcode-back" href="../Compressor.html#isentropic_models.Compressor.exit_density">[docs]</a>    <span class="k">def</span> <span class="nf">exit_density</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                     <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">molar_mass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                     <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param mass_flow_rate: The mass flow rate in units of kg/s</span>
+<span class="sd">        :param inlet_stagnation_temperature: The stagnation temperature at the</span>
+<span class="sd">                                             compressor inlet in units of Kelvins</span>
+<span class="sd">        :param inlet_mach_number: The Mach number at the compressor inlet</span>
+<span class="sd">        :param molar_mass: The molar mass of the fluid</span>
+<span class="sd">        :param gamma: The ratio of specific heats</span>
+<span class="sd">        :return density: The fluid density at the compressor outlet in</span>
+<span class="sd">                         units of kg per cubic meters</span>
+
+<span class="sd">        This function determines the fluid density via the equation shown below.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \\rho = \\frac{\dot{m}}{uA}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">velocity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_velocity</span><span class="p">(</span><span class="n">inlet_stagnation_temperature</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span>
+                                      <span class="n">inlet_mach_number</span><span class="p">,</span> <span class="n">molar_mass</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">mass_flow_rate</span> <span class="o">/</span> <span class="p">(</span><span class="n">velocity</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_area</span><span class="p">)</span></div></div>
 <span class="c1"># ============================================================================</span>
 <span class="c1"># ============================================================================</span>
 <span class="c1"># eof</span>

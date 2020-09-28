@@ -147,6 +147,9 @@ T_{o2}=T_{o1}\left[1 + \frac{1}{\eta_c}\left(p_{cr}^{\frac{\gamma-1}{\gamma}}\ri
 % --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \subsection{Fluid Static Pressure and Temperature}
+The fluid static pressure and temperature are determined via Equations \ref{eq:stag_pressure} and \ref{eq:stag_temperature} with knowledge of the 
+inlet stagnation conditions to determine he exit stagnation conditions using Equations \ref{eq:comp_stag_pressure} and \ref{eq:comp_stag_temp} 
+and the Mach number which is determined from Eq. \ref{eq:com_mach_number}
 % --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \subsection{Fluid Velocity and Mach Number}
@@ -157,9 +160,22 @@ Equation \ref{eq:com_mach_number} with knowledge of the inlet stagnation tempera
 \label{eq:com_mach_number}
 \frac{T_{o2}}{T_{o1}} = \left[\frac{1 + \gamma M^2_2}{1 + \gamma M^2_1} \right]^2 \left(\frac{1 + \frac{\gamma-1}{2}M^2_2}{1 + \frac{\gamma - 1}{2}M^2_1} \right)
 \end{equation}
+
+\noindent The fluid velocity is then determined in accordance with Equation \ref{eq:comp_fluid_velocity}
+
+\begin{equation}
+\label{eq:comp_fluid_velocity}
+u=M \sqrt[]{\gamma R T}
+\end{equation}
 % --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \subsection{Fluid Density}
+The fluid density leaving the compressor is determined via Equation \ref{eq:comp_density}
+
+\begin{equation}
+\label{eq:comp_density}
+\rho = \frac{\dot{m}}{uA}
+\end{equation}
 % --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \subsection{Compressor Work}

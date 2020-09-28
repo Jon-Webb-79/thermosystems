@@ -245,7 +245,8 @@ inlet_stag_pressure = 6000000.0
 inlet_stag_temperature = 800.0
 efficiency = 0.9
 inlet_mach_number = 0.1
-comp = Compressor(compressor_ratio, efficiency)
+exit_area = 1.0
+comp = Compressor(compressor_ratio, efficiency, exit_area)
 
 
 def test_comp_exit_stag_pressure():
@@ -254,7 +255,7 @@ def test_comp_exit_stag_pressure():
     This function tests the exit_stagnation_pressure() function
     """
     exit_stag_pres = comp.exit_stagnation_pressure(inlet_stag_pressure)
-    assert isclose(8400000.0, exit_stag_pres, rel_tol=1.0e-3)
+    assert isclose(19200000.0, exit_stag_pres, rel_tol=1.0e-3)
 # ------------------------------------------------------------------------------
 
 
@@ -264,7 +265,7 @@ def test_comp_exit_stag_temperature():
     This function tests the exit_stagnation_temperature() function
     """
     exit_stag_temp = comp.exit_stagnation_temperature(inlet_stag_temperature, gamma)
-    assert isclose(exit_stag_temp, 889.69, rel_tol=1.0e-3)
+    assert isclose(exit_stag_temp, 1150.4, rel_tol=1.0e-3)
 # ------------------------------------------------------------------------------
 
 
@@ -277,7 +278,7 @@ def test_comp_work():
     specific_heat = 1.0
     comp_work = comp.compressor_work(mass_flow_rate, specific_heat,
                                      inlet_stag_temperature, gamma)
-    assert isclose(109.628, comp_work, rel_tol=1.0e-3)
+    assert isclose(428.278, comp_work, rel_tol=1.0e-3)
 # ------------------------------------------------------------------------------
 
 
@@ -289,6 +290,49 @@ def test_comp_mach_number():
     mach = comp.exit_mach_number(inlet_mach_number, inlet_stag_temperature,
                                  gamma, 0.001, 0.999)
     assert isclose(mach[0], 0.120615, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_comp_static_pressure():
+    """
+
+    This function tests the compressor exit_static_pressure() function
+    """
+    press = comp.exit_static_pressure(inlet_stag_pressure, inlet_stag_temperature,
+                                      gamma, inlet_mach_number)
+    assert isclose(press, 19005747.0, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_comp_static_temperature():
+    """
+
+    This function tests the compressor exit_static_temperature() function
+    """
+    temp = comp.exit_static_temperature(inlet_stag_temperature, gamma, inlet_mach_number)
+    assert isclose(temp, 1147.07, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_comp_fluid_velocity():
+    """
+
+    This function tests the compressor exit_velocity() function
+    """
+    vel = comp.exit_velocity(inlet_stag_temperature, gamma, inlet_mach_number,
+                             1.0)
+    assert isclose(vel, 13.936, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_comp_fluid_density():
+    """
+
+    This function tests the compressor exit_density() function
+    """
+    den = comp.exit_density(1.0, inlet_stag_temperature, inlet_mach_number, 1.0,
+                            gamma)
+    assert isclose(den, 0.07175, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # eof

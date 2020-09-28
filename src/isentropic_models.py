@@ -531,15 +531,18 @@ class Compressor(Stagnation):
     1. Hill, P. and Peterson, C., "Mechanics and Thermodynamics of Propulsion,"
        Addison Wesley Publishing Co., Reading, MA, 1992
     """
-    def __init__(self, compression_ratio: float, efficiency: float):
+    def __init__(self, compression_ratio: float, efficiency: float,
+                 exit_area: float):
         """
 
         :param compression_ratio: The ratio of outlet stagnation pressure
                                   to inlet stagnation pressure
         :param efficiency: The compressor isentropic efficiency
+        :param exit_area; The flow area at the compressor exit
         """
         self.compression_ratio = compression_ratio
         self.efficiency = efficiency
+        self.exit_area = exit_area
 # ----------------------------------------------------------------------------
 
     def exit_stagnation_pressure(self, inlet_stagnation_pressure: float) -> float:
@@ -642,6 +645,109 @@ class Compressor(Stagnation):
                       args=(inlet_mach_number, gamma, inlet_stagnation_temperature,
                             exit_stag_temp), full_output=True)
         return mach
+# ----------------------------------------------------------------------------
+
+    def exit_static_pressure(self, inlet_stagnation_pressure: float,
+                             inlet_stagnation_temperature: float,
+                             gamma: float, inlet_mach_number: float) -> float:
+        """
+
+        :param inlet_stagnation_pressure: The stagnation pressure at the
+                                          compressor entrance in units of Pascals
+        :param inlet_stagnation_temperature: The stagnation temperature at the
+                                             compressor entrance in unites of Kelvins
+        :param gamma: The ratio of specific heats
+        :param inlet_mach_number: The Mach number at the compressor entrance
+        :return stat_press: The static pressure at the exit in units of Pascals
+
+        This function solves for the compressor exit static pressure using
+        the relationship from pg. 72 or reference 1, shown
+        below
+
+        .. math::
+           P = \\frac{P_o}{\\left[1+\\frac{\gamma-1}{2}M^2\\right]^{\gamma/\\left(\gamma-1\\right)}}
+        """
+        mach_number = self.exit_mach_number(inlet_mach_number,
+                                            inlet_stagnation_temperature,
+                                            gamma)
+        exit_stag_pres = self.exit_stagnation_pressure(inlet_stagnation_pressure)
+        stat_press = self.static_pressure(exit_stag_pres,
+                                          mach_number[0], gamma)
+        return stat_press
+# ----------------------------------------------------------------------------
+
+    def exit_static_temperature(self, inlet_stagnation_temperature: float,
+                                gamma: float, inlet_mach_number: float) -> float:
+        """
+
+        :param inlet_stagnation_temperature: The stagnation temperature at the
+                                             compressor inlet in units of Kelvins
+        :param gamma: The ratio of specific heats
+        :param inlet_mach_number: The Mach number at the inlet to the compressor
+        :return stat_temp: The static temperature at the outlet of the compressor
+
+        This function determines the static temperature
+        using the relationship from pg. 72 or reference 1,
+        shown below
+
+        .. math::
+           T = \\frac{T_o}{\\left(1+\\frac{\gamma-1}{2}M^2\\right)}
+        """
+        mach_number = self.exit_mach_number(inlet_mach_number,
+                                            inlet_stagnation_temperature,
+                                            gamma)
+        exit_stag_temp = self.exit_stagnation_temperature(inlet_stagnation_temperature,
+                                                          gamma)
+        stat_temp = self.static_temperature(exit_stag_temp, mach_number[0], gamma)
+        return stat_temp
+# ----------------------------------------------------------------------------
+
+    def exit_velocity(self, inlet_stagnation_temperature: float, gamma: float,
+                      inlet_mach_number: float, molar_mass: float):
+        """
+
+        :param inlet_stagnation_temperature: The stagnation temperature at the
+                                             compressor inlet in units of Kelvins
+        :param gamma: The ratio of specific heats
+        :param inlet_mach_number: The Mach number at the compressor inlet
+        :param molar_mass: The fluid molar mass in units of J/mol-K
+        :return velocity: The fluid velocity in units of meters per second
+
+        This function determines the fluid velocity via the relationship shown
+        below.
+
+        .. math::
+           u = M\\sqrt[]{\gamma R T}
+        """
+        stat_temp = self.exit_static_temperature(inlet_stagnation_temperature,
+                                                 gamma, inlet_mach_number)
+        sos = self.speed_of_sound(gamma, stat_temp, molar_mass)
+        mach_number = self.exit_mach_number(inlet_mach_number, inlet_stagnation_temperature, gamma)
+        return mach_number[0] * sos
+# ----------------------------------------------------------------------------
+
+    def exit_density(self, mass_flow_rate: float, inlet_stagnation_temperature: float,
+                     inlet_mach_number: float, molar_mass: float,
+                     gamma: float) -> float:
+        """
+
+        :param mass_flow_rate: The mass flow rate in units of kg/s
+        :param inlet_stagnation_temperature: The stagnation temperature at the
+                                             compressor inlet in units of Kelvins
+        :param inlet_mach_number: The Mach number at the compressor inlet
+        :param molar_mass: The molar mass of the fluid
+        :param gamma: The ratio of specific heats
+        :return density: The fluid density at the compressor outlet in
+                         units of kg per cubic meters
+
+        This function determines the fluid density via the equation shown below.
+
+        .. math::
+           \\rho = \\frac{\dot{m}}{uA}
+        """
+        velocity = self.exit_velocity(inlet_stagnation_temperature, gamma,
+                                      inlet_mach_number, molar_mass)
+        return mass_flow_rate / (velocity * self.exit_area)
 # ============================================================================
 # ============================================================================
 # eof
