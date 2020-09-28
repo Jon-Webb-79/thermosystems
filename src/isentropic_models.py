@@ -815,6 +815,90 @@ class HeatAddition(Stagnation):
         stag_temp = inlet_stagnation_temperature + heat_addition / \
                     (mass_flow_rate * specific_heat)
         return stag_temp
+# ----------------------------------------------------------------------------
+
+    def exit_mach_number(self, inlet_stagnation_temperature: float,
+                         heat_addition: float, specific_heat: float,
+                         mass_flow_rate: float, inlet_mach_number: float,
+                         gamma: float, lower: float = 0.001,
+                         upper: float = 0.999) -> float:
+        """
+
+        :param inlet_stagnation_temperature: The stagnation temperature at the
+                                             heat addition inlet in units of
+                                             Kelvins
+        :param heat_addition: The heat addition in units of Watts
+        :param specific_heat: The fluid specific heat in units of J/kg-K
+        :param mass_flow_rate: The mass flow rate in units of kg/s
+        :param inlet_mach_number: The Mach number at the inlet to the
+                                  heat addition
+        :param gamma: The ratio of specific heats
+        :param lower: The lower bound for the Mach number solution
+        :param upper: The upper bound for the Mach number solution
+        :return exit_mach: The Mach number at the exit to the heat
+                           addition unit.
+
+        This function solves for the Mach number at the exit of the
+        heat addition unit.  This equation was derived from page
+        75 or Ref. 1., shown below
+
+        .. math::
+           \\frac{T_{o1}}{T_{o2}} = \\left[\\frac{1 + \gamma M^2_2}{1 + \gamma M^2_1}
+           \\left(\\frac{M_1}{M_2}\\right)\\right]^2\\left(\\frac{1 + \\frac{\gamma-1}{2}M^2_1}
+           {1 + \\frac{\gamma-1}{2}M^2_2}\\right)
+        """
+        exit_stag_temp = self.exit_stagnation_temperature(inlet_stagnation_temperature,
+                                                          heat_addition, specific_heat,
+                                                          mass_flow_rate)
+        exit_mach = bisect(self.temp_exit_mach, lower, upper,
+                           args=(inlet_mach_number, gamma, inlet_stagnation_temperature,
+                                 exit_stag_temp), full_output=True)
+        return exit_mach[0]
+# ----------------------------------------------------------------------------
+
+    def exit_stagnation_pressure(self, inlet_stagnation_pressure: float,
+                                 inlet_stagnation_temperature: float,
+                                 heat_addition: float, specific_heat: float,
+                                 mass_flow_rate: float, inlet_mach_number: float,
+                                 gamma: float) -> float:
+        """
+
+        :param inlet_stagnation_pressure: The stagnation pressure at the inlet
+                                          to the heat addition component in
+                                          units of Pascals
+        :param inlet_stagnation_temperature: The stagnation temperature at the
+                                             heat addition inlet in units of
+                                             Kelvins
+        :param heat_addition: The heat addition in units of Watts
+        :param specific_heat: The fluid specific heat in units of J/kg-K
+        :param mass_flow_rate: The mass flow rate in units of kg/s
+        :param inlet_mach_number: The Mach number at the inlet to the
+                                  heat addition
+        :param gamma: The ratio of specific heats
+        :return exit_stag_pressure: The stagnation pressure at the exit
+                                    to the heat addition component in
+                                    units of Pascals
+
+        This function determines the stagnation at the exit of the heat
+        addition component.
+
+        This equation
+        was derived from page 75 of Ref. 1., shown below
+
+        .. math::
+           P_{o2} = P_{o1}\\left[\\frac{1 + \gamma M^2_1}{1 + \gamma M^2_2}
+           \\right]\\left(\\frac{1 + \\frac{\gamma-1}{2}M^2_2}
+           {1 + \\frac{\gamma-1}{2}M^2_1}\\right)^{\gamma/\\left(\gamma-1\\right)}
+        """
+        exit_mach = self.exit_mach_number(inlet_stagnation_temperature,
+                                          heat_addition, specific_heat,
+                                          mass_flow_rate, inlet_mach_number,
+                                          gamma)
+        one = (1.0 + gamma * exit_mach ** 2.0) / (1.0 + gamma * inlet_mach_number ** 2.0)
+        two = 1.0 + ((gamma - 1.0) / 2.0) * inlet_mach_number ** 2.0
+        three = 1.0 + ((gamma - 1.0) / 2.0) * exit_mach ** 2.0
+        four = (two / three) ** (gamma / (gamma - 1.0))
+        return inlet_stagnation_pressure / (one * four)
 # ============================================================================
 # ============================================================================
 # eof

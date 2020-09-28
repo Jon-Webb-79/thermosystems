@@ -228,12 +228,24 @@ specific heat of the fluid $c_p$ as well as the mass flow rate $\dot{m}$ as show
 \label{eq:he_stag_temp}
 T_{o2} = T_{o1} + \frac{\dot{Q}_{he}}{\dot{m}c_p}
 \end{equation}
+
+The stagnation temperature is determined by solving Equation \ref{eq:he_stag_pressure} with knowledge of the inlet conditions 
+($M_1$ and $P_{o1}$) and the exit Mach Number ($M_2$).
+
+\begin{equation}
+\label{eq:he_stag_pressure}
+P_{o2} = P_{o1}\left(\frac{1 + \gamma M^2_1}{1 + \gamma M^2_2} \right) \left(\frac{1 + \frac{\gamma - 1}{2}M^2_2}{1 + \frac{\gamma -1}{2}M^2_1} \right)^{\frac{\gamma}{\gamma - 1}}
+\end{equation}
 % --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \subsection{Fluid Static Pressure and Temperature}
 % --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \subsection{Fluid Velocity and Mach Number}
+The fluid Mach number leaving the heat addition component is determine with knowledge of the inlet conditions ($T_{o1}$ and $M_1$) as
+well as the exit Stagnation temperature ($T_{o2}$) and Equation \ref{eq:com_mach_number}.  The equation is implicit and cannot be solved
+directly, so a root finder must be employed to solve this equation.  The ThermSystems code uses the bisect method to determine the roots
+for $M_2$.
 % --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \subsection{Fluid Density}

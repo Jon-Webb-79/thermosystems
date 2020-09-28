@@ -851,7 +851,92 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">stag_temp</span> <span class="o">=</span> <span class="n">inlet_stagnation_temperature</span> <span class="o">+</span> <span class="n">heat_addition</span> <span class="o">/</span> \
                     <span class="p">(</span><span class="n">mass_flow_rate</span> <span class="o">*</span> <span class="n">specific_heat</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">stag_temp</span></div></div>
+        <span class="k">return</span> <span class="n">stag_temp</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="HeatAddition.exit_mach_number"><a class="viewcode-back" href="../HeatAddition.html#isentropic_models.HeatAddition.exit_mach_number">[docs]</a>    <span class="k">def</span> <span class="nf">exit_mach_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                         <span class="n">heat_addition</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                         <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                         <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+                         <span class="n">upper</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.999</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param inlet_stagnation_temperature: The stagnation temperature at the</span>
+<span class="sd">                                             heat addition inlet in units of</span>
+<span class="sd">                                             Kelvins</span>
+<span class="sd">        :param heat_addition: The heat addition in units of Watts</span>
+<span class="sd">        :param specific_heat: The fluid specific heat in units of J/kg-K</span>
+<span class="sd">        :param mass_flow_rate: The mass flow rate in units of kg/s</span>
+<span class="sd">        :param inlet_mach_number: The Mach number at the inlet to the</span>
+<span class="sd">                                  heat addition</span>
+<span class="sd">        :param gamma: The ratio of specific heats</span>
+<span class="sd">        :param lower: The lower bound for the Mach number solution</span>
+<span class="sd">        :param upper: The upper bound for the Mach number solution</span>
+<span class="sd">        :return exit_mach: The Mach number at the exit to the heat</span>
+<span class="sd">                           addition unit.</span>
+
+<span class="sd">        This function solves for the Mach number at the exit of the</span>
+<span class="sd">        heat addition unit.  This equation was derived from page</span>
+<span class="sd">        75 or Ref. 1., shown below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \\frac{T_{o1}}{T_{o2}} = \\left[\\frac{1 + \gamma M^2_2}{1 + \gamma M^2_1}</span>
+<span class="sd">           \\left(\\frac{M_1}{M_2}\\right)\\right]^2\\left(\\frac{1 + \\frac{\gamma-1}{2}M^2_1}</span>
+<span class="sd">           {1 + \\frac{\gamma-1}{2}M^2_2}\\right)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">exit_stag_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_stagnation_temperature</span><span class="p">(</span><span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                                          <span class="n">heat_addition</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">,</span>
+                                                          <span class="n">mass_flow_rate</span><span class="p">)</span>
+        <span class="n">exit_mach</span> <span class="o">=</span> <span class="n">bisect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temp_exit_mach</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span>
+                           <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">inlet_mach_number</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                 <span class="n">exit_stag_temp</span><span class="p">),</span> <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">exit_mach</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="HeatAddition.exit_stagnation_pressure"><a class="viewcode-back" href="../HeatAddition.html#isentropic_models.HeatAddition.exit_stagnation_pressure">[docs]</a>    <span class="k">def</span> <span class="nf">exit_stagnation_pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                 <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                 <span class="n">heat_addition</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                 <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                 <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param inlet_stagnation_pressure: The stagnation pressure at the inlet</span>
+<span class="sd">                                          to the heat addition component in</span>
+<span class="sd">                                          units of Pascals</span>
+<span class="sd">        :param inlet_stagnation_temperature: The stagnation temperature at the</span>
+<span class="sd">                                             heat addition inlet in units of</span>
+<span class="sd">                                             Kelvins</span>
+<span class="sd">        :param heat_addition: The heat addition in units of Watts</span>
+<span class="sd">        :param specific_heat: The fluid specific heat in units of J/kg-K</span>
+<span class="sd">        :param mass_flow_rate: The mass flow rate in units of kg/s</span>
+<span class="sd">        :param inlet_mach_number: The Mach number at the inlet to the</span>
+<span class="sd">                                  heat addition</span>
+<span class="sd">        :param gamma: The ratio of specific heats</span>
+<span class="sd">        :return exit_stag_pressure: The stagnation pressure at the exit</span>
+<span class="sd">                                    to the heat addition component in</span>
+<span class="sd">                                    units of Pascals</span>
+
+<span class="sd">        This function determines the stagnation at the exit of the heat</span>
+<span class="sd">        addition component.</span>
+
+<span class="sd">        This equation</span>
+<span class="sd">        was derived from page 75 or Ref. 1., shown below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           P_{o2} = P_{o1}\\left[\\frac{1 + \gamma M^2_1}{1 + \gamma M^2_2}</span>
+<span class="sd">           \\right]\\left(\\frac{1 + \\frac{\gamma-1}{2}M^2_2}</span>
+<span class="sd">           {1 + \\frac{\gamma-1}{2}M^2_1}\\right)^{\gamma/\\left(\gamma-1\\right)}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">exit_mach</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_mach_number</span><span class="p">(</span><span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                          <span class="n">heat_addition</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">,</span>
+                                          <span class="n">mass_flow_rate</span><span class="p">,</span> <span class="n">inlet_mach_number</span><span class="p">,</span>
+                                          <span class="n">gamma</span><span class="p">)</span>
+        <span class="n">one</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">inlet_mach_number</span> <span class="o">**</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">/</span> \
+              <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">exit_mach</span> <span class="o">**</span> <span class="mf">2.0</span><span class="p">)</span>
+        <span class="n">two</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">exit_mach</span> <span class="o">**</span> <span class="mf">2.0</span>
+        <span class="n">three</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">inlet_mach_number</span> <span class="o">**</span> <span class="mf">2.0</span>
+        <span class="n">four</span> <span class="o">=</span> <span class="n">three</span> <span class="o">**</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">/</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">inlet_stagnation_pressure</span> <span class="o">*</span> <span class="n">one</span> <span class="o">*</span> <span class="n">four</span></div></div>
 <span class="c1"># ============================================================================</span>
 <span class="c1"># ============================================================================</span>
 <span class="c1"># eof</span>
