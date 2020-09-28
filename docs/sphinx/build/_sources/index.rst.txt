@@ -14,6 +14,7 @@ Welcome to thermosystems's documentation!
    Stagnation
    Diffuser_Nozzle
    Compressor
+   HeatAddition
 
 Indices and tables
 ==================

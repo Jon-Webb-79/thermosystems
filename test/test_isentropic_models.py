@@ -1,5 +1,6 @@
 # Import modules here
 from src.isentropic_models import DiffuserNozzle, Stagnation, Compressor
+from src.isentropic_models import HeatAddition
 
 from math import isclose
 # ==============================================================================
@@ -333,6 +334,33 @@ def test_comp_fluid_density():
     den = comp.exit_density(1.0, inlet_stag_temperature, inlet_mach_number, 1.0,
                             gamma)
     assert isclose(den, 0.07175, rel_tol=1.0e-3)
+# ==============================================================================
+# ==============================================================================
+# Test the HeatAddition class
+
+
+heat = 1000000.0
+efficiency = 0.9
+he = HeatAddition(efficiency)
+
+
+def test_he_input_power():
+    """
+
+    This function tests the input_power() function
+    """
+    power = he.input_power(heat)
+    assert isclose(power, 1111111.11, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_he_exit_stagnation_temperature():
+    """
+
+    This function tests the exit_stagnation_temperature() function
+    """
+    stag_temp = he.exit_stagnation_temperature(inlet_stag_temperature, heat, 1.0, 1000.0)
+    assert isclose(1800.0, stag_temp, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # eof

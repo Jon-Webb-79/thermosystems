@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=latex 2018.4.16)  27 SEP 2020 18:38
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=latex 2018.4.16)  28 SEP 2020 09:04
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1372,7 +1372,7 @@ Chapter 1.
 [1
 
 
-] [2] [3] [4]) [5
+] [2] [3] [4] [5]) [6
 
 ]
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 94.
@@ -1381,16 +1381,16 @@ Package atveryend Info: Empty hook `AfterLastShipout' on input line 94.
 Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 94.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 94.
 Package rerunfilecheck Info: File `theory.out' has not changed.
-(rerunfilecheck)             Checksum: 8989B83F90A2130ED2B9EAB5F049EADB;972.
+(rerunfilecheck)             Checksum: 43D84D15E3D07E9D6C4B8324E77FFC60;1436.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 94.
  ) 
 Here is how much of TeX's memory you used:
- 32568 strings out of 492650
- 681141 string characters out of 6129648
- 764990 words of memory out of 5000000
- 36034 multiletter control sequences out of 15000+600000
+ 32578 strings out of 492650
+ 681301 string characters out of 6129648
+ 765827 words of memory out of 5000000
+ 36044 multiletter control sequences out of 15000+600000
  538206 words of font info for 49 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  64i,6n,71p,10363b,377s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on theory.dvi (7 pages, 43896 bytes).
+Output written on theory.dvi (8 pages, 53416 bytes).

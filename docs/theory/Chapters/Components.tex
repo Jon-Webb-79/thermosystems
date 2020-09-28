@@ -189,6 +189,57 @@ W = \dot{m}c_p\left(T_{o2} - T_{o1}\right)
 % ===========================================================================================================
 % ===========================================================================================================
 
+\section{HeatAddition}
+Typical thermodynamic systems have a combustion chamber or a heat exchanger where energy is added to the system.  As with all other
+thermodynamic systems a heat addition unit is accompanied by an isentropic efficiency ($\eta_{he}$) where the subscript he refers to 
+a heat exchanger.
+
+\subsection{Power Addition}
+The required power that must be supplied to the heat exchanger or combustion chamber is determined with knowledge of the heat to 
+be added to the fluid $\dot{Q}_{he}$ via Eq. \ref{eq:supplied_heat}
+
+\begin{equation}
+\label{eq:supplied_heat}
+\dot{Q}_{t} = \frac{\dot{Q}_{he}}{\eta_{he}}
+\end{equation}
+
+For a thermodynamic propulsion systems the heat addition $\dot{Q}_{he}$ is driven by the energy required to drive a nozzle
+exit velocity $\dot{Q}_{KE}$ and also possibly the work that must be extracted by the compressor $\dot{W}_c$.  The compressor 
+work is described in equation \ref{eq:comp_work}, the energy addition to drive a nozzle exit velocity is described in Eq. \ref{eq:ke}
+where $V_e$ represents the nozzle exit velocity and $V_\infty$ represents the free field fluid velocity outside of the engine.
+
+\begin{equation}
+\label{eq:ke}
+\dot{Q}_{KE} = \frac{\dot{m}}{2}\left(V^2_e-V^2_{\infty}\right)
+\end{equation}
+
+\begin{equation}
+\label{eq:total_heat}
+\dot{Q}_t = \dot{Q}_{KE} + \dot{W_c}
+\end{equation}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{Fluid Stagnation Pressure and Temperature}
+
+The stagnation temperature at the heat addition exit $T_{o2}$ can be determined with knowledge of the heat addition $\dot{Q}_{he}$ and the
+specific heat of the fluid $c_p$ as well as the mass flow rate $\dot{m}$ as shown in Eq. \ref{eq:he_stag_temp}
+
+\begin{equation}
+\label{eq:he_stag_temp}
+T_{o2} = T_{o1} + \frac{\dot{Q}_{he}}{\dot{m}c_p}
+\end{equation}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{Fluid Static Pressure and Temperature}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{Fluid Velocity and Mach Number}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{Fluid Density}
+% ===========================================================================================================
+% ===========================================================================================================
+
 
 \begin{thebibliography}{2}
 

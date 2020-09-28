@@ -750,4 +750,71 @@ class Compressor(Stagnation):
         return mass_flow_rate / (velocity * self.exit_area)
 # ============================================================================
 # ============================================================================
+# - This class describes the performance of a heat source such as would
+#   be seen with a combustion chamber or heat exchanger
+
+
+class HeatAddition(Stagnation):
+    """
+    This class contains functions that determine the exit conditions for
+    a heat exchanger or combustion chamber with knowledge of the inlet properties.
+    These relationships are developed for sub-sonic, incompressible flows and
+    assume a negligible change the ratio of specific heats throughout the
+    process.  All relationships are developed from the following references.
+
+    1. Hill, P. and Peterson, C., "Mechanics and Thermodynamics of Propulsion,"
+       Addison Wesley Publishing Co., Reading, MA, 1992
+    """
+    def __init__(self, efficiency: float):
+        """
+
+        :param efficiency: The isentropic efficiency of the heat exchanger
+        """
+        self.efficiency = efficiency
+# ----------------------------------------------------------------------------
+
+    def input_power(self, heat_addition: float) -> float:
+        """
+
+        :param heat_addition: The heat that must be added to the fluid in
+                              units of Watts
+        :return power: The power that must be supplied to the heat exchanger
+                       in units of Watts
+
+        This function determines the power that must be supplied to the heat
+        exchanger in order to supply the correct heat addition to the fluid.
+        This function determines the input power via the equation below.
+
+        .. math::
+           \dot{Q}_t=\\frac{\dot{Q}_{he}}{\eta_{he}}
+        """
+        return heat_addition / self.efficiency
+# ----------------------------------------------------------------------------
+
+    @classmethod
+    def exit_stagnation_temperature(cls, inlet_stagnation_temperature: float,
+                                    heat_addition: float, specific_heat: float,
+                                    mass_flow_rate: float) -> float:
+        """
+
+        :param inlet_stagnation_temperature: The stagnation conditions at the
+                                             inlet to the heat addition source
+                                             in units of Kelvins
+        :param heat_addition: The heat added to the fluid in units of Watts
+        :param specific_heat: The specific heat of the fluid in units of J/kg-K
+        :param mass_flow_rate: The fluid mass flow rate in units of kg/s
+        :return stag_temp: The stagnation temperature at the exit to the
+                           heat addition in units of Kelvins
+
+        This function determines the stagnation temperature at the heat
+        addition component.  This function solves teh following equation
+
+        .. math::
+           T_{o2} = T_{o1} + \\frac{\dot{Q}_{he}}{\dot{m}c_p}
+        """
+        stag_temp = inlet_stagnation_temperature + heat_addition / \
+                    (mass_flow_rate * specific_heat)
+        return stag_temp
+# ============================================================================
+# ============================================================================
 # eof

@@ -787,6 +787,73 @@
         <span class="k">return</span> <span class="n">mass_flow_rate</span> <span class="o">/</span> <span class="p">(</span><span class="n">velocity</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_area</span><span class="p">)</span></div></div>
 <span class="c1"># ============================================================================</span>
 <span class="c1"># ============================================================================</span>
+<span class="c1"># - This class describes the performance of a heat source such as would</span>
+<span class="c1">#   be seen with a combustion chamber or heat exchanger</span>
+
+
+<div class="viewcode-block" id="HeatAddition"><a class="viewcode-back" href="../HeatAddition.html#isentropic_models.HeatAddition">[docs]</a><span class="k">class</span> <span class="nc">HeatAddition</span><span class="p">(</span><span class="n">Stagnation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class contains functions that determine the exit conditions for</span>
+<span class="sd">    a heat exchanger or combustion chamber with knowledge of the inlet properties.</span>
+<span class="sd">    These relationships are developed for sub-sonic, incompressible flows and</span>
+<span class="sd">    assume a negligible change the ratio of specific heats throughout the</span>
+<span class="sd">    process.  All relationships are developed from the following references.</span>
+
+<span class="sd">    1. Hill, P. and Peterson, C., &quot;Mechanics and Thermodynamics of Propulsion,&quot;</span>
+<span class="sd">       Addison Wesley Publishing Co., Reading, MA, 1992</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">efficiency</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param efficiency: The isentropic efficiency of the heat exchanger</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">efficiency</span> <span class="o">=</span> <span class="n">efficiency</span>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="HeatAddition.input_power"><a class="viewcode-back" href="../HeatAddition.html#isentropic_models.HeatAddition.input_power">[docs]</a>    <span class="k">def</span> <span class="nf">input_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">heat_addition</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param heat_addition: The heat that must be added to the fluid in</span>
+<span class="sd">                              units of Watts</span>
+<span class="sd">        :return power: The power that must be supplied to the heat exchanger</span>
+<span class="sd">                       in units of Watts</span>
+
+<span class="sd">        This function determines the power that must be supplied to the heat</span>
+<span class="sd">        exchanger in order to supply the correct heat addition to the fluid.</span>
+<span class="sd">        This function determines the input power via the equation below.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \dot{Q}_t=\\frac{\dot{Q}_{he}}{\eta_{he}}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">heat_addition</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">efficiency</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="HeatAddition.exit_stagnation_temperature"><a class="viewcode-back" href="../HeatAddition.html#isentropic_models.HeatAddition.exit_stagnation_temperature">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">exit_stagnation_temperature</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                    <span class="n">heat_addition</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                    <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param inlet_stagnation_temperature: The stagnation conditions at the</span>
+<span class="sd">                                             inlet to the heat addition source</span>
+<span class="sd">                                             in units of Kelvins</span>
+<span class="sd">        :param heat_addition: The heat added to the fluid in units of Watts</span>
+<span class="sd">        :param specific_heat: The specific heat of the fluid in units of J/kg-K</span>
+<span class="sd">        :param mass_flow_rate: The fluid mass flow rate in units of kg/s</span>
+<span class="sd">        :return stag_temp: The stagnation temperature at the exit to the</span>
+<span class="sd">                           heat addition in units of Kelvins</span>
+
+<span class="sd">        This function determines the stagnation temperature at the heat</span>
+<span class="sd">        addition component.  This function solves teh following equation</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           T_{o2} = T_{o1} + \\frac{\dot{Q}_{he}}{\dot{m}c_p}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stag_temp</span> <span class="o">=</span> <span class="n">inlet_stagnation_temperature</span> <span class="o">+</span> <span class="n">heat_addition</span> <span class="o">/</span> \
+                    <span class="p">(</span><span class="n">mass_flow_rate</span> <span class="o">*</span> <span class="n">specific_heat</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stag_temp</span></div></div>
+<span class="c1"># ============================================================================</span>
+<span class="c1"># ============================================================================</span>
 <span class="c1"># eof</span>
 </pre></div>
 
