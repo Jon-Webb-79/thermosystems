@@ -1,6 +1,6 @@
 # Import modules here
 from src.isentropic_models import DiffuserNozzle, Stagnation, Compressor
-from src.isentropic_models import HeatAddition
+from src.isentropic_models import HeatAddition, Turbine
 
 from math import isclose
 # ==============================================================================
@@ -418,6 +418,18 @@ def test_he_exit_velocity():
     velocity = he.exit_velocity(inlet_stag_temperature, heat, 1.0,
                                 1000.0, inlet_mach_number, gamma, 1.0)
     assert isclose(velocity, 22.029, rel_tol=1.0e-3)
+# ==============================================================================
+# ==============================================================================
+# Test Turbine class
+
+
+work = 1000.0
+turb = Turbine(0.9)
+
+
+def test_turbine_work():
+    total_work = turb.work_extraction(work)
+    assert isclose(1111.11, total_work, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # eof
