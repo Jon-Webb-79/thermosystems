@@ -385,6 +385,28 @@ def test_he_exit_stagnation_pressure():
                                             heat, 1.0, 1000.0,
                                             inlet_mach_number, gamma)
     assert isclose(stag_pres, 5946850.0, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_he_exit_static_temperature():
+    """
+
+    This function tests the exit_static_temperature() function
+    """
+    stat_temp = he.exit_static_temperature(inlet_stag_temperature, heat, 1.0,
+                                           1000.0, gamma, inlet_mach_number)
+    assert isclose(stat_temp, 1791.6, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_he_exit_static_pressure():
+    """
+
+    This function tests the exit_static_pressure() function
+    """
+    stat_pres = he.exit_static_pressure(inlet_stag_pressure, inlet_stag_temperature,
+                                        heat, 1.0, 1000.0, gamma, inlet_mach_number)
+    assert isclose(5903279.0, stat_pres, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # eof
