@@ -184,7 +184,7 @@ is modeled via Eq. \ref{eq:comp_work}.
 
 \begin{equation}
 \label{eq:comp_work}
-W = \dot{m}c_p\left(T_{o2} - T_{o1}\right)
+W_c = \dot{m}c_p\left(T_{o2} - T_{o1}\right)
 \end{equation}
 % ===========================================================================================================
 % ===========================================================================================================
@@ -193,6 +193,7 @@ W = \dot{m}c_p\left(T_{o2} - T_{o1}\right)
 Typical thermodynamic systems have a combustion chamber or a heat exchanger where energy is added to the system.  As with all other
 thermodynamic systems a heat addition unit is accompanied by an isentropic efficiency ($\eta_{he}$) where the subscript he refers to 
 a heat exchanger.
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \subsection{Power Addition}
 The required power that must be supplied to the heat exchanger or combustion chamber is determined with knowledge of the heat to 
@@ -246,13 +247,38 @@ The static temperature and pressure can be determined with Equations \ref{eq:sta
 The fluid Mach number leaving the heat addition component is determine with knowledge of the inlet conditions ($T_{o1}$ and $M_1$) as
 well as the exit Stagnation temperature ($T_{o2}$) and Equation \ref{eq:com_mach_number}.  The equation is implicit and cannot be solved
 directly, so a root finder must be employed to solve this equation.  The ThermSystems code uses the bisect method to determine the roots
-for $M_2$.
+for $M_2$.  The fluid velocity is determined by multiplying the Mach number by the speed of sound as determined in Eq. \ref{eq:mach}
+% ===========================================================================================================
+% ===========================================================================================================
+
+\section{Turbine}
+A turbine extracts energy from a fluid field, either to run an alternator that produces electricity or to supply mechanical energy to
+a compressor.  As with all other thermodynamic systems a turbine is accompanied by an isentropic efficiency ($\eta_{t}$) 
+where the subscript he refers to a heat exchanger.
 % --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-\subsection{Fluid Density}
-% ===========================================================================================================
-% ===========================================================================================================
+\subsection{Work Extraction}
+A turbine must extract a certain amount ($\dot{W}_t$) of work from the flow field to supply the mechanical energy needs of an alternator
+or a compressor.  In order to ensure that the amount of work extracted is correct, we must divide the compressor work $\dot{W}_t$ by 
+the turbine isentropic efficiency to understand the total work to be extracted as shown in Eq. \ref{eq:work_extraction}.  If the work 
+is to be supplied to a compressor then $\dot{W}_t$ is equal to $\dot{W}_c$
 
+\begin{equation}
+\label{eq:work_extraction}
+\dot{W}_{total} = \frac{\dot{W}_t}{\eta_t}
+\end{equation}
+
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{Fluid Stagnation Temperature and Pressure}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{Fluid StaticTemperature and Pressure}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{Fluid Velocity and Mach Number}
+% ===========================================================================================================
+% ===========================================================================================================
 
 \begin{thebibliography}{2}
 

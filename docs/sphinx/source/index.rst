@@ -15,6 +15,7 @@ Welcome to thermosystems's documentation!
    Diffuser_Nozzle
    Compressor
    HeatAddition
+   Turbine
 
 Indices and tables
 ==================

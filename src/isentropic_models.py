@@ -982,6 +982,85 @@ class HeatAddition(Stagnation):
         static_pressure = self.static_pressure(inlet_stagnation_pressure,
                                                exit_mach_number, gamma)
         return static_pressure
+# ----------------------------------------------------------------------------
+
+    def exit_velocity(self, inlet_stagnation_temperature: float,
+                      heat_addition: float, specific_heat: float,
+                      mass_flow_rate: float, inlet_mach_number: float,
+                      gamma: float, molar_mass: float) -> float:
+        """
+
+        :param inlet_stagnation_temperature: The stagnation conditions at the
+                                             heat addition component inlet in
+                                             units of Kelvins
+        :param heat_addition: The heat addition in units of Watts
+        :param specific_heat: The fluid specific heat in units of J/kg-K
+        :param mass_flow_rate: The mass flow rate in units of kg/s
+        :param inlet_mach_number: The Mach number at the heat addition
+                                  component inlet
+        :param gamma: The ratio of specific heats
+        :param molar_mass: Molar mass of the fluid in units of J/mol-K
+        :return exit_velocity: The fluid velocity at the exit to the
+                               heat addition component in units of
+                               meters per second
+
+        This function determines the fluid velocity leaving the heat
+        addition component by solving the equation below
+
+        .. math::
+           u = M\sqrt[]{\gamma R T}
+        """
+        exit_mach = self.exit_mach_number(inlet_stagnation_temperature,
+                                          heat_addition, specific_heat,
+                                          mass_flow_rate, inlet_mach_number,
+                                          gamma)
+        static_temp = self.exit_static_temperature(inlet_stagnation_temperature,
+                                                   heat_addition, specific_heat,
+                                                   mass_flow_rate, gamma,
+                                                   inlet_mach_number)
+        sos = self.speed_of_sound(gamma, static_temp, molar_mass)
+        return exit_mach * sos
+# ============================================================================
+# ============================================================================
+# This class describes the performance of a compressor
+
+
+class Turbine(Stagnation):
+    """
+    This class contains functions that determine the exit conditions for
+    a gas turbine assuming knowledge of the inlet properties.  These
+    relationships are developed for sub-sonic, incompressible flows and
+    assume a negligible change the ratio of specific heats throughout the
+    process.  All relationships are developed from the following references.
+
+    1. Hill, P. and Peterson, C., "Mechanics and Thermodynamics of Propulsion,"
+       Addison Wesley Publishing Co., Reading, MA, 1992
+    """
+    def __init__(self, efficiency: float):
+        """
+
+        :param compression_ratio: The ratio of outlet stagnation pressure
+                                  to inlet stagnation pressure
+        """
+        self.efficiency = efficiency
+# ----------------------------------------------------------------------------
+
+    def work_extraction(self, turbine_work: float) -> float:
+        """
+
+        :param turbine_work: The usable work extracted by the turbine in
+                             units of Watts
+        :return total_work: The total work extracted by a turbine in
+                            units of
+
+        This function solves for the total work to be extracted from the
+        system with knowledge of the work required for an alternator
+        or a compressor.  This function solves the equation below.
+
+        .. math::
+           \dot{W}_{total}=\\frac{\dot{W}_t}{\eta_t}
+        """
+        return turbine_work / self.efficiency
 # ============================================================================
 # ============================================================================
 # eof
