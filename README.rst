@@ -16,3 +16,6 @@ The code contains the following classes
 
 * **Stagnation:** which contains classmethods to be inherited in other classes
 * **DiffuserNozzle**: which contains functions that determine the fluid exit conditions leaving a diffuser or nozzle
+* **Compressor**: which contains functions that determine the fluid exit conditions leaving a compressor
+* **HeatAddition**: which contains functions that determine the fluid exit conditions leaving a combustion chamber
+* **Turbine**: which contains functions that determine the fluid exit conditions leaving a turbine
