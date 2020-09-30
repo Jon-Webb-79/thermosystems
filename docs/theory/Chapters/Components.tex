@@ -271,12 +271,27 @@ is to be supplied to a compressor then $\dot{W}_t$ is equal to $\dot{W}_c$
 % --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \subsection{Fluid Stagnation Temperature and Pressure}
+The stagnation temperature at the turbine exit can be determine via Eq. \ref{eq:turb_stag_temp}
+
+\begin{equation}
+\label{eq:turb_stag_temp}
+T_{o2} = T_{o1} - \frac{\dot{W}_{total}}{\dot{m}c_p}
+\end{equation}
+
+The stagnation temperature at the turbine exit can be detemrined via Eq. \ref{eq:turb_stag_pres}
+
+\begin{equation}
+\label{eq:turb_stag_pres}
+P_{o2} = P_{o1}\left[1 - \frac{1}{\eta_t}\left(1 - \frac{T_{o2}}{T_{o1}} \right) \right]^{\frac{\gamma}{\gamma - 1}}
+\end{equation}
 % --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \subsection{Fluid StaticTemperature and Pressure}
+The fluid static temperature and pressure are determined from Equations  \ref{eq:stag_temperature} and \ref{eq:stag_pressure}.
 % --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 \subsection{Fluid Velocity and Mach Number}
+The fluid Mach number is determined from Equation \ref{eq:com_mach_number}
 % ===========================================================================================================
 % ===========================================================================================================
 

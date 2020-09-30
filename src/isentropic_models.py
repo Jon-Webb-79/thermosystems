@@ -974,11 +974,6 @@ class HeatAddition(Stagnation):
                                                  heat_addition, specific_heat,
                                                  mass_flow_rate, inlet_mach_number,
                                                  gamma)
-        exit_stag_pres = self.exit_stagnation_pressure(inlet_stagnation_pressure,
-                                                       inlet_stagnation_temperature,
-                                                       heat_addition, specific_heat,
-                                                       mass_flow_rate, gamma,
-                                                       inlet_mach_number)
         static_pressure = self.static_pressure(inlet_stagnation_pressure,
                                                exit_mach_number, gamma)
         return static_pressure
@@ -1061,6 +1056,210 @@ class Turbine(Stagnation):
            \dot{W}_{total}=\\frac{\dot{W}_t}{\eta_t}
         """
         return turbine_work / self.efficiency
+# ----------------------------------------------------------------------------
+
+    def exit_stagnation_temperature(self, turbine_work: float,
+                                    specific_heat: float,
+                                    mass_flow_rate: float,
+                                    inlet_stagnation_temperature: float) -> float:
+        """
+
+        :param turbine_work: The total work to be extracted by the turbine
+                             in units of Watts
+        :param specific_heat: The fluid specific heat at constant pressure
+                              in units of J/kg-K
+        :param mass_flow_rate: The fluid mass flow rate in units of kg/s
+        :param inlet_stagnation_temperature: The stagnation temperature at
+                                             the turbine inlet in units
+                                             of Kelvins
+        :return stag_temp: The stagnation temperature at the turbine exit
+                           in units of Kelvins
+
+        This function calculates the stagnation temperature at the exit to
+        the compressor with the equation below
+
+        .. math::
+           T_{o2} = T_{o1} - \\frac{\dot{W}_{total}}{\dot{m}c_p}
+        """
+        total_work = self.work_extraction(turbine_work)
+        stag_temp = inlet_stagnation_temperature - (total_work /
+                                                    (mass_flow_rate * specific_heat))
+        return stag_temp
+# ---------------------------------------------------------------------------
+
+    def exit_stagnation_pressure(self, inlet_stagnation_pressure: float,
+                                 inlet_stagnation_temperature: float,
+                                 specific_heat: float, mass_flow_rate: float,
+                                 turbine_work: float, gamma: float) -> float:
+        """
+
+        :param inlet_stagnation_pressure: The stagnation pressure at the turbine
+                                          inlet in units of Pascals
+        :param inlet_stagnation_temperature: The stagnation temperature at the
+                                             turbine inlet in units of Kelvins
+        :param specific_heat: The fluid specific heat in units of J/kg-K
+        :param mass_flow_rate: The fluid mass flow rate in units of kg/s
+        :param turbine_work: The usable work extracted by the turbine in
+                             units of Watts
+        :param gamma: The ratio of specific heats
+        :return stag_pres: The stagnation pressure at the exit to the
+                           diffuser in units of Pascals
+
+        This function solves for the stagnation pressure at the turbine exit
+        using the equation below.
+
+        .. math::
+           P_{o2} = P_{o1}\\left[1 - \\frac{1}{\eta_t}\\left(1 -
+           \\frac{T_{o2}}{T_{o1}} \\right) \\right]^{\\frac{\gamma}{\gamma - 1}}
+        """
+        stag_temp = self.exit_stagnation_temperature(turbine_work, specific_heat,
+                                                     mass_flow_rate, inlet_stagnation_temperature)
+        one = 1 - (1/self.efficiency) * (1 - (stag_temp / inlet_stagnation_temperature))
+        stag_pres = inlet_stagnation_pressure * one ** (gamma / (gamma - 1))
+        return stag_pres
+# ---------------------------------------------------------------------------
+
+    def exit_mach_number(self, inlet_stagnation_temperature: float,
+                         inlet_mach_number: float, gamma: float,
+                         turbine_work: float, specific_heat: float,
+                         mass_flow_rate: float, lower: float = 0.001,
+                         upper: float = 0.999) -> float:
+        """
+
+        :param inlet_stagnation_temperature: The stagnation temperature at the
+                                             turbine inlet in units of Kelvins
+        :param inlet_mach_number: The Mach number at the inlet to the
+                                  turbine
+        :param gamma: The ratio of specific heats
+        :param turbine_work: The usable work extracted by the turbine
+        :param specific_heat: The fluid specific heat in units of J/kg-K
+        :param mass_flow_rate: The fluid mass flow rate in units of kg/s
+        :param lower: The lower bound for Mach number preset to 0.001
+        :param upper: The upper bound for Mach number preset to 0.999
+        :return exit_mach: The Mach number at the exit to the turbine
+
+        This function determines the Mach number at the exit to the
+        turbine using the equation shown below.
+
+
+        .. math::
+           \\frac{T_{o1}}{T_{o2}} = \\left[\\frac{1 + \gamma M^2_2}{1 + \gamma M^2_1}
+           \\left(\\frac{M_1}{M_2}\\right)\\right]^2\\left(\\frac{1 + \\frac{\gamma-1}{2}M^2_1}
+           {1 + \\frac{\gamma-1}{2}M^2_2}\\right)
+        """
+        exit_stag_temp = self.exit_stagnation_temperature(turbine_work, specific_heat,
+                                                          mass_flow_rate,
+                                                          inlet_stagnation_temperature)
+        exit_mach = bisect(self.temp_exit_mach, lower, upper,
+                           args=(inlet_mach_number, gamma, inlet_stagnation_temperature,
+                                 exit_stag_temp), full_output=True)
+        return exit_mach[0]
+# ---------------------------------------------------------------------------
+
+    def exit_static_temperature(self, inlet_stagnation_temperature: float,
+                                inlet_mach_number: float, gamma: float,
+                                turbine_work: float, specific_heat: float,
+                                mass_flow_rate: float) -> float:
+        """
+
+        :param inlet_stagnation_temperature: The stagnation temperature at
+                                             the inlet to the turbine in
+                                             units of Kelvins
+        :param inlet_mach_number: The Mach number at the inlet to the
+                                  turbine
+        :param gamma: The ratio of specific heats
+        :param turbine_work: The usable work extracted by the turbine
+        :param specific_heat: The fluid specific heat in units of J/kg-K
+        :param mass_flow_rate: The mass flow rate in units of kg/s
+        :return stat_temp: The static temperature at the exit to the
+                           turbine in units of Kelvins.
+
+        This function determines the static temperature at the exit to the
+        turbine by solving the equation below.
+
+
+        .. math::
+           T = \\frac{T_o}{\\left(1+\\frac{\gamma-1}{2}M^2\\right)}
+        """
+        exit_mach = self.exit_mach_number(inlet_stagnation_temperature,
+                                          inlet_mach_number, gamma, turbine_work,
+                                          specific_heat, mass_flow_rate)
+        stag_temp = self.exit_stagnation_temperature(turbine_work, specific_heat,
+                                                     mass_flow_rate,
+                                                     inlet_stagnation_temperature)
+        stat_temp = self.static_temperature(stag_temp, exit_mach, gamma)
+        return stat_temp
+# ---------------------------------------------------------------------------
+
+    def exit_static_pressure(self, inlet_stagnation_temperature: float,
+                             inlet_mach_number: float, gamma: float,
+                             turbine_work: float, specific_heat: float,
+                             mass_flow_rate: float,
+                             inlet_stagnation_pressure: float) -> float:
+        """
+
+        :param inlet_stagnation_temperature: The stagnation temperature at the
+                                             inlet to the turbine in units of
+                                             Kelvins
+        :param inlet_mach_number: The Mach number at the inlet to the turbine
+        :param gamma: The ratio of specific heats
+        :param turbine_work: The usable work extracted by the turbine
+        :param specific_heat: The fluid specific heat in units of J/kg-K
+        :param mass_flow_rate: The fluid mass flow rate in units of kg/s
+        :param inlet_stagnation_pressure: The stagnation pressure at the inlet
+                                          to the turbine in units of Pascals
+        :return stat_pres: The static pressure at the exit to the turbine
+                           in units of Pascals.
+
+        This function determines the static pressure at the turbine exit
+        using the equation below.
+
+        .. math::
+           P = \\frac{P_o}{\\left[1+\\frac{\gamma-1}{2}M^2\\right]^{\gamma/\\left(\gamma-1\\right)}}
+        """
+        exit_mach = self.exit_mach_number(inlet_stagnation_temperature,
+                                          inlet_mach_number, gamma, turbine_work,
+                                          specific_heat, mass_flow_rate)
+        stag_temp = self.exit_stagnation_pressure(inlet_stagnation_pressure,
+                                                  inlet_stagnation_temperature,
+                                                  specific_heat, mass_flow_rate,
+                                                  turbine_work, gamma)
+        stat_pres = self.static_pressure(inlet_stagnation_pressure, exit_mach,
+                                         gamma)
+        return stat_pres
+# ----------------------------------------------------------------------------
+
+    def exit_velocity(self, inlet_stagnation_temperature: float,
+                      inlet_mach_number: float, gamma: float,
+                      turbine_work: float, specific_heat: float,
+                      mass_flow_rate: float, molar_mass: float) -> float:
+        """
+
+        :param inlet_stagnation_temperature: The stagnation temperature at
+                                             the turbine inlet in units of
+                                             Kelvins
+        :param inlet_mach_number: The Mach number at the inlet to the turbine
+        :param gamma: The ratio of specific heats
+        :param turbine_work: The usable work extracted by the turbine
+        :param specific_heat: The fluid specific heat in units of J/kg-K
+        :param mass_flow_rate: The fluid mass flow rate in units of kg/s
+        :param molar_mass: The molar mass in units of J/mol-K
+        :return velocity: The fluid velocity in meters per second
+
+        This function determines the fluid velocity using the equation
+        below
+
+        .. math::
+           u = M \sqrt[]{\gamma R T}
+        """
+        stat_temp = self.exit_static_temperature(inlet_stagnation_temperature,
+                                                 inlet_mach_number, gamma, turbine_work,
+                                                 specific_heat, mass_flow_rate)
+        exit_mach = self.exit_mach_number(inlet_stagnation_temperature,
+                                          inlet_mach_number, gamma, turbine_work,
+                                          specific_heat, mass_flow_rate)
+        sos = self.speed_of_sound(gamma, stat_temp, molar_mass)
+        return sos * exit_mach
 # ============================================================================
 # ============================================================================
 # eof

@@ -428,8 +428,77 @@ turb = Turbine(0.9)
 
 
 def test_turbine_work():
+    """
+
+    :This function tests the work_extraction() function
+    """
     total_work = turb.work_extraction(work)
     assert isclose(1111.11, total_work, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_turbine_stagnation_temperature():
+    """
+
+    This function tests the exit_stagnation_temperature() function
+    """
+    temp = turb.exit_stagnation_temperature(work, 1.0, 1000.0, inlet_stag_temperature)
+    assert isclose(798.88, temp, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_turbine_stagnation_pressure():
+    """
+
+    This function tests the exit_stagnation_pressure() function
+    """
+    pres = turb.exit_stagnation_pressure(inlet_stag_pressure, inlet_stag_temperature,
+                                         1.0, 1000.0, work, gamma)
+    assert isclose(pres, 5967655.0, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_turbine_exit_mach_number():
+    """
+
+    This function tests the exit_mach_number() function
+    """
+    mach = turb.exit_mach_number(inlet_stag_temperature, inlet_mach_number, gamma,
+                                 work, 1.0, 1000.0)
+    assert isclose(mach, 0.09928707, rel_tol=1.0e-2)
+# ------------------------------------------------------------------------------
+
+
+def test_turbine_exit_static_temperature():
+    """
+
+    This function tests the exit_static_temperature() function
+    """
+    temp = turb.exit_static_temperature(inlet_stag_temperature, inlet_mach_number,
+                                        gamma, work, 1.0, 1000.0)
+    assert isclose(797.296, temp, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_turbine_exit_static_pressure():
+    """
+
+    This function tests the exit_static_pressure() function
+    """
+    pres = turb.exit_static_pressure(inlet_stag_temperature, inlet_mach_number,
+                                     gamma, work, 1.0, 1000.0, inlet_stag_pressure)
+    assert isclose(5958247.0, pres, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_turbine_exit_velocity():
+    """
+
+    This function tests the exit_velocity() function
+    """
+    vel = turb.exit_velocity(inlet_stag_temperature, inlet_mach_number, gamma,
+                             work, 1.0, 1000.0, 1.0)
+    assert isclose(vel, 9.626, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # eof

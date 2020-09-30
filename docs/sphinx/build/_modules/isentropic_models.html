@@ -791,7 +791,7 @@
 <span class="c1">#   be seen with a combustion chamber or heat exchanger</span>
 
 
-<div class="viewcode-block" id="HeatAddition"><a class="viewcode-back" href="../Turbine.html#isentropic_models.HeatAddition">[docs]</a><span class="k">class</span> <span class="nc">HeatAddition</span><span class="p">(</span><span class="n">Stagnation</span><span class="p">):</span>
+<div class="viewcode-block" id="HeatAddition"><a class="viewcode-back" href="../HeatAddition.html#isentropic_models.HeatAddition">[docs]</a><span class="k">class</span> <span class="nc">HeatAddition</span><span class="p">(</span><span class="n">Stagnation</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class contains functions that determine the exit conditions for</span>
 <span class="sd">    a heat exchanger or combustion chamber with knowledge of the inlet properties.</span>
@@ -810,7 +810,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">efficiency</span> <span class="o">=</span> <span class="n">efficiency</span>
 <span class="c1"># ----------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="HeatAddition.input_power"><a class="viewcode-back" href="../Turbine.html#isentropic_models.HeatAddition.input_power">[docs]</a>    <span class="k">def</span> <span class="nf">input_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">heat_addition</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<div class="viewcode-block" id="HeatAddition.input_power"><a class="viewcode-back" href="../HeatAddition.html#isentropic_models.HeatAddition.input_power">[docs]</a>    <span class="k">def</span> <span class="nf">input_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">heat_addition</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param heat_addition: The heat that must be added to the fluid in</span>
@@ -828,7 +828,7 @@
         <span class="k">return</span> <span class="n">heat_addition</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">efficiency</span></div>
 <span class="c1"># ----------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="HeatAddition.exit_stagnation_temperature"><a class="viewcode-back" href="../Turbine.html#isentropic_models.HeatAddition.exit_stagnation_temperature">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="HeatAddition.exit_stagnation_temperature"><a class="viewcode-back" href="../HeatAddition.html#isentropic_models.HeatAddition.exit_stagnation_temperature">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">exit_stagnation_temperature</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                                     <span class="n">heat_addition</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                                     <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -854,7 +854,7 @@
         <span class="k">return</span> <span class="n">stag_temp</span></div>
 <span class="c1"># ----------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="HeatAddition.exit_mach_number"><a class="viewcode-back" href="../Turbine.html#isentropic_models.HeatAddition.exit_mach_number">[docs]</a>    <span class="k">def</span> <span class="nf">exit_mach_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<div class="viewcode-block" id="HeatAddition.exit_mach_number"><a class="viewcode-back" href="../HeatAddition.html#isentropic_models.HeatAddition.exit_mach_number">[docs]</a>    <span class="k">def</span> <span class="nf">exit_mach_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                          <span class="n">heat_addition</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                          <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                          <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
@@ -893,7 +893,7 @@
         <span class="k">return</span> <span class="n">exit_mach</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 <span class="c1"># ----------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="HeatAddition.exit_stagnation_pressure"><a class="viewcode-back" href="../Turbine.html#isentropic_models.HeatAddition.exit_stagnation_pressure">[docs]</a>    <span class="k">def</span> <span class="nf">exit_stagnation_pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<div class="viewcode-block" id="HeatAddition.exit_stagnation_pressure"><a class="viewcode-back" href="../HeatAddition.html#isentropic_models.HeatAddition.exit_stagnation_pressure">[docs]</a>    <span class="k">def</span> <span class="nf">exit_stagnation_pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                                  <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                                  <span class="n">heat_addition</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                                  <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -938,7 +938,7 @@
         <span class="k">return</span> <span class="n">inlet_stagnation_pressure</span> <span class="o">/</span> <span class="p">(</span><span class="n">one</span> <span class="o">*</span> <span class="n">four</span><span class="p">)</span></div>
 <span class="c1"># ----------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="HeatAddition.exit_static_temperature"><a class="viewcode-back" href="../Turbine.html#isentropic_models.HeatAddition.exit_static_temperature">[docs]</a>    <span class="k">def</span> <span class="nf">exit_static_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<div class="viewcode-block" id="HeatAddition.exit_static_temperature"><a class="viewcode-back" href="../HeatAddition.html#isentropic_models.HeatAddition.exit_static_temperature">[docs]</a>    <span class="k">def</span> <span class="nf">exit_static_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                                 <span class="n">heat_addition</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                                 <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                                 <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -977,7 +977,7 @@
         <span class="k">return</span> <span class="n">exit_static_temp</span></div>
 <span class="c1"># ----------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="HeatAddition.exit_static_pressure"><a class="viewcode-back" href="../Turbine.html#isentropic_models.HeatAddition.exit_static_pressure">[docs]</a>    <span class="k">def</span> <span class="nf">exit_static_pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<div class="viewcode-block" id="HeatAddition.exit_static_pressure"><a class="viewcode-back" href="../HeatAddition.html#isentropic_models.HeatAddition.exit_static_pressure">[docs]</a>    <span class="k">def</span> <span class="nf">exit_static_pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                              <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                              <span class="n">heat_addition</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                              <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
@@ -1011,17 +1011,12 @@
                                                  <span class="n">heat_addition</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">,</span>
                                                  <span class="n">mass_flow_rate</span><span class="p">,</span> <span class="n">inlet_mach_number</span><span class="p">,</span>
                                                  <span class="n">gamma</span><span class="p">)</span>
-        <span class="n">exit_stag_pres</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_stagnation_pressure</span><span class="p">(</span><span class="n">inlet_stagnation_pressure</span><span class="p">,</span>
-                                                       <span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
-                                                       <span class="n">heat_addition</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">,</span>
-                                                       <span class="n">mass_flow_rate</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span>
-                                                       <span class="n">inlet_mach_number</span><span class="p">)</span>
         <span class="n">static_pressure</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">static_pressure</span><span class="p">(</span><span class="n">inlet_stagnation_pressure</span><span class="p">,</span>
                                                <span class="n">exit_mach_number</span><span class="p">,</span> <span class="n">gamma</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">static_pressure</span></div>
 <span class="c1"># ----------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="HeatAddition.exit_velocity"><a class="viewcode-back" href="../Turbine.html#isentropic_models.HeatAddition.exit_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">exit_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<div class="viewcode-block" id="HeatAddition.exit_velocity"><a class="viewcode-back" href="../HeatAddition.html#isentropic_models.HeatAddition.exit_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">exit_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                       <span class="n">heat_addition</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                       <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                       <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">molar_mass</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -1097,7 +1092,211 @@
 <span class="sd">        .. math::</span>
 <span class="sd">           \dot{W}_{total}=\\frac{\dot{W}_t}{\eta_t}</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">turbine_work</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">efficiency</span></div></div>
+        <span class="k">return</span> <span class="n">turbine_work</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">efficiency</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Turbine.exit_stagnation_temperature"><a class="viewcode-back" href="../Turbine.html#isentropic_models.Turbine.exit_stagnation_temperature">[docs]</a>    <span class="k">def</span> <span class="nf">exit_stagnation_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">turbine_work</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                    <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                    <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                    <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param turbine_work: The total work to be extracted by the turbine</span>
+<span class="sd">                             in units of Watts</span>
+<span class="sd">        :param specific_heat: The fluid specific heat at constant pressure</span>
+<span class="sd">                              in units of J/kg-K</span>
+<span class="sd">        :param mass_flow_rate: The fluid mass flow rate in units of kg/s</span>
+<span class="sd">        :param inlet_stagnation_temperature: The stagnation temperature at</span>
+<span class="sd">                                             the turbine inlet in units</span>
+<span class="sd">                                             of Kelvins</span>
+<span class="sd">        :return stag_temp: The stagnation temperature at the turbine exit</span>
+<span class="sd">                           in units of Kelvins</span>
+
+<span class="sd">        This function calculates the stagnation temperature at the exit to</span>
+<span class="sd">        the compressor with the equation below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           T_{o2} = T_{o1} - \\frac{\dot{W}_{total}}{\dot{m}c_p}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">total_work</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">work_extraction</span><span class="p">(</span><span class="n">turbine_work</span><span class="p">)</span>
+        <span class="n">stag_temp</span> <span class="o">=</span> <span class="n">inlet_stagnation_temperature</span> <span class="o">-</span> <span class="p">(</span><span class="n">total_work</span> <span class="o">/</span>
+                                                    <span class="p">(</span><span class="n">mass_flow_rate</span> <span class="o">*</span> <span class="n">specific_heat</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">stag_temp</span></div>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Turbine.exit_stagnation_pressure"><a class="viewcode-back" href="../Turbine.html#isentropic_models.Turbine.exit_stagnation_pressure">[docs]</a>    <span class="k">def</span> <span class="nf">exit_stagnation_pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                 <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                 <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                 <span class="n">turbine_work</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param inlet_stagnation_pressure: The stagnation pressure at the turbine</span>
+<span class="sd">                                          inlet in units of Pascals</span>
+<span class="sd">        :param inlet_stagnation_temperature: The stagnation temperature at the</span>
+<span class="sd">                                             turbine inlet in units of Kelvins</span>
+<span class="sd">        :param specific_heat: The fluid specific heat in units of J/kg-K</span>
+<span class="sd">        :param mass_flow_rate: The fluid mass flow rate in units of kg/s</span>
+<span class="sd">        :param turbine_work: The usable work extracted by the turbine in</span>
+<span class="sd">                             units of Watts</span>
+<span class="sd">        :param gamma: The ratio of specific heats</span>
+<span class="sd">        :return stag_pres: The stagnation pressure at the exit to the</span>
+<span class="sd">                           diffuser in units of Pascals</span>
+
+<span class="sd">        This function solves for the stagnation pressure at the turbine exit</span>
+<span class="sd">        using the equation below.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           P_{o2} = P_{o1}\\left[1 - \\frac{1}{\eta_t}\\left(1 -</span>
+<span class="sd">           \\frac{T_{o2}}{T_{o1}} \\right) \\right]^{\\frac{\gamma}{\gamma - 1}}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stag_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_stagnation_temperature</span><span class="p">(</span><span class="n">turbine_work</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">,</span>
+                                                     <span class="n">mass_flow_rate</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">)</span>
+        <span class="n">one</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">efficiency</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">stag_temp</span> <span class="o">/</span> <span class="n">inlet_stagnation_temperature</span><span class="p">))</span>
+        <span class="n">stag_pres</span> <span class="o">=</span> <span class="n">inlet_stagnation_pressure</span> <span class="o">*</span> <span class="n">one</span> <span class="o">**</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">/</span> <span class="p">(</span><span class="n">gamma</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">stag_pres</span></div>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Turbine.exit_mach_number"><a class="viewcode-back" href="../Turbine.html#isentropic_models.Turbine.exit_mach_number">[docs]</a>    <span class="k">def</span> <span class="nf">exit_mach_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                         <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                         <span class="n">turbine_work</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                         <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">lower</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+                         <span class="n">upper</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.999</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param inlet_stagnation_temperature: The stagnation temperature at the</span>
+<span class="sd">                                             turbine inlet in units of Kelvins</span>
+<span class="sd">        :param inlet_mach_number: The Mach number at the inlet to the</span>
+<span class="sd">                                  turbine</span>
+<span class="sd">        :param gamma: The ratio of specific heats</span>
+<span class="sd">        :param turbine_work: The usable work extracted by the turbine</span>
+<span class="sd">        :param specific_heat: The fluid specific heat in units of J/kg-K</span>
+<span class="sd">        :param mass_flow_rate: The fluid mass flow rate in units of kg/s</span>
+<span class="sd">        :param lower: The lower bound for Mach number preset to 0.001</span>
+<span class="sd">        :param upper: The upper bound for Mach number preset to 0.999</span>
+<span class="sd">        :return exit_mach: The Mach number at the exit to the turbine</span>
+
+<span class="sd">        This function determines the Mach number at the exit to the</span>
+<span class="sd">        turbine using the equation shown below.</span>
+
+
+<span class="sd">        .. math::</span>
+<span class="sd">           \\frac{T_{o1}}{T_{o2}} = \\left[\\frac{1 + \gamma M^2_2}{1 + \gamma M^2_1}</span>
+<span class="sd">           \\left(\\frac{M_1}{M_2}\\right)\\right]^2\\left(\\frac{1 + \\frac{\gamma-1}{2}M^2_1}</span>
+<span class="sd">           {1 + \\frac{\gamma-1}{2}M^2_2}\\right)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">exit_stag_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_stagnation_temperature</span><span class="p">(</span><span class="n">turbine_work</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">,</span>
+                                                          <span class="n">mass_flow_rate</span><span class="p">,</span>
+                                                          <span class="n">inlet_stagnation_temperature</span><span class="p">)</span>
+        <span class="n">exit_mach</span> <span class="o">=</span> <span class="n">bisect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">temp_exit_mach</span><span class="p">,</span> <span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">,</span>
+                           <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">inlet_mach_number</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                 <span class="n">exit_stag_temp</span><span class="p">),</span> <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">exit_mach</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Turbine.exit_static_temperature"><a class="viewcode-back" href="../Turbine.html#isentropic_models.Turbine.exit_static_temperature">[docs]</a>    <span class="k">def</span> <span class="nf">exit_static_temperature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                <span class="n">turbine_work</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                                <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param inlet_stagnation_temperature: The stagnation temperature at</span>
+<span class="sd">                                             the inlet to the turbine in</span>
+<span class="sd">                                             units of Kelvins</span>
+<span class="sd">        :param inlet_mach_number: The Mach number at the inlet to the</span>
+<span class="sd">                                  turbine</span>
+<span class="sd">        :param gamma: The ratio of specific heats</span>
+<span class="sd">        :param turbine_work: The usable work extracted by the turbine</span>
+<span class="sd">        :param specific_heat: The fluid specific heat in units of J/kg-K</span>
+<span class="sd">        :param mass_flow_rate: The mass flow rate in units of kg/s</span>
+<span class="sd">        :return stat_temp: The static temperature at the exit to the</span>
+<span class="sd">                           turbine in units of Kelvins.</span>
+
+<span class="sd">        This function determines the static temperature at the exit to the</span>
+<span class="sd">        turbine by solving the equation below.</span>
+
+
+<span class="sd">        .. math::</span>
+<span class="sd">           T = \\frac{T_o}{\\left(1+\\frac{\gamma-1}{2}M^2\\right)}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">exit_mach</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_mach_number</span><span class="p">(</span><span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                          <span class="n">inlet_mach_number</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">turbine_work</span><span class="p">,</span>
+                                          <span class="n">specific_heat</span><span class="p">,</span> <span class="n">mass_flow_rate</span><span class="p">)</span>
+        <span class="n">stag_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_stagnation_temperature</span><span class="p">(</span><span class="n">turbine_work</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">,</span>
+                                                     <span class="n">mass_flow_rate</span><span class="p">,</span>
+                                                     <span class="n">inlet_stagnation_temperature</span><span class="p">)</span>
+        <span class="n">stat_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">static_temperature</span><span class="p">(</span><span class="n">stag_temp</span><span class="p">,</span> <span class="n">exit_mach</span><span class="p">,</span> <span class="n">gamma</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stat_temp</span></div>
+<span class="c1"># ---------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Turbine.exit_static_pressure"><a class="viewcode-back" href="../Turbine.html#isentropic_models.Turbine.exit_static_pressure">[docs]</a>    <span class="k">def</span> <span class="nf">exit_static_pressure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                             <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                             <span class="n">turbine_work</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                             <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                             <span class="n">inlet_stagnation_pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param inlet_stagnation_temperature: The stagnation temperature at the</span>
+<span class="sd">                                             inlet to the turbine in units of</span>
+<span class="sd">                                             Kelvins</span>
+<span class="sd">        :param inlet_mach_number: The Mach number at the inlet to the turbine</span>
+<span class="sd">        :param gamma: The ratio of specific heats</span>
+<span class="sd">        :param turbine_work: The usable work extracted by the turbine</span>
+<span class="sd">        :param specific_heat: The fluid specific heat in units of J/kg-K</span>
+<span class="sd">        :param mass_flow_rate: The fluid mass flow rate in units of kg/s</span>
+<span class="sd">        :param inlet_stagnation_pressure: The stagnation pressure at the inlet</span>
+<span class="sd">                                          to the turbine in units of Pascals</span>
+<span class="sd">        :return stat_pres: The static pressure at the exit to the turbine</span>
+<span class="sd">                           in units of Pascals.</span>
+
+<span class="sd">        This function determines the static pressure at the turbine exit</span>
+<span class="sd">        using the equation below.</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           P = \\frac{P_o}{\\left[1+\\frac{\gamma-1}{2}M^2\\right]^{\gamma/\\left(\gamma-1\\right)}}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">exit_mach</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_mach_number</span><span class="p">(</span><span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                          <span class="n">inlet_mach_number</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">turbine_work</span><span class="p">,</span>
+                                          <span class="n">specific_heat</span><span class="p">,</span> <span class="n">mass_flow_rate</span><span class="p">)</span>
+        <span class="n">stag_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_stagnation_pressure</span><span class="p">(</span><span class="n">inlet_stagnation_pressure</span><span class="p">,</span>
+                                                  <span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                                  <span class="n">specific_heat</span><span class="p">,</span> <span class="n">mass_flow_rate</span><span class="p">,</span>
+                                                  <span class="n">turbine_work</span><span class="p">,</span> <span class="n">gamma</span><span class="p">)</span>
+        <span class="n">stat_pres</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">static_pressure</span><span class="p">(</span><span class="n">inlet_stagnation_pressure</span><span class="p">,</span> <span class="n">exit_mach</span><span class="p">,</span>
+                                         <span class="n">gamma</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">stat_pres</span></div>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="Turbine.exit_velocity"><a class="viewcode-back" href="../Turbine.html#isentropic_models.Turbine.exit_velocity">[docs]</a>    <span class="k">def</span> <span class="nf">exit_velocity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                      <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                      <span class="n">turbine_work</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                      <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">molar_mass</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param inlet_stagnation_temperature: The stagnation temperature at</span>
+<span class="sd">                                             the turbine inlet in units of</span>
+<span class="sd">                                             Kelvins</span>
+<span class="sd">        :param inlet_mach_number: The Mach number at the inlet to the turbine</span>
+<span class="sd">        :param gamma: The ratio of specific heats</span>
+<span class="sd">        :param turbine_work: The usable work extracted by the turbine</span>
+<span class="sd">        :param specific_heat: The fluid specific heat in units of J/kg-K</span>
+<span class="sd">        :param mass_flow_rate: The fluid mass flow rate in units of kg/s</span>
+<span class="sd">        :param molar_mass: The molar mass in units of J/mol-K</span>
+<span class="sd">        :return velocity: The fluid velocity in meters per second</span>
+
+<span class="sd">        This function determines the fluid velocity using the equation</span>
+<span class="sd">        below</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">           u = M \sqrt[]{\gamma R T}</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">stat_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_static_temperature</span><span class="p">(</span><span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                                 <span class="n">inlet_mach_number</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">turbine_work</span><span class="p">,</span>
+                                                 <span class="n">specific_heat</span><span class="p">,</span> <span class="n">mass_flow_rate</span><span class="p">)</span>
+        <span class="n">exit_mach</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_mach_number</span><span class="p">(</span><span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                          <span class="n">inlet_mach_number</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span> <span class="n">turbine_work</span><span class="p">,</span>
+                                          <span class="n">specific_heat</span><span class="p">,</span> <span class="n">mass_flow_rate</span><span class="p">)</span>
+        <span class="n">sos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">speed_of_sound</span><span class="p">(</span><span class="n">gamma</span><span class="p">,</span> <span class="n">stat_temp</span><span class="p">,</span> <span class="n">molar_mass</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sos</span> <span class="o">*</span> <span class="n">exit_mach</span></div></div>
 <span class="c1"># ============================================================================</span>
 <span class="c1"># ============================================================================</span>
 <span class="c1"># eof</span>
