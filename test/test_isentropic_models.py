@@ -1,6 +1,7 @@
 # Import modules here
 from src.isentropic_models import DiffuserNozzle, Stagnation, Compressor
 from src.isentropic_models import HeatAddition, Turbine, DiffuserNozzleComponent
+from src.isentropic_models import CompressorComponent
 
 from math import isclose
 # ==============================================================================
@@ -290,7 +291,7 @@ def test_comp_mach_number():
     """
     mach = comp.exit_mach_number(inlet_mach_number, inlet_stag_temperature,
                                  gamma, 0.001, 0.999)
-    assert isclose(mach[0], 0.120615, rel_tol=1.0e-3)
+    assert isclose(mach, 0.120615, rel_tol=1.0e-3)
 # ------------------------------------------------------------------------------
 
 
@@ -331,9 +332,9 @@ def test_comp_fluid_density():
 
     This function tests the compressor exit_density() function
     """
-    den = comp.exit_density(1.0, inlet_stag_temperature, inlet_mach_number, 1.0,
+    den = comp.exit_density(1.10, inlet_stag_temperature, inlet_mach_number, 1.0,
                             gamma)
-    assert isclose(den, 0.07175, rel_tol=1.0e-3)
+    assert isclose(den, 0.07892, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # Test the HeatAddition class
@@ -552,6 +553,46 @@ def test_diffusernozzle_component():
     assert isclose(exit_cond['velocity'], 0.8499, rel_tol=1.0e-3)
     assert isclose(exit_cond['mach_number'], 0.001496, rel_tol=1.0e-3)
     assert isclose(exit_cond['density'], 0.4837, rel_tol=1.0e-3)
+# ==============================================================================
+# ==============================================================================
+# Test the DiffuserNozzleComponent class
+
+
+def test_compressor_component():
+    """
+
+    This function tests the CompressorComponent class
+    """
+    compressor_ratio = 3.2
+    efficiency = 0.9
+    inlet_mach_number = 0.1
+    exit_area = 1.0
+    gamma = 1.4
+    mass_flow_rate = 1.10
+    specific_heat = 1.0
+    molar_mass = 1.0
+
+    comp = CompressorComponent(compressor_ratio, efficiency, exit_area)
+    exit_cond = comp.outlet_conditions(gamma, specific_heat, molar_mass,
+                                       inlet_mach_number, mass_flow_rate,
+                                       inlet_stag_pressure,
+                                       inlet_stag_temperature)
+
+    assert isclose(exit_cond['static_pressure'], 19005747.0, rel_tol=1.0e-3)
+    assert isclose(exit_cond['static_temperature'], 1147.07, rel_tol=1.0e-3)
+    assert isclose(exit_cond['stagnation_pressure'], 19200000.0, rel_tol=1.0e-3)
+    assert isclose(exit_cond['stagnation_temperature'], 1150.4, rel_tol=1.0e-3)
+    assert isclose(exit_cond['velocity'], 13.936, rel_tol=1.0e-3)
+    assert isclose(exit_cond['mach_number'], 0.120615, rel_tol=1.0e-3)
+    assert isclose(exit_cond['density'], 0.07892, rel_tol=1.0e-3)
+# ==============================================================================
+# ==============================================================================
+
+
+# TODO Update HeatAddition with exit_area as an input to instantiation
+# TODO Update Turbine with exit_area as an input to instantiation
+# TODO Add HeatAdditionComponent class
+# TODO Add TurbineComponent class
 # ==============================================================================
 # ==============================================================================
 # eof

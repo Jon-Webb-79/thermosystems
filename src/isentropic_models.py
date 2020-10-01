@@ -615,7 +615,7 @@ class Compressor(Stagnation):
     def exit_mach_number(self, inlet_mach_number: float,
                          inlet_stagnation_temperature: float,
                          gamma: float, upper: float = 0.001,
-                         lower: float = 0.999) -> Tuple[float, Any]:
+                         lower: float = 0.999) -> float:
         """
 
         :param inlet_mach_number: The mach number at the compressor inlet
@@ -644,7 +644,7 @@ class Compressor(Stagnation):
         mach = bisect(self.temp_exit_mach, lower, upper,
                       args=(inlet_mach_number, gamma, inlet_stagnation_temperature,
                             exit_stag_temp), full_output=True)
-        return mach
+        return mach[0]
 # ----------------------------------------------------------------------------
 
     def exit_static_pressure(self, inlet_stagnation_pressure: float,
@@ -672,7 +672,7 @@ class Compressor(Stagnation):
                                             gamma)
         exit_stag_pres = self.exit_stagnation_pressure(inlet_stagnation_pressure)
         stat_press = self.static_pressure(exit_stag_pres,
-                                          mach_number[0], gamma)
+                                          mach_number, gamma)
         return stat_press
 # ----------------------------------------------------------------------------
 
@@ -698,7 +698,7 @@ class Compressor(Stagnation):
                                             gamma)
         exit_stag_temp = self.exit_stagnation_temperature(inlet_stagnation_temperature,
                                                           gamma)
-        stat_temp = self.static_temperature(exit_stag_temp, mach_number[0], gamma)
+        stat_temp = self.static_temperature(exit_stag_temp, mach_number, gamma)
         return stat_temp
 # ----------------------------------------------------------------------------
 
@@ -723,7 +723,7 @@ class Compressor(Stagnation):
                                                  gamma, inlet_mach_number)
         sos = self.speed_of_sound(gamma, stat_temp, molar_mass)
         mach_number = self.exit_mach_number(inlet_mach_number, inlet_stagnation_temperature, gamma)
-        return mach_number[0] * sos
+        return mach_number * sos
 # ----------------------------------------------------------------------------
 
     def exit_density(self, mass_flow_rate: float, inlet_stagnation_temperature: float,
@@ -1328,6 +1328,11 @@ class Turbine(Stagnation):
 
 
 class DiffuserNozzleComponent(DiffuserNozzle):
+    """
+
+    This class combined all functionality of the DiffuserNozzle class
+    into a single function for ease of user access
+    """
     def __init__(self, efficiency: float, inlet_area: float, exit_area: float):
         """
 
@@ -1393,6 +1398,79 @@ class DiffuserNozzleComponent(DiffuserNozzle):
                 'stagnation_pressure': exit_stag_pres, 'stagnation_temperature': exit_stag_temp,
                 'velocity': exit_velocity, 'mach_number': exit_mach_number,
                 'density': exit_density}
+        return dict
+# ============================================================================
+# ============================================================================
+
+
+class CompressorComponent(Compressor):
+    """
+
+    This class combined all functionality of the Compressor class
+    into a single function for ease of user access
+    """
+    def __init__(self, compression_ratio: float, efficiency: float,
+                 exit_area: float):
+        """
+
+        :param compression_ratio: The ratio of outlet stagnation pressure
+                                  to the inlet stagnation pressure
+        :param efficiency: The isentropic efficiency of the compressor
+        :param exit_area: The exit area of the compressor in units
+                          of square meters
+        """
+        Compressor.__init__(self, compression_ratio, efficiency,
+                            exit_area)
+# ----------------------------------------------------------------------------
+
+    def outlet_conditions(self, gamma: float, specific_heat: float,
+                          molar_mass: float,
+                          inlet_mach_number: float, mass_flow_rate: float,
+                          inlet_stagnation_pressure: float,
+                          inlet_stagnation_temperature: float):
+        """
+
+        :param gamma: The ratio of specific heats
+        :param specific_heat: The fluid specific heat at constant pressure
+                              in units of J/kg-K
+        :param molar_mass: The fluid molar mass in units of J/mol-K
+        :param inlet_mach_number: The inlet Mach number
+        :param mass_flow_rate: The fluid mass flow in units of kg/s
+        :param inlet_stagnation_pressure: The stagnation pressure at the
+                                          inlet to the compressor in units
+                                          of Pascals
+        :param inlet_stagnation_temperature: The stagnation temperature at the
+                                             inlet to the compressor in units of
+                                             Kelvins
+        :return dict: A dictionary containing all fluid exit
+                      properties
+
+        This function simplifies the Compressor class so the user can merely
+        call one function and obtain out outlet properties as a dictionary with
+        keywords `static_pressure`, `static_temperature`, `stagnation_pressure`,
+        `stagnation_temperature`, `velocity`, `mach_number`, `density`, `work`.
+        """
+        exit_stag_pres = self.exit_stagnation_pressure(inlet_stagnation_pressure)
+        exit_stag_temp = self.exit_stagnation_temperature(inlet_stagnation_temperature,
+                                                          gamma)
+        comp_work = self.compressor_work(mass_flow_rate, specific_heat,
+                                         inlet_stagnation_temperature, gamma)
+        exit_mach_number = self.exit_mach_number(inlet_mach_number,
+                                                 inlet_stagnation_temperature,
+                                                 gamma)
+        exit_stat_pres = self.exit_static_pressure(inlet_stagnation_pressure,
+                                                   inlet_stagnation_temperature,
+                                                   gamma, inlet_mach_number)
+        exit_stat_temp = self.exit_static_temperature(inlet_stagnation_temperature,
+                                                      gamma, inlet_mach_number)
+        exit_velocity = self.exit_velocity(inlet_stagnation_temperature, gamma,
+                                           inlet_mach_number, molar_mass)
+        exit_density = self.exit_density(mass_flow_rate, inlet_stagnation_temperature,
+                                         inlet_mach_number, molar_mass, gamma)
+        dict = {'static_pressure': exit_stat_pres, 'static_temperature': exit_stat_temp,
+                'stagnation_pressure': exit_stag_pres, 'stagnation_temperature': exit_stag_temp,
+                'velocity': exit_velocity, 'mach_number': exit_mach_number,
+                'density': exit_density, 'work': comp_work}
         return dict
 # ============================================================================
 # ============================================================================
