@@ -1,7 +1,7 @@
 # Import modules here
 from src.isentropic_models import DiffuserNozzle, Stagnation, Compressor
 from src.isentropic_models import HeatAddition, Turbine, DiffuserNozzleComponent
-from src.isentropic_models import CompressorComponent
+from src.isentropic_models import CompressorComponent, HeatAdditionComponent
 
 from math import isclose
 # ==============================================================================
@@ -585,12 +585,43 @@ def test_compressor_component():
     assert isclose(exit_cond['velocity'], 13.936, rel_tol=1.0e-3)
     assert isclose(exit_cond['mach_number'], 0.120615, rel_tol=1.0e-3)
     assert isclose(exit_cond['density'], 0.07892, rel_tol=1.0e-3)
+    assert isclose(exit_cond['work'], 428.278, rel_tol=1.0e-3)
+# ==============================================================================
+# ==============================================================================
+# Test the HeatAdditionComponent class
+
+
+def test_heataddition_component():
+    """
+
+    This function tests the HeatAdditionComponent class
+    """
+    heat = 1000000.0
+    efficiency = 0.9
+    inlet_mach_number = 0.1
+    exit_area = 10.0
+    gamma = 1.4
+    mass_flow_rate = 1000.0
+    specific_heat = 1.0
+    molar_mass = 1.0
+
+    he = HeatAdditionComponent(efficiency, exit_area)
+    exit_cond = he.outlet_conditions(gamma, specific_heat, molar_mass,
+                                     inlet_mach_number, mass_flow_rate,
+                                     inlet_stag_pressure,
+                                     inlet_stag_temperature, heat)
+
+    assert isclose(exit_cond['power'], 1111111.11, rel_tol=1.0e-3)
+    assert isclose(exit_cond['static_temperature'], 1791.6, rel_tol=1.0e-3)
+    assert isclose(exit_cond['stagnation_pressure'], 5946850.0, rel_tol=1.0e-3)
+    assert isclose(exit_cond['stagnation_temperature'], 1800.0, rel_tol=1.0e-3)
+    assert isclose(exit_cond['velocity'], 22.029, rel_tol=1.0e-3)
+    assert isclose(exit_cond['mach_number'], 0.1525, rel_tol=1.0e-3)
+    assert isclose(exit_cond['density'], 4.539, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 
 
-# TODO Update Turbine with exit_area as an input to instantiation
-# TODO Add HeatAdditionComponent class
 # TODO Add TurbineComponent class
 # ==============================================================================
 # ==============================================================================

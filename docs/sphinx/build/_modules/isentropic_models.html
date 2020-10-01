@@ -1105,6 +1105,8 @@
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param efficiency: The isentropic efficiency of the turbine</span>
+<span class="sd">        :param exit_area: The cross-sectional area of the heat addition</span>
+<span class="sd">                          component</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">efficiency</span> <span class="o">=</span> <span class="n">efficiency</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">exit_area</span> <span class="o">=</span> <span class="n">exit_area</span>
@@ -1462,7 +1464,7 @@
                           <span class="n">molar_mass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                           <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
                           <span class="n">inlet_stagnation_pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-                          <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+                          <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">        :param gamma: The ratio of specific heats</span>
@@ -1506,6 +1508,92 @@
                 <span class="s1">&#39;stagnation_pressure&#39;</span><span class="p">:</span> <span class="n">exit_stag_pres</span><span class="p">,</span> <span class="s1">&#39;stagnation_temperature&#39;</span><span class="p">:</span> <span class="n">exit_stag_temp</span><span class="p">,</span>
                 <span class="s1">&#39;velocity&#39;</span><span class="p">:</span> <span class="n">exit_velocity</span><span class="p">,</span> <span class="s1">&#39;mach_number&#39;</span><span class="p">:</span> <span class="n">exit_mach_number</span><span class="p">,</span>
                 <span class="s1">&#39;density&#39;</span><span class="p">:</span> <span class="n">exit_density</span><span class="p">,</span> <span class="s1">&#39;work&#39;</span><span class="p">:</span> <span class="n">comp_work</span><span class="p">}</span>
+        <span class="k">return</span> <span class="nb">dict</span></div></div>
+<span class="c1"># ============================================================================</span>
+<span class="c1"># ============================================================================</span>
+
+
+<div class="viewcode-block" id="HeatAdditionComponent"><a class="viewcode-back" href="../HeatAdditionComponent.html#isentropic_models.HeatAdditionComponent">[docs]</a><span class="k">class</span> <span class="nc">HeatAdditionComponent</span><span class="p">(</span><span class="n">HeatAddition</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    This class combined all functionality of the Compressor class</span>
+<span class="sd">    into a single function for ease of user access</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">efficiency</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">exit_area</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param efficiency: The isentropic efficiency of the heat</span>
+<span class="sd">                           addition component</span>
+<span class="sd">        :param exit_area: The cross-sectional area of the heat addition</span>
+<span class="sd">                          component</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">HeatAddition</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">efficiency</span><span class="p">,</span> <span class="n">exit_area</span><span class="p">)</span>
+<span class="c1"># ----------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="HeatAdditionComponent.outlet_conditions"><a class="viewcode-back" href="../HeatAdditionComponent.html#isentropic_models.HeatAdditionComponent.outlet_conditions">[docs]</a>    <span class="k">def</span> <span class="nf">outlet_conditions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                          <span class="n">molar_mass</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                          <span class="n">inlet_mach_number</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">mass_flow_rate</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                          <span class="n">inlet_stagnation_pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                          <span class="n">inlet_stagnation_temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+                          <span class="n">heat_addition</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param gamma: The ratio of specific heats</span>
+<span class="sd">        :param specific_heat: The fluid specific heat at constant pressure</span>
+<span class="sd">                              in units of J/kg-K</span>
+<span class="sd">        :param molar_mass: The fluid molar mass in units of J/mol-K</span>
+<span class="sd">        :param inlet_mach_number: The inlet Mach number</span>
+<span class="sd">        :param mass_flow_rate: The fluid mass flow in units of kg/s</span>
+<span class="sd">        :param inlet_stagnation_pressure: The stagnation pressure at the</span>
+<span class="sd">                                          inlet to the compressor in units</span>
+<span class="sd">                                          of Pascals</span>
+<span class="sd">        :param inlet_stagnation_temperature: The stagnation temperature at the</span>
+<span class="sd">                                             inlet to the compressor in units of</span>
+<span class="sd">                                             Kelvins</span>
+<span class="sd">        :param heat_addition: The heat added to the fluid in units of</span>
+<span class="sd">                              Watts</span>
+<span class="sd">        :return dict: A dictionary containing all fluid exit</span>
+<span class="sd">                      properties</span>
+
+<span class="sd">        This function simplifies the Compressor class so the user can merely</span>
+<span class="sd">        call one function and obtain out outlet properties as a dictionary with</span>
+<span class="sd">        keywords `static_pressure`, `static_temperature`, `stagnation_pressure`,</span>
+<span class="sd">        `stagnation_temperature`, `velocity`, `mach_number`, `density`, and `power`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">input_power</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_power</span><span class="p">(</span><span class="n">heat_addition</span><span class="p">)</span>
+        <span class="n">exit_stag_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_stagnation_temperature</span><span class="p">(</span><span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                                          <span class="n">heat_addition</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">,</span>
+                                                          <span class="n">mass_flow_rate</span><span class="p">)</span>
+        <span class="n">exit_mach_number</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_mach_number</span><span class="p">(</span><span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                                 <span class="n">heat_addition</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">,</span>
+                                                 <span class="n">mass_flow_rate</span><span class="p">,</span> <span class="n">inlet_mach_number</span><span class="p">,</span>
+                                                 <span class="n">gamma</span><span class="p">)</span>
+        <span class="n">exit_stag_pres</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_stagnation_pressure</span><span class="p">(</span><span class="n">inlet_stagnation_pressure</span><span class="p">,</span>
+                                                       <span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                                       <span class="n">heat_addition</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">,</span>
+                                                       <span class="n">mass_flow_rate</span><span class="p">,</span> <span class="n">inlet_mach_number</span><span class="p">,</span>
+                                                       <span class="n">gamma</span><span class="p">)</span>
+        <span class="n">exit_stat_temp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_static_temperature</span><span class="p">(</span><span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                                      <span class="n">heat_addition</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">,</span>
+                                                      <span class="n">mass_flow_rate</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span>
+                                                      <span class="n">inlet_mach_number</span><span class="p">)</span>
+        <span class="n">exit_stat_pres</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_static_pressure</span><span class="p">(</span><span class="n">inlet_stagnation_pressure</span><span class="p">,</span>
+                                                   <span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                                   <span class="n">heat_addition</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">,</span>
+                                                   <span class="n">mass_flow_rate</span><span class="p">,</span> <span class="n">gamma</span><span class="p">,</span>
+                                                   <span class="n">inlet_mach_number</span><span class="p">)</span>
+        <span class="n">exit_velocity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_velocity</span><span class="p">(</span><span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                           <span class="n">heat_addition</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">,</span>
+                                           <span class="n">mass_flow_rate</span><span class="p">,</span> <span class="n">inlet_mach_number</span><span class="p">,</span>
+                                           <span class="n">gamma</span><span class="p">,</span> <span class="n">molar_mass</span><span class="p">)</span>
+        <span class="n">exit_density</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_density</span><span class="p">(</span><span class="n">inlet_stagnation_temperature</span><span class="p">,</span>
+                                         <span class="n">heat_addition</span><span class="p">,</span> <span class="n">specific_heat</span><span class="p">,</span>
+                                         <span class="n">mass_flow_rate</span><span class="p">,</span> <span class="n">inlet_mach_number</span><span class="p">,</span>
+                                         <span class="n">gamma</span><span class="p">,</span> <span class="n">molar_mass</span><span class="p">)</span>
+        <span class="nb">dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;static_pressure&#39;</span><span class="p">:</span> <span class="n">exit_stat_pres</span><span class="p">,</span> <span class="s1">&#39;static_temperature&#39;</span><span class="p">:</span> <span class="n">exit_stat_temp</span><span class="p">,</span>
+                <span class="s1">&#39;stagnation_pressure&#39;</span><span class="p">:</span> <span class="n">exit_stag_pres</span><span class="p">,</span> <span class="s1">&#39;stagnation_temperature&#39;</span><span class="p">:</span> <span class="n">exit_stag_temp</span><span class="p">,</span>
+                <span class="s1">&#39;velocity&#39;</span><span class="p">:</span> <span class="n">exit_velocity</span><span class="p">,</span> <span class="s1">&#39;mach_number&#39;</span><span class="p">:</span> <span class="n">exit_mach_number</span><span class="p">,</span>
+                <span class="s1">&#39;density&#39;</span><span class="p">:</span> <span class="n">exit_density</span><span class="p">,</span> <span class="s1">&#39;power&#39;</span><span class="p">:</span> <span class="n">input_power</span><span class="p">}</span>
         <span class="k">return</span> <span class="nb">dict</span></div></div>
 <span class="c1"># ============================================================================</span>
 <span class="c1"># ============================================================================</span>
