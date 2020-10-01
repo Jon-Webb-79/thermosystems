@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=latex 2018.4.16)  29 SEP 2020 20:27
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=latex 2018.4.16)  30 SEP 2020 18:41
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1381,16 +1381,16 @@ Package atveryend Info: Empty hook `AfterLastShipout' on input line 94.
 Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 94.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 94.
 Package rerunfilecheck Info: File `theory.out' has not changed.
-(rerunfilecheck)             Checksum: B72F69CB195859ACF9DE7EB509E766F0;1761.
+(rerunfilecheck)             Checksum: F3F4B08A97104E98C8190402162C71BE;1895.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 94.
  ) 
 Here is how much of TeX's memory you used:
- 32586 strings out of 492650
- 681447 string characters out of 6129648
- 766527 words of memory out of 5000000
- 36052 multiletter control sequences out of 15000+600000
+ 32588 strings out of 492650
+ 681483 string characters out of 6129648
+ 766713 words of memory out of 5000000
+ 36054 multiletter control sequences out of 15000+600000
  538206 words of font info for 49 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  64i,6n,71p,10363b,377s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on theory.dvi (9 pages, 64156 bytes).
+Output written on theory.dvi (9 pages, 66600 bytes).

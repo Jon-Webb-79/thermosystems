@@ -16,8 +16,10 @@
 \contentsline {subsection}{\numberline {1.4.2}Fluid Stagnation Pressure and Temperature}{4}{subsection.1.4.2}
 \contentsline {subsection}{\numberline {1.4.3}Fluid Static Pressure and Temperature}{5}{subsection.1.4.3}
 \contentsline {subsection}{\numberline {1.4.4}Fluid Velocity and Mach Number}{5}{subsection.1.4.4}
+\contentsline {subsection}{\numberline {1.4.5}Fluid Density}{5}{subsection.1.4.5}
 \contentsline {section}{\numberline {1.5}Turbine}{5}{section.1.5}
 \contentsline {subsection}{\numberline {1.5.1}Work Extraction}{5}{subsection.1.5.1}
 \contentsline {subsection}{\numberline {1.5.2}Fluid Stagnation Temperature and Pressure}{5}{subsection.1.5.2}
 \contentsline {subsection}{\numberline {1.5.3}Fluid StaticTemperature and Pressure}{6}{subsection.1.5.3}
 \contentsline {subsection}{\numberline {1.5.4}Fluid Velocity and Mach Number}{6}{subsection.1.5.4}
+\contentsline {subsection}{\numberline {1.5.5}Fluid Density}{6}{subsection.1.5.5}

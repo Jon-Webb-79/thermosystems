@@ -1015,6 +1015,38 @@ class HeatAddition(Stagnation):
                                                    inlet_mach_number)
         sos = self.speed_of_sound(gamma, static_temp, molar_mass)
         return exit_mach * sos
+# ----------------------------------------------------------------------------
+
+    def exit_density(self, inlet_stagnation_temperature: float,
+                     heat_addition: float, specific_heat: float,
+                     mass_flow_rate: float, inlet_mach_number: float,
+                     gamma: float, molar_mass: float, exit_area: float) -> float:
+        """
+
+        :param inlet_stagnation_temperature: The stagnation temperature at the
+                                             heat addition inlet in units of Kelvins
+        :param heat_addition: The usable work extracted by the turbine in units
+                              of Watts
+        :param specific_heat: The fluid specific heat in units of J/kg-K
+        :param mass_flow_rate: The fluid mass flow rate in units of kg/s
+        :param inlet_mach_number: The Mach number at the inlet to the heat
+                                  addition component
+        :param gamma: The ratio of specific heats
+        :param molar_mass: The molar mass of the fluid
+        :param exit_area: The area at the heat addition component inlet in
+                          units of square meters
+        :return density: The fluid density at the heat addition outlet in
+                         units of kg per cubic meters
+
+        This function determines the fluid density via the equation shown below.
+
+        .. math::
+           \\rho = \\frac{\dot{m}}{uA}
+        """
+        velocity = self.exit_velocity(inlet_stagnation_temperature, heat_addition,
+                                      specific_heat, mass_flow_rate, inlet_mach_number,
+                                      gamma, molar_mass)
+        return mass_flow_rate / (velocity * exit_area)
 # ============================================================================
 # ============================================================================
 # This class describes the performance of a compressor
@@ -1260,6 +1292,37 @@ class Turbine(Stagnation):
                                           specific_heat, mass_flow_rate)
         sos = self.speed_of_sound(gamma, stat_temp, molar_mass)
         return sos * exit_mach
+# ----------------------------------------------------------------------------
+
+    def exit_density(self, inlet_stagnation_temperature: float,
+                     inlet_mach_number: float, gamma: float,
+                     turbine_work: float, specific_heat: float,
+                     mass_flow_rate: float, molar_mass: float,
+                     exit_area: float) -> float:
+        """
+
+        :param inlet_stagnation_temperature: The stagnation temperature at the
+                                             heat addition inlet in units of Kelvins
+        :param inlet_mach_number: The Mach number at the turbine inlet
+        :param gamma: The ratio of specific heats
+        :param turbine_work: The exuable work extracted by the turbine
+        :param specific_heat: The fluid specific heat in units of J/kg-K
+        :param mass_flow_rate: The fluid mass flow rate in units of kg/s
+        :param molar_mass: The molar mass of the fluid
+        :param exit_area: The area at the heat addition component inlet in
+                          units of square meters
+        :return density: The fluid density at the heat addition outlet in
+                         units of kg per cubic meters
+
+        This function determines the fluid density via the equation shown below.
+
+        .. math::
+           \\rho = \\frac{\dot{m}}{uA}
+        """
+        velocity = self.exit_velocity(inlet_stagnation_temperature, inlet_mach_number,
+                                      gamma, turbine_work, specific_heat,
+                                      mass_flow_rate, molar_mass)
+        return mass_flow_rate / (velocity * exit_area)
 # ============================================================================
 # ============================================================================
 # eof

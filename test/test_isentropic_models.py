@@ -418,6 +418,17 @@ def test_he_exit_velocity():
     velocity = he.exit_velocity(inlet_stag_temperature, heat, 1.0,
                                 1000.0, inlet_mach_number, gamma, 1.0)
     assert isclose(velocity, 22.029, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_he_exit_density():
+    """
+
+    This function tests the exit_density() function
+    """
+    density = he.exit_density(inlet_stag_temperature, heat, 1.0,
+                              1000.0, inlet_mach_number, gamma, 1.0, 10.0)
+    assert isclose(density, 4.539, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # Test Turbine class
@@ -499,6 +510,17 @@ def test_turbine_exit_velocity():
     vel = turb.exit_velocity(inlet_stag_temperature, inlet_mach_number, gamma,
                              work, 1.0, 1000.0, 1.0)
     assert isclose(vel, 9.626, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_turbine_exit_density():
+    """
+
+    This function tests the exit_density() function
+    """
+    den = turb.exit_density(inlet_stag_temperature, inlet_mach_number, gamma,
+                             work, 1.0, 1000.0, 1.0, 10.0)
+    assert isclose(10.387, den, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # eof

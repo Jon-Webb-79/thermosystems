@@ -248,6 +248,10 @@ The fluid Mach number leaving the heat addition component is determine with know
 well as the exit Stagnation temperature ($T_{o2}$) and Equation \ref{eq:com_mach_number}.  The equation is implicit and cannot be solved
 directly, so a root finder must be employed to solve this equation.  The ThermSystems code uses the bisect method to determine the roots
 for $M_2$.  The fluid velocity is determined by multiplying the Mach number by the speed of sound as determined in Eq. \ref{eq:mach}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{Fluid Density}
+The fluid density leaving the heat addition component is determined via Eq. \ref{eq:comp_work}
 % ===========================================================================================================
 % ===========================================================================================================
 
@@ -292,6 +296,10 @@ The fluid static temperature and pressure are determined from Equations  \ref{eq
 
 \subsection{Fluid Velocity and Mach Number}
 The fluid Mach number is determined from Equation \ref{eq:com_mach_number}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{Fluid Density}
+The fluid density leaving the turbine is determined via Eq. \ref{eq:comp_work}
 % ===========================================================================================================
 % ===========================================================================================================
 
