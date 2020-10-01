@@ -1,6 +1,6 @@
 # Import modules here
 from src.isentropic_models import DiffuserNozzle, Stagnation, Compressor
-from src.isentropic_models import HeatAddition, Turbine
+from src.isentropic_models import HeatAddition, Turbine, DiffuserNozzleComponent
 
 from math import isclose
 # ==============================================================================
@@ -521,6 +521,37 @@ def test_turbine_exit_density():
     den = turb.exit_density(inlet_stag_temperature, inlet_mach_number, gamma,
                              work, 1.0, 1000.0, 1.0, 10.0)
     assert isclose(10.387, den, rel_tol=1.0e-3)
+# ==============================================================================
+# ==============================================================================
+# Test the DiffuserNozzleComponent class
+
+
+def test_diffusernozzle_component():
+    """
+
+    This function tests the DiffuserNozzleComponent class
+    """
+    mass_flow_rate = 3.0
+    gamma = 1.4
+    mach_number = 0.15
+    efficiency = 0.94
+    inlet_static_pressure = 6000000.0
+    inlet_static_temperature = 800.0
+    inlet_area = 1.8241
+    exit_area = 7.2965
+    inlet_velocity = 3.4
+    molar_mass = 0.0289645
+    diff_comp = DiffuserNozzleComponent(efficiency, inlet_area, exit_area)
+    exit_cond = diff_comp.outlet_conditions(gamma, 1.0, molar_mass, inlet_static_temperature,
+                                            inlet_static_pressure, mach_number,
+                                            mass_flow_rate, inlet_velocity)
+    assert isclose(exit_cond['static_pressure'], 6088971.0, rel_tol=1.0e-3)
+    assert isclose(exit_cond['static_temperature'], 803.022, rel_tol=1.0e-3)
+    assert isclose(exit_cond['stagnation_pressure'], 6089300.0, rel_tol=1.0e-3)
+    assert isclose(exit_cond['stagnation_temperature'], 803.384, rel_tol=1.0e-3)
+    assert isclose(exit_cond['velocity'], 0.8499, rel_tol=1.0e-3)
+    assert isclose(exit_cond['mach_number'], 0.001496, rel_tol=1.0e-3)
+    assert isclose(exit_cond['density'], 0.4837, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # eof

@@ -1,6 +1,6 @@
 # Import necessary packages here
 from scipy.optimize import bisect
-from typing import Tuple, Any
+from typing import Tuple, Any, Dict
 
 # ============================================================================
 # ============================================================================
@@ -1305,7 +1305,7 @@ class Turbine(Stagnation):
                                              heat addition inlet in units of Kelvins
         :param inlet_mach_number: The Mach number at the turbine inlet
         :param gamma: The ratio of specific heats
-        :param turbine_work: The exuable work extracted by the turbine
+        :param turbine_work: The usable work extracted by the turbine
         :param specific_heat: The fluid specific heat in units of J/kg-K
         :param mass_flow_rate: The fluid mass flow rate in units of kg/s
         :param molar_mass: The molar mass of the fluid
@@ -1323,6 +1323,77 @@ class Turbine(Stagnation):
                                       gamma, turbine_work, specific_heat,
                                       mass_flow_rate, molar_mass)
         return mass_flow_rate / (velocity * exit_area)
+# ============================================================================
+# ============================================================================
+
+
+class DiffuserNozzleComponent(DiffuserNozzle):
+    def __init__(self, efficiency: float, inlet_area: float, exit_area: float):
+        """
+
+        :param efficiency: The isentropic efficiency of the diffuser or nozzle
+        :param inlet_area: The diffuser or nozzle inlet area in units of
+                           square meters
+        :param exit_area: The diffuser or nozzle exit area in units of
+                          square meters
+        """
+        DiffuserNozzle.__init__(self, efficiency, inlet_area, exit_area)
+# ----------------------------------------------------------------------------
+
+    def outlet_conditions(self, gamma: float, specific_heat: float,
+                          molar_mass: float,
+                          inlet_static_temperature: float,
+                          inlet_static_pressure: float,
+                          inlet_mach_number: float, mass_flow_rate: float,
+                          inlet_velocity: float) -> Dict[str, float]:
+        """
+
+        :param gamma: The ratio of specific heats
+        :param specific_heat: The fluid specific heat at constant pressure
+                              in units of J/kg-K
+        :param molar_mass: The fluid molar mass in units of J/mol-K
+        :param inlet_static_temperature: The inlet static temperature in
+                                         units of Kelvins
+        :param inlet_static_pressure: The inlet static pressure in units
+                                      of Pascals
+        :param inlet_mach_number: The inlet Mach number
+        :param mass_flow_rate: The fluid mass flow in units of kg/s
+        :param inlet_velocity: The inlet fluid velocity in units of
+                               m/s
+        :return dict: A dictionary containing all fluid exit
+                      properties
+
+        This function simplifies the DiffuserNozzle class so the user can merely
+        call one function and obtain out outlet properties as a dictionary with
+        keywords `static_pressure`, `static_temperature`, `stagnation_pressure`,
+        `stagnation_temperature`, `velocity`, `mach_number`, `density`.
+        """
+        exit_stag_pres = self.exit_stagnation_pressure(gamma, inlet_static_pressure,
+                                                       inlet_mach_number)
+        exit_stag_temp = self.exit_stagnation_temperature(gamma, inlet_static_temperature,
+                                                          inlet_static_pressure,
+                                                          inlet_mach_number)
+        exit_velocity = self.exit_velocity(inlet_velocity)
+        exit_stat_temp = self.exit_static_temperature(specific_heat, gamma,
+                                                      inlet_static_temperature,
+                                                      inlet_static_pressure,
+                                                      inlet_mach_number,
+                                                      inlet_velocity)
+        exit_mach_number = self.exit_mach_number(specific_heat, gamma,
+                                                 inlet_static_temperature,
+                                                 inlet_static_pressure,
+                                                 inlet_mach_number,
+                                                 inlet_velocity, molar_mass)
+        exit_stat_pres = self.exit_static_pressure(gamma, inlet_static_pressure,
+                                                   inlet_mach_number, specific_heat,
+                                                   inlet_static_temperature, inlet_velocity,
+                                                   molar_mass)
+        exit_density = self.exit_density(inlet_velocity, mass_flow_rate)
+        dict = {'static_pressure': exit_stat_pres, 'static_temperature': exit_stat_temp,
+                'stagnation_pressure': exit_stag_pres, 'stagnation_temperature': exit_stag_temp,
+                'velocity': exit_velocity, 'mach_number': exit_mach_number,
+                'density': exit_density}
+        return dict
 # ============================================================================
 # ============================================================================
 # eof
