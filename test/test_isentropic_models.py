@@ -342,7 +342,7 @@ def test_comp_fluid_density():
 
 heat = 1000000.0
 efficiency = 0.9
-he = HeatAddition(efficiency)
+he = HeatAddition(efficiency, 10.0)
 
 
 def test_he_input_power():
@@ -428,7 +428,7 @@ def test_he_exit_density():
     This function tests the exit_density() function
     """
     density = he.exit_density(inlet_stag_temperature, heat, 1.0,
-                              1000.0, inlet_mach_number, gamma, 1.0, 10.0)
+                              1000.0, inlet_mach_number, gamma, 1.0)
     assert isclose(density, 4.539, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
@@ -436,7 +436,7 @@ def test_he_exit_density():
 
 
 work = 1000.0
-turb = Turbine(0.9)
+turb = Turbine(0.9, 10.0)
 
 
 def test_turbine_work():
@@ -520,7 +520,7 @@ def test_turbine_exit_density():
     This function tests the exit_density() function
     """
     den = turb.exit_density(inlet_stag_temperature, inlet_mach_number, gamma,
-                             work, 1.0, 1000.0, 1.0, 10.0)
+                             work, 1.0, 1000.0, 1.0)
     assert isclose(10.387, den, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
@@ -589,7 +589,6 @@ def test_compressor_component():
 # ==============================================================================
 
 
-# TODO Update HeatAddition with exit_area as an input to instantiation
 # TODO Update Turbine with exit_area as an input to instantiation
 # TODO Add HeatAdditionComponent class
 # TODO Add TurbineComponent class

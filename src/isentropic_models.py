@@ -765,12 +765,15 @@ class HeatAddition(Stagnation):
     1. Hill, P. and Peterson, C., "Mechanics and Thermodynamics of Propulsion,"
        Addison Wesley Publishing Co., Reading, MA, 1992
     """
-    def __init__(self, efficiency: float):
+    def __init__(self, efficiency: float, exit_area: float):
         """
 
         :param efficiency: The isentropic efficiency of the heat exchanger
+        :param exit_area: The cross-sectional area of the heat addition
+                          component
         """
         self.efficiency = efficiency
+        self.exit_area = exit_area
 # ----------------------------------------------------------------------------
 
     def input_power(self, heat_addition: float) -> float:
@@ -1020,7 +1023,7 @@ class HeatAddition(Stagnation):
     def exit_density(self, inlet_stagnation_temperature: float,
                      heat_addition: float, specific_heat: float,
                      mass_flow_rate: float, inlet_mach_number: float,
-                     gamma: float, molar_mass: float, exit_area: float) -> float:
+                     gamma: float, molar_mass: float) -> float:
         """
 
         :param inlet_stagnation_temperature: The stagnation temperature at the
@@ -1033,8 +1036,6 @@ class HeatAddition(Stagnation):
                                   addition component
         :param gamma: The ratio of specific heats
         :param molar_mass: The molar mass of the fluid
-        :param exit_area: The area at the heat addition component inlet in
-                          units of square meters
         :return density: The fluid density at the heat addition outlet in
                          units of kg per cubic meters
 
@@ -1046,7 +1047,7 @@ class HeatAddition(Stagnation):
         velocity = self.exit_velocity(inlet_stagnation_temperature, heat_addition,
                                       specific_heat, mass_flow_rate, inlet_mach_number,
                                       gamma, molar_mass)
-        return mass_flow_rate / (velocity * exit_area)
+        return mass_flow_rate / (velocity * self.exit_area)
 # ============================================================================
 # ============================================================================
 # This class describes the performance of a compressor
@@ -1063,13 +1064,13 @@ class Turbine(Stagnation):
     1. Hill, P. and Peterson, C., "Mechanics and Thermodynamics of Propulsion,"
        Addison Wesley Publishing Co., Reading, MA, 1992
     """
-    def __init__(self, efficiency: float):
+    def __init__(self, efficiency: float, exit_area: float):
         """
 
-        :param compression_ratio: The ratio of outlet stagnation pressure
-                                  to inlet stagnation pressure
+        :param efficiency: The isentropic efficiency of the turbine
         """
         self.efficiency = efficiency
+        self.exit_area = exit_area
 # ----------------------------------------------------------------------------
 
     def work_extraction(self, turbine_work: float) -> float:
@@ -1297,8 +1298,7 @@ class Turbine(Stagnation):
     def exit_density(self, inlet_stagnation_temperature: float,
                      inlet_mach_number: float, gamma: float,
                      turbine_work: float, specific_heat: float,
-                     mass_flow_rate: float, molar_mass: float,
-                     exit_area: float) -> float:
+                     mass_flow_rate: float, molar_mass: float) -> float:
         """
 
         :param inlet_stagnation_temperature: The stagnation temperature at the
@@ -1309,8 +1309,6 @@ class Turbine(Stagnation):
         :param specific_heat: The fluid specific heat in units of J/kg-K
         :param mass_flow_rate: The fluid mass flow rate in units of kg/s
         :param molar_mass: The molar mass of the fluid
-        :param exit_area: The area at the heat addition component inlet in
-                          units of square meters
         :return density: The fluid density at the heat addition outlet in
                          units of kg per cubic meters
 
@@ -1322,7 +1320,7 @@ class Turbine(Stagnation):
         velocity = self.exit_velocity(inlet_stagnation_temperature, inlet_mach_number,
                                       gamma, turbine_work, specific_heat,
                                       mass_flow_rate, molar_mass)
-        return mass_flow_rate / (velocity * exit_area)
+        return mass_flow_rate / (velocity * self.exit_area)
 # ============================================================================
 # ============================================================================
 
