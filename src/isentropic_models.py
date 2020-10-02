@@ -1488,7 +1488,7 @@ class HeatAdditionComponent(HeatAddition):
         :param efficiency: The isentropic efficiency of the heat
                            addition component
         :param exit_area: The cross-sectional area of the heat addition
-                          component
+                          component exit
         """
         HeatAddition.__init__(self, efficiency, exit_area)
 # ----------------------------------------------------------------------------
@@ -1557,6 +1557,65 @@ class HeatAdditionComponent(HeatAddition):
                 'stagnation_pressure': exit_stag_pres, 'stagnation_temperature': exit_stag_temp,
                 'velocity': exit_velocity, 'mach_number': exit_mach_number,
                 'density': exit_density, 'power': input_power}
+        return dict
+# ============================================================================
+# ============================================================================
+
+
+class TurbineComponent(Turbine):
+    """
+
+        This class combined all functionality of the Compressor class
+        into a single function for ease of user access
+        """
+
+    def __init__(self, efficiency: float, exit_area: float):
+        """
+
+        :param efficiency: The isentropic efficiency of the turbine
+        :param exit_area: The cross-sectional area of the turbine exit
+        """
+        Turbine.__init__(self, efficiency, exit_area)
+# ----------------------------------------------------------------------------
+
+    def outlet_conditions(self, gamma: float, specific_heat: float,
+                          molar_mass: float,
+                          inlet_mach_number: float, mass_flow_rate: float,
+                          inlet_stagnation_pressure: float,
+                          inlet_stagnation_temperature: float,
+                          turbine_work: float) -> Dict[str, float]:
+        work_extracted = self.work_extraction(turbine_work)
+        exit_stag_temp = self.exit_stagnation_temperature(turbine_work, specific_heat,
+                                                          mass_flow_rate,
+                                                          inlet_stagnation_temperature)
+        exit_stag_pres = self.exit_stagnation_pressure(inlet_stagnation_pressure,
+                                                       inlet_stagnation_temperature,
+                                                       specific_heat, mass_flow_rate,
+                                                       turbine_work, gamma)
+        exit_mach_number = self.exit_mach_number(inlet_stagnation_temperature,
+                                                 inlet_mach_number, gamma,
+                                                 turbine_work, specific_heat,
+                                                 mass_flow_rate)
+        exit_stat_temp = self.exit_static_temperature(inlet_stagnation_temperature,
+                                                      inlet_mach_number, gamma,
+                                                      turbine_work, specific_heat,
+                                                      mass_flow_rate)
+        exit_stat_pres = self.exit_static_pressure(inlet_stagnation_temperature,
+                                                   inlet_mach_number, gamma,
+                                                   turbine_work, specific_heat,
+                                                   mass_flow_rate,
+                                                   inlet_stagnation_pressure)
+        exit_velocity = self.exit_velocity(inlet_stagnation_temperature,
+                                           inlet_mach_number, gamma,
+                                           turbine_work, specific_heat,
+                                           mass_flow_rate, molar_mass)
+        exit_density = self.exit_density(inlet_stagnation_temperature, inlet_mach_number,
+                                         gamma, turbine_work, specific_heat,
+                                         mass_flow_rate, molar_mass)
+        dict = {'static_pressure': exit_stat_pres, 'static_temperature': exit_stat_temp,
+                'stagnation_pressure': exit_stag_pres, 'stagnation_temperature': exit_stag_temp,
+                'velocity': exit_velocity, 'mach_number': exit_mach_number,
+                'density': exit_density, 'extracted_work': work_extracted}
         return dict
 # ============================================================================
 # ============================================================================

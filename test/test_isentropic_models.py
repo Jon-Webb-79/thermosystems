@@ -2,6 +2,7 @@
 from src.isentropic_models import DiffuserNozzle, Stagnation, Compressor
 from src.isentropic_models import HeatAddition, Turbine, DiffuserNozzleComponent
 from src.isentropic_models import CompressorComponent, HeatAdditionComponent
+from src.isentropic_models import TurbineComponent
 
 from math import isclose
 # ==============================================================================
@@ -613,6 +614,7 @@ def test_heataddition_component():
 
     assert isclose(exit_cond['power'], 1111111.11, rel_tol=1.0e-3)
     assert isclose(exit_cond['static_temperature'], 1791.6, rel_tol=1.0e-3)
+    assert isclose(exit_cond['static_pressure'], 5903279.0, rel_tol=1.0e-3)
     assert isclose(exit_cond['stagnation_pressure'], 5946850.0, rel_tol=1.0e-3)
     assert isclose(exit_cond['stagnation_temperature'], 1800.0, rel_tol=1.0e-3)
     assert isclose(exit_cond['velocity'], 22.029, rel_tol=1.0e-3)
@@ -622,7 +624,36 @@ def test_heataddition_component():
 # ==============================================================================
 
 
-# TODO Add TurbineComponent class
+def test_turbine_component():
+    turbine_work = 1000.0
+    efficiency = 0.9
+    inlet_mach_number = 0.1
+    exit_area = 10.0
+    gamma = 1.4
+    mass_flow_rate = 1000.0
+    specific_heat = 1.0
+    molar_mass = 1.0
+
+    turb = TurbineComponent(efficiency, exit_area)
+    exit_cond = turb.outlet_conditions(gamma, specific_heat, molar_mass,
+                                       inlet_mach_number, mass_flow_rate,
+                                       inlet_stag_pressure,
+                                       inlet_stag_temperature,
+                                       turbine_work)
+    assert isclose(exit_cond['extracted_work'], 1111.11, rel_tol=1.0e-3)
+    assert isclose(exit_cond['static_temperature'], 797.296, rel_tol=1.0e-3)
+    assert isclose(exit_cond['static_pressure'], 5958247.0, rel_tol=1.0e-3)
+    assert isclose(exit_cond['stagnation_pressure'], 5967655.0, rel_tol=1.0e-3)
+    assert isclose(exit_cond['stagnation_temperature'], 798.88, rel_tol=1.0e-3)
+    assert isclose(exit_cond['velocity'], 9.626, rel_tol=1.0e-3)
+    assert isclose(exit_cond['mach_number'], 0.09928707, rel_tol=1.0e-3)
+    assert isclose(exit_cond['density'], 10.387, rel_tol=1.0e-3)
+# ==============================================================================
+# ==============================================================================
+
+
+# TODO Add Propeller class
+# TODO Add PropellerComponent class
 # ==============================================================================
 # ==============================================================================
 # eof
