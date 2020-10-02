@@ -19,3 +19,4 @@ The code contains the following classes
 * **Compressor**: which contains functions that determine the fluid exit conditions leaving a compressor
 * **HeatAddition**: which contains functions that determine the fluid exit conditions leaving a combustion chamber
 * **Turbine**: which contains functions that determine the fluid exit conditions leaving a turbine
+* **Propeller**: which contains functions that determine the fluid exit conditions leaving a propeller
