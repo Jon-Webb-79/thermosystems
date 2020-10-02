@@ -1518,7 +1518,7 @@ class HeatAdditionComponent(HeatAddition):
         :return dict: A dictionary containing all fluid exit
                       properties
 
-        This function simplifies the Compressor class so the user can merely
+        This function simplifies the HeatAddition class so the user can merely
         call one function and obtain out outlet properties as a dictionary with
         keywords `static_pressure`, `static_temperature`, `stagnation_pressure`,
         `stagnation_temperature`, `velocity`, `mach_number`, `density`, and `power`.
@@ -1565,7 +1565,7 @@ class HeatAdditionComponent(HeatAddition):
 class TurbineComponent(Turbine):
     """
 
-        This class combined all functionality of the Compressor class
+        This class combined all functionality of the Turbine class
         into a single function for ease of user access
         """
 
@@ -1584,6 +1584,29 @@ class TurbineComponent(Turbine):
                           inlet_stagnation_pressure: float,
                           inlet_stagnation_temperature: float,
                           turbine_work: float) -> Dict[str, float]:
+        """
+
+        :param gamma: The ratio of specific specific heats
+        :param specific_heat: The fluid specific heat at constant pressure
+                              in units of J/kg-K
+        :param molar_mass: The fluid molar mass in units of J/mol-K
+        :param inlet_mach_number: The Mach number at the turbine inlet
+        :param mass_flow_rate: The fluid mass flow rate in units of kg/s
+        :param inlet_stagnation_pressure: The stagnation pressure at the turbine
+                                          inlet in units of Pascals
+        :param inlet_stagnation_temperature: The stagnation temperature at the
+                                             turbine inlet in units of Pascals
+        :param turbine_work: The usable work extracted by the turbine in
+                             units of Watts
+        :return dict: A dictionary containing all fluid exit
+                      properties
+
+        This function simplifies the Turbine class so the user can merely
+        call one function and obtain out outlet properties as a dictionary with
+        keywords `static_pressure`, `static_temperature`, `stagnation_pressure`,
+        `stagnation_temperature`, `velocity`, `mach_number`, `density`,
+        and `extracted_work`.
+        """
         work_extracted = self.work_extraction(turbine_work)
         exit_stag_temp = self.exit_stagnation_temperature(turbine_work, specific_heat,
                                                           mass_flow_rate,
