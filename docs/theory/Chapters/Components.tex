@@ -303,6 +303,50 @@ The fluid density leaving the turbine is determined via Eq. \ref{eq:comp_work}
 % ===========================================================================================================
 % ===========================================================================================================
 
+\section{Propeller}
+A propeller extracts work from the atmosphere and transforms it into thrust. As with all other thermodynamic systems a turbine is accompanied 
+by an isentropic efficiency ($\eta_{p}$) where the subscript he refers to a heat exchanger.
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{Work Extraction}
+The amount of work to be extracted from the fluid $\dot{W}$ is based on the amount of thrust to be produced.  However, due to 
+isentropic inefficiencies, the propeller must extract $\dot{W}_p$ Watts of power as defined by eq. \ref{eq:proppower}.
+
+\begin{equation}
+\label{eq:proppower}
+\dot{W}_p=\frac{\dot{W}}{\eta_p}
+\end{equation}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{Fluid Stagnation Temperature and Pressure}
+The stagnation temperature at the propeller exit $T_{o2}$ is defined in accordance with Equation \ref{eq:prop_stag}.
+
+\begin{equation}
+\label{eq:prop_stag}
+T_{o2} = T_{o1} + \frac{\dot{W}_p}{\dot{m}c_p}
+\end{equation}
+
+The stagnation pressure is defined in Eq. \ref{eq:prop_stag_pres}
+
+\begin{equation}
+\label{eq:prop_stag_pres}
+P_{o2}=P_{o1}\left]1 + \eta_p\left(\frac{T_{o2}}{T_{o1}} -1\right) \right]^{\frac{\gamma}{\gamma - 1}}
+\end{equation}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{Fluid Static Temperature and Pressure}
+The static temperature and pressure are determined via Equations \ref{eq:stag_temperature} and \ref{eq:stag_pressure}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{Fluid Velocity and Mach Number}
+The fluid Mach number is determined from Equation \ref{eq:com_mach_number}
+% --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+\subsection{Fluid Density}
+The fluid density leaving the turbine is determined via Eq. \ref{eq:comp_work}
+% ===========================================================================================================
+% ===========================================================================================================
+
 \begin{thebibliography}{2}
 
 \bibitem{Hill} Hill, P. and Peterson, C., \emph{Machanics and Thermodynamics of Propulsion}, Addison-Wesley, Reading, MA, 1992.

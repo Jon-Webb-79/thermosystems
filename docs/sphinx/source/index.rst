@@ -16,6 +16,7 @@ Welcome to thermosystems's documentation!
    Compressor
    HeatAddition
    Turbine
+   Propeller
    DiffuserNozzle
    CompressorComp
    HeatAdditionComponent

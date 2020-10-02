@@ -1327,6 +1327,288 @@ class Turbine(Stagnation):
 # ============================================================================
 
 
+class Propeller(Stagnation):
+    """
+    This class contains functions that determine the exit conditions for
+    a propeller assuming knowledge of the inlet properties.  These
+    relationships are developed for sub-sonic, incompressible flows and
+    assume a negligible change the ratio of specific heats throughout the
+    process.  All relationships are developed from the following references.
+
+    1. Hill, P. and Peterson, C., "Mechanics and Thermodynamics of Propulsion,"
+       Addison Wesley Publishing Co., Reading, MA, 1992
+    """
+    def __init__(self, efficiency: float, exit_area: float):
+        """
+
+        :param efficiency: The isentropic efficiency of the propeller
+        :param exit_area: The cross-sectional area of the propeller
+        """
+        self.efficiency = efficiency
+        self.exit_area = exit_area
+# ----------------------------------------------------------------------------
+
+    def propeller_work(self, extracted_work: float) -> float:
+        """
+
+        :param extracted_work: The usable work extracted by the
+                               propeller in units of Watts
+        :return total_work: The total amount of work extracted by the
+                            propeller in units of Watts.
+
+        This function determines the total amount of work extracted
+        by the propeller using the equation below
+
+        .. math::
+           \dot{W}_p = \\frac{\dot{W}}{\eta_p}
+        """
+        return extracted_work / self.efficiency
+# ----------------------------------------------------------------------------
+
+    def exit_stagnation_temperature(self, inlet_stagnation_temperature: float,
+                                    mass_flow_rate: float, specific_heat: float,
+                                    extracted_work: float) -> float:
+        """
+
+        :param inlet_stagnation_temperature: The stagnation temperature at
+                                             the propeller inlet in units
+                                             of Kelvins
+        :param mass_flow_rate: The mass flow rate in units of kg/s
+        :param specific_heat: The fluid specific heat at constant pressure
+                              in units of J/kg-K
+        :param extracted_work: The usable work extracted by the propeller
+                               in units of Watts
+        :return stag_temp: The stagnation temperature at the propeller
+                           exit in units of Kelvins
+
+        This function determines the stagnation temperature leaving
+        the propeller using the equation below
+
+        .. math::
+           T_{o2} = T_{o1} + \\frac{\dot{W}_p}{\dot{m}c_p}
+        """
+        work = self.propeller_work(extracted_work)
+        temp = inlet_stagnation_temperature + (work / (mass_flow_rate * specific_heat))
+        return temp
+# ----------------------------------------------------------------------------
+
+    def exit_stagnation_pressure(self, inlet_stagnation_pressure: float,
+                                 inlet_stagnation_temperature: float,
+                                 gamma: float, mass_flow_rate: float,
+                                 specific_heat: float, extracted_work: float) -> float:
+        """
+
+        :param inlet_stagnation_pressure: The stagnation pressure at the
+                                          propeller inlet in units of Pascals
+        :param inlet_stagnation_temperature: The stagnation temperature
+                                             at the propeller inlet in
+                                             units of Kelvins
+        :param gamma: The ratio of specific heats
+        :param mass_flow_rate: The fluid mass flow rate in units of kg/s
+        :param specific_heat: The fluid specific heat at constant pressure
+                              in units of J/kg-K
+        :param extracted_work: The usable work extracted by the propeller
+                               in units of Watts
+        :return stag_pres: The stagnation pressure at the propeller
+                           exit in units of Pascals
+
+        This function determines the stagnation pressure at the propeller
+        exit using the equation shown below;
+
+        .. math::
+           P_{o2} = P_{o1} \\left[1 + \eta_d\\left(\\frac{T_{o2}}{T_{o1}} - 1 \\right)
+           \\right]^{\\frac{\gamma}{\gamma - 1}}
+        """
+        stag_temp = self.exit_stagnation_temperature(inlet_stagnation_temperature,
+                                                     mass_flow_rate, specific_heat,
+                                                     extracted_work)
+        one = 1 + self.efficiency * ((inlet_stagnation_temperature / stag_temp) - 1.0)
+        return inlet_stagnation_pressure * one ** (gamma / (gamma - 1.0))
+# ----------------------------------------------------------------------------
+
+    def exit_mach_number(self, inlet_stagnation_temperature: float,
+                         inlet_mach_number, mass_flow_rate: float,
+                         specific_heat: float, extracted_work: float,
+                         gamma: float, lower: float = 0.001,
+                         upper: float = 0.999) -> float:
+        """
+
+        :param inlet_stagnation_temperature: The stagnation temperature at the
+                                             inlet to the propeller in units
+                                             of Kelvins
+        :param inlet_mach_number: The Mach number at the propeller inlet
+        :param mass_flow_rate: The fluid mass flow rate in units of kg/s
+        :param specific_heat: The fluid specific heat at constant pressure in
+                              in units of J/kg-K
+        :param extracted_work: The usable work extracted by the propeller in
+                               units of Watts
+        :param gamma: Ratio of specific heats
+        :param lower: The lower bounds for Mach number
+        :param upper: The upper bounds for Mach number
+        :return mach_number: The Mach number at the propeller exit
+
+        This equation determines the Mach number at the propeller exit.
+        This equation
+        was derived from page 75 or Ref. 1., shown below
+
+        .. math::
+           \\frac{T_{o1}}{T_{o2}} = \\left[\\frac{1 + \gamma M^2_2}{1 + \gamma M^2_1}
+           \\left(\\frac{M_1}{M_2}\\right)\\right]^2\\left(\\frac{1 + \\frac{\gamma-1}{2}M^2_1}
+           {1 + \\frac{\gamma-1}{2}M^2_2}\\right)
+        """
+        exit_temp = self.exit_stagnation_temperature(inlet_stagnation_temperature,
+                                                     mass_flow_rate, specific_heat,
+                                                     extracted_work)
+        exit_mach = bisect(self.temp_exit_mach, lower, upper,
+                           args=(inlet_mach_number, gamma, inlet_stagnation_temperature,
+                                 exit_temp), full_output=True)
+        return exit_mach[0]
+# ----------------------------------------------------------------------------
+
+    def exit_static_temperature(self, inlet_stagnation_temperature: float,
+                                inlet_mach_number, mass_flow_rate: float,
+                                specific_heat: float, extracted_work: float,
+                                gamma: float) -> float:
+        """
+
+        :param inlet_stagnation_temperature: The stagnation temperature at the
+                                             inlet to the propeller in units
+                                             of Kelvins
+        :param inlet_mach_number: The Mach number at the entrance to the
+                                  propeller
+        :param mass_flow_rate: The mass flow rate in units of kg/s
+        :param specific_heat: The fluid specific heat in units of J/kg-K
+        :param extracted_work: The usable work extracted by the propeller
+                               in units of Watts
+        :param gamma: The ratio of specific heats
+        :return stat_temp: The static temperature at the propeller exit
+                           in units of Kelvins
+
+        This function determines the static temperature at the propeller
+        exit using the relationship from pg. 72 or reference 1,
+        shown below
+
+        .. math::
+           T = \\frac{T_o}{\\left(1+\\frac{\gamma-1}{2}M^2\\right)}
+        """
+        mach = self.exit_mach_number(inlet_stagnation_temperature, inlet_mach_number,
+                                     mass_flow_rate, specific_heat, extracted_work,
+                                     gamma)
+        stag_temp = self.exit_stagnation_temperature(inlet_stagnation_temperature,
+                                                     mass_flow_rate, specific_heat,
+                                                     extracted_work)
+        stat_temp = self.static_temperature(stag_temp, mach, gamma)
+        return stat_temp
+# ----------------------------------------------------------------------------
+
+    def exit_static_pressure(self, inlet_stagnation_temperature: float,
+                             inlet_mach_number, mass_flow_rate: float,
+                             specific_heat: float, extracted_work: float,
+                             gamma: float, inlet_stagnation_pressure: float):
+        """
+
+        :param inlet_stagnation_temperature: The stagnation temperature at the
+                                             propeller inlet in units of Kelvins
+        :param inlet_mach_number: The Mach number at the inlet to the propeller
+        :param mass_flow_rate: The fluid mass flow rate in units of kg/s
+        :param specific_heat: The fluid specific heat in units if J/kg-K
+        :param extracted_work: The usable work extracted by the propeller in
+                               units of Watts
+        :param gamma: The ratio of specific heat
+        :param inlet_stagnation_pressure: The stagnation pressure at the
+                                          propeller inlet in units of Pascals
+        :return stat_pressure: The stagnation pressure at the propeller
+                               exit in units of Pascals
+
+        This function determines the static pressure at the propeller exit
+        using the relationship from pg. 72 or reference 1, shown
+        below
+
+        .. math::
+           P = \\frac{P_o}{\\left[1+\\frac{\gamma-1}{2}M^2\\right]^{\gamma/\\left(\gamma-1\\right)}}
+        """
+        mach = self.exit_mach_number(inlet_stagnation_temperature, inlet_mach_number,
+                                     mass_flow_rate, specific_heat, extracted_work,
+                                     gamma)
+        stag_pres = self.exit_stagnation_pressure(inlet_stagnation_pressure,
+                                                  inlet_stagnation_temperature,
+                                                  gamma, mass_flow_rate,
+                                                  specific_heat, extracted_work)
+        stat_pres = self.static_pressure(stag_pres, mach, gamma)
+        return stat_pres
+# ----------------------------------------------------------------------------
+
+    def exit_velocity(self, inlet_stagnation_temperature: float,
+                      inlet_mach_number, mass_flow_rate: float,
+                      specific_heat: float, extracted_work: float,
+                      gamma: float, molar_mass: float) -> float:
+        """
+
+        :param inlet_stagnation_temperature: The stagnation temperature at
+                                             the propeller inlet in units
+                                             of Kelvins
+        :param inlet_mach_number: The Mach number at the propeller inlet
+        :param mass_flow_rate: The mass flow rate in units of kg/s
+        :param specific_heat: The fluid specific heat in units of J/kg-K
+        :param extracted_work: The usable work extracted by the propeller
+                               in units of Watts
+        :param gamma: The ratio of specific heats
+        :param molar_mass: The molar mass in units of J/mol-K
+        :return velocity: The fluid velocity leaving the propeller
+                          in units of meters per second
+
+        This function determines the fluid velocity leaving the
+        propeller using the following equation
+
+        .. math::
+           u = M\sqrt[]{\gamma R T}
+        """
+        stat_temp = self.exit_static_temperature(inlet_stagnation_temperature,
+                                                 inlet_mach_number, mass_flow_rate,
+                                                 specific_heat, extracted_work,
+                                                 gamma)
+        sos = self.speed_of_sound(gamma, stat_temp, molar_mass)
+        mach = self.exit_mach_number(inlet_stagnation_temperature,
+                                     inlet_mach_number, mass_flow_rate,
+                                     specific_heat, extracted_work,
+                                     gamma)
+        return sos * mach
+# ----------------------------------------------------------------------------
+
+    def exit_density(self, inlet_stagnation_temperature: float,
+                     inlet_mach_number, mass_flow_rate: float,
+                     specific_heat: float, extracted_work: float,
+                     gamma: float, molar_mass: float) -> float:
+        """
+
+        :param inlet_stagnation_temperature: The stagnation temperature at
+                                             the propeller inlet in units
+                                             of Kelvins
+        :param inlet_mach_number: The Mach number at the propeller inlet
+        :param mass_flow_rate: The mass flow rate in units of kg/s
+        :param specific_heat: The fluid specific heat in units of J/kg-K
+        :param extracted_work: The usable work extracted by the propeller
+                               in units of Watts
+        :param gamma: The ratio of specific heats
+        :param molar_mass: The molar mass in units of J/mol-K
+        :return density: The fluid density leaving the propeller
+                         in units of meters per second
+
+        This function determines the fluid density leaving the
+        propeller using the following equation
+
+        .. math::
+           \\rho = \\frac{\dot{m}}{uA}
+        """
+        velocity = self.exit_velocity(inlet_stagnation_temperature,
+                                      inlet_mach_number, mass_flow_rate,
+                                      specific_heat, extracted_work,
+                                      gamma, molar_mass)
+        return mass_flow_rate / (velocity * self.exit_area)
+# ============================================================================
+# ============================================================================
+
+
 class DiffuserNozzleComponent(DiffuserNozzle):
     """
 

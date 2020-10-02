@@ -23,3 +23,9 @@
 \contentsline {subsection}{\numberline {1.5.3}Fluid StaticTemperature and Pressure}{6}{subsection.1.5.3}
 \contentsline {subsection}{\numberline {1.5.4}Fluid Velocity and Mach Number}{6}{subsection.1.5.4}
 \contentsline {subsection}{\numberline {1.5.5}Fluid Density}{6}{subsection.1.5.5}
+\contentsline {section}{\numberline {1.6}Propeller}{6}{section.1.6}
+\contentsline {subsection}{\numberline {1.6.1}Work Extraction}{6}{subsection.1.6.1}
+\contentsline {subsection}{\numberline {1.6.2}Fluid Stagnation Temperature and Pressure}{6}{subsection.1.6.2}
+\contentsline {subsection}{\numberline {1.6.3}Fluid Static Temperature and Pressure}{6}{subsection.1.6.3}
+\contentsline {subsection}{\numberline {1.6.4}Fluid Velocity and Mach Number}{6}{subsection.1.6.4}
+\contentsline {subsection}{\numberline {1.6.5}Fluid Density}{7}{subsection.1.6.5}

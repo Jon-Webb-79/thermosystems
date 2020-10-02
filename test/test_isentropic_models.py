@@ -2,7 +2,7 @@
 from src.isentropic_models import DiffuserNozzle, Stagnation, Compressor
 from src.isentropic_models import HeatAddition, Turbine, DiffuserNozzleComponent
 from src.isentropic_models import CompressorComponent, HeatAdditionComponent
-from src.isentropic_models import TurbineComponent
+from src.isentropic_models import TurbineComponent, Propeller
 
 from math import isclose
 # ==============================================================================
@@ -525,6 +525,109 @@ def test_turbine_exit_density():
     assert isclose(10.387, den, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
+# Test the Propeller class
+
+
+efficiency = 0.9
+prop = Propeller(efficiency, 10.0)
+inlet_stag_temp = 345.0
+inlet_stag_pres = 101325.0
+usable_work = 1000.0
+mass_flow_rate = 100.0
+specific_heat = 1.0
+
+def test_propeller_work():
+    """
+
+    This function tests the propeller_work() function
+    """
+    work = prop.propeller_work(usable_work)
+    assert isclose(work, 1111.11, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_propeller_exit_stag_temp():
+    """
+
+    This function tests the exit_stagnation_temperature() function
+    """
+    stag_temp = prop.exit_stagnation_temperature(inlet_stag_temp, mass_flow_rate,
+                                                 specific_heat, work)
+    assert isclose(stag_temp, 356.11, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_propeller_exit_stag_pres():
+    """
+
+    This function tests the exit_stagnation_pressure() function
+    """
+    stag_pres = prop.exit_stagnation_pressure(inlet_stag_pres, inlet_stag_temp,
+                                              gamma, mass_flow_rate, specific_heat,
+                                              work)
+    assert isclose(91711.0, stag_pres, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_propeller_exit_mach_number():
+    """
+
+    This function tests the exit_mach_number() function
+    """
+    mach = prop.exit_mach_number(inlet_stag_temp, inlet_mach_number, mass_flow_rate,
+                                 specific_heat, work, gamma)
+    assert isclose(mach, 0.1016405, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_propeller_exit_static_temp():
+    """
+
+    This function tests the exit_static_temperature() function
+    """
+    stat_temp = prop.exit_static_temperature(inlet_stag_temp, inlet_mach_number,
+                                             mass_flow_rate, specific_heat,
+                                             work, gamma)
+    assert isclose(stat_temp, 355.37, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_propeller_exit_static_pres():
+    """
+
+    This function tests the exit_static_pressure() function
+    """
+    stat_pres = prop.exit_static_pressure(inlet_stag_temp, inlet_mach_number,
+                                          mass_flow_rate, specific_heat,
+                                          work, gamma,
+                                          inlet_stag_pres)
+    assert isclose(stat_pres, 91050.91, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_propeller_exit_velocity():
+    """
+
+    This function tests the exit_velocity() function
+    """
+    velocity = prop.exit_velocity(inlet_stag_temp, inlet_mach_number,
+                                  mass_flow_rate, specific_heat,
+                                  work, gamma, 1.0)
+    assert isclose(velocity, 6.537, rel_tol=1.0e-3)
+# ------------------------------------------------------------------------------
+
+
+def test_propeller_exit_density():
+    """
+
+    This function tests the exit_density() function
+    """
+    density = prop.exit_density(inlet_stag_temp, inlet_mach_number,
+                                mass_flow_rate, specific_heat,
+                                work, gamma, 1.0)
+    assert isclose(density, 1.5297, rel_tol=1.0e-3)
+# ==============================================================================
+# ==============================================================================
 # Test the DiffuserNozzleComponent class
 
 
@@ -646,7 +749,7 @@ def test_turbine_component():
     assert isclose(exit_cond['stagnation_pressure'], 5967655.0, rel_tol=1.0e-3)
     assert isclose(exit_cond['stagnation_temperature'], 798.88, rel_tol=1.0e-3)
     assert isclose(exit_cond['velocity'], 9.626, rel_tol=1.0e-3)
-    assert isclose(exit_cond['mach_number'], 0.09928707, rel_tol=1.0e-3)
+    assert isclose(exit_cond['mach_number'], 0.099928707, rel_tol=1.0e-3)
     assert isclose(exit_cond['density'], 10.387, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
