@@ -1676,11 +1676,11 @@ class DiffuserNozzleComponent(DiffuserNozzle):
                                                    inlet_static_temperature, inlet_velocity,
                                                    molar_mass)
         exit_density = self.exit_density(inlet_velocity, mass_flow_rate)
-        dict = {'static_pressure': exit_stat_pres, 'static_temperature': exit_stat_temp,
-                'stagnation_pressure': exit_stag_pres, 'stagnation_temperature': exit_stag_temp,
-                'velocity': exit_velocity, 'mach_number': exit_mach_number,
-                'density': exit_density}
-        return dict
+        dictionary = {'static_pressure': exit_stat_pres, 'static_temperature': exit_stat_temp,
+                      'stagnation_pressure': exit_stag_pres, 'stagnation_temperature': exit_stag_temp,
+                      'velocity': exit_velocity, 'mach_number': exit_mach_number,
+                      'density': exit_density}
+        return dictionary
 # ============================================================================
 # ============================================================================
 
@@ -1749,11 +1749,11 @@ class CompressorComponent(Compressor):
                                            inlet_mach_number, molar_mass)
         exit_density = self.exit_density(mass_flow_rate, inlet_stagnation_temperature,
                                          inlet_mach_number, molar_mass, gamma)
-        dict = {'static_pressure': exit_stat_pres, 'static_temperature': exit_stat_temp,
-                'stagnation_pressure': exit_stag_pres, 'stagnation_temperature': exit_stag_temp,
-                'velocity': exit_velocity, 'mach_number': exit_mach_number,
-                'density': exit_density, 'work': comp_work}
-        return dict
+        dictionary = {'static_pressure': exit_stat_pres, 'static_temperature': exit_stat_temp,
+                      'stagnation_pressure': exit_stag_pres, 'stagnation_temperature': exit_stag_temp,
+                      'velocity': exit_velocity, 'mach_number': exit_mach_number,
+                      'density': exit_density, 'work': comp_work}
+        return dictionary
 # ============================================================================
 # ============================================================================
 
@@ -1835,11 +1835,11 @@ class HeatAdditionComponent(HeatAddition):
                                          heat_addition, specific_heat,
                                          mass_flow_rate, inlet_mach_number,
                                          gamma, molar_mass)
-        dict = {'static_pressure': exit_stat_pres, 'static_temperature': exit_stat_temp,
-                'stagnation_pressure': exit_stag_pres, 'stagnation_temperature': exit_stag_temp,
-                'velocity': exit_velocity, 'mach_number': exit_mach_number,
-                'density': exit_density, 'power': input_power}
-        return dict
+        dictionary = {'static_pressure': exit_stat_pres, 'static_temperature': exit_stat_temp,
+                      'stagnation_pressure': exit_stag_pres, 'stagnation_temperature': exit_stag_temp,
+                      'velocity': exit_velocity, 'mach_number': exit_mach_number,
+                      'density': exit_density, 'power': input_power}
+        return dictionary
 # ============================================================================
 # ============================================================================
 
@@ -1917,11 +1917,90 @@ class TurbineComponent(Turbine):
         exit_density = self.exit_density(inlet_stagnation_temperature, inlet_mach_number,
                                          gamma, turbine_work, specific_heat,
                                          mass_flow_rate, molar_mass)
-        dict = {'static_pressure': exit_stat_pres, 'static_temperature': exit_stat_temp,
-                'stagnation_pressure': exit_stag_pres, 'stagnation_temperature': exit_stag_temp,
-                'velocity': exit_velocity, 'mach_number': exit_mach_number,
-                'density': exit_density, 'extracted_work': work_extracted}
-        return dict
+        dictionary = {'static_pressure': exit_stat_pres, 'static_temperature': exit_stat_temp,
+                      'stagnation_pressure': exit_stag_pres, 'stagnation_temperature': exit_stag_temp,
+                      'velocity': exit_velocity, 'mach_number': exit_mach_number,
+                      'density': exit_density, 'extracted_work': work_extracted}
+        return dictionary
+# ============================================================================
+# ============================================================================
+
+
+class PropellerComponent(Propeller):
+    """
+
+        This class combined all functionality of the Propeller class
+        into a single function for ease of user access
+        """
+
+    def __init__(self, efficiency: float, exit_area: float):
+        """
+
+        :param efficiency: The isentropic efficiency of the propeller
+        :param exit_area: The cross-sectional area of the propeller exit
+        """
+        Propeller.__init__(self, efficiency, exit_area)
+# ----------------------------------------------------------------------------
+
+    def outlet_conditions(self, extracted_work: float,
+                          inlet_stagnation_temperature: float,
+                          mass_flow_rate: float, specific_heat: float,
+                          inlet_stagnation_pressure: float, gamma: float,
+                          inlet_mach_number: float, molar_mass: float) -> Dict[str, float]:
+        """
+
+        :param extracted_work: The total usable work done by the propeller
+        :param inlet_stagnation_temperature: The stagnation temperature at
+                                             the propeller inlet in units
+                                             of Kelvins
+        :param mass_flow_rate: The fluid mass flow rate in units of
+                               kg/s
+        :param specific_heat: The fluid specific heat in units of J/kg-K
+        :param inlet_stagnation_pressure: The stagnation pressure at the
+                                          propeller inlet in units of Pascals
+        :param gamma: The ratio of specific heats
+        :param inlet_mach_number: The Mach number at the propeller inlet
+        :param molar_mass: The fluid molar mass
+        :return dict: A dictionary containing all fluid exit properties
+
+        This function simplifies the Propeller class so the user can merely
+        call one function and obtain out outlet properties as a dictionary with
+        keywords `static_pressure`, `static_temperature`, `stagnation_pressure`,
+        `stagnation_temperature`, `velocity`, `mach_number`, `density`,
+        and `total_work`.
+        """
+        total_work = self.propeller_work(extracted_work)
+        exit_stag_temp = self.exit_stagnation_temperature(inlet_stagnation_temperature,
+                                                          mass_flow_rate, specific_heat,
+                                                          extracted_work)
+        exit_stag_pres = self.exit_stagnation_pressure(inlet_stagnation_pressure,
+                                                       inlet_stagnation_temperature,
+                                                       gamma, mass_flow_rate,
+                                                       specific_heat, extracted_work)
+        exit_mach_number = self.exit_mach_number(inlet_stagnation_temperature, inlet_mach_number,
+                                                 mass_flow_rate, specific_heat, extracted_work,
+                                                 gamma)
+        exit_stat_temp = self.exit_static_temperature(inlet_stagnation_temperature,
+                                                      inlet_mach_number, mass_flow_rate,
+                                                      specific_heat, extracted_work,
+                                                      gamma)
+        exit_stat_pres = self.exit_static_pressure(inlet_stagnation_temperature,
+                                                   inlet_mach_number, mass_flow_rate,
+                                                   specific_heat, extracted_work,
+                                                   gamma, inlet_stagnation_pressure)
+        exit_velocity = self.exit_velocity(inlet_stagnation_temperature,
+                                           inlet_mach_number, mass_flow_rate,
+                                           specific_heat, extracted_work,
+                                           gamma, molar_mass)
+        exit_density = self.exit_density(inlet_stagnation_temperature,
+                                         inlet_mach_number, mass_flow_rate,
+                                         specific_heat, extracted_work,
+                                         gamma, molar_mass)
+        dictionary = {'static_pressure': exit_stat_pres, 'static_temperature': exit_stat_temp,
+                      'stagnation_pressure': exit_stag_pres, 'stagnation_temperature': exit_stag_temp,
+                      'velocity': exit_velocity, 'mach_number': exit_mach_number,
+                      'density': exit_density, 'total_work': total_work}
+        return dictionary
 # ============================================================================
 # ============================================================================
 # eof

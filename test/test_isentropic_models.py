@@ -2,7 +2,7 @@
 from src.isentropic_models import DiffuserNozzle, Stagnation, Compressor
 from src.isentropic_models import HeatAddition, Turbine, DiffuserNozzleComponent
 from src.isentropic_models import CompressorComponent, HeatAdditionComponent
-from src.isentropic_models import TurbineComponent, Propeller
+from src.isentropic_models import TurbineComponent, Propeller, PropellerComponent
 
 from math import isclose
 # ==============================================================================
@@ -728,6 +728,10 @@ def test_heataddition_component():
 
 
 def test_turbine_component():
+    """
+
+    This function tests the TurbineComponent() class
+    """
     turbine_work = 1000.0
     efficiency = 0.9
     inlet_mach_number = 0.1
@@ -755,8 +759,36 @@ def test_turbine_component():
 # ==============================================================================
 
 
-# TODO Add Propeller class
-# TODO Add PropellerComponent class
+def test_propeller_component():
+    """
+
+    This function tests the PropellerComponent() class
+    """
+    efficiency = 0.9
+    inlet_mach_number = 0.1
+    exit_area = 10.0
+    gamma = 1.4
+    mass_flow_rate = 100.0
+    specific_heat = 1.0
+    molar_mass = 1.0
+    work = 1000.0
+    inlet_stag_temperature = 345.0
+    inlet_stag_pressure = 101325.0
+
+
+    propc = PropellerComponent(efficiency, exit_area)
+    exit_cond = propc.outlet_conditions(work, inlet_stag_temperature,
+                                        mass_flow_rate, specific_heat,
+                                        inlet_stag_pressure, gamma,
+                                        inlet_mach_number, molar_mass)
+    assert isclose(exit_cond['total_work'], 1111.11, rel_tol=1.0e-3)
+    assert isclose(exit_cond['static_temperature'], 355.37, rel_tol=1.0e-3)
+    assert isclose(exit_cond['static_pressure'], 91050.91, rel_tol=1.0e-3)
+    assert isclose(exit_cond['stagnation_pressure'], 91711.0, rel_tol=1.0e-3)
+    assert isclose(exit_cond['stagnation_temperature'], 356.11, rel_tol=1.0e-3)
+    assert isclose(exit_cond['velocity'], 6.537, rel_tol=1.0e-3)
+    assert isclose(exit_cond['mach_number'], 0.1016405, rel_tol=1.0e-3)
+    assert isclose(exit_cond['density'], 1.5297, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # eof
