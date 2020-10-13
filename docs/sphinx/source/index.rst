@@ -22,6 +22,7 @@ Welcome to thermosystems's documentation!
    HeatAdditionComponent
    TurbineComponent
    PropComp
+   thermprops
 
 Indices and tables
 ==================
