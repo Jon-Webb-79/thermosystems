@@ -531,18 +531,15 @@ class Compressor(Stagnation):
     1. Hill, P. and Peterson, C., "Mechanics and Thermodynamics of Propulsion,"
        Addison Wesley Publishing Co., Reading, MA, 1992
     """
-    def __init__(self, compression_ratio: float, efficiency: float,
-                 exit_area: float):
+    def __init__(self, compression_ratio: float, efficiency: float):
         """
 
         :param compression_ratio: The ratio of outlet stagnation pressure
                                   to inlet stagnation pressure
         :param efficiency: The compressor isentropic efficiency
-        :param exit_area; The flow area at the compressor exit
         """
         self.compression_ratio = compression_ratio
         self.efficiency = efficiency
-        self.exit_area = exit_area
 # ----------------------------------------------------------------------------
 
     def exit_stagnation_pressure(self, inlet_stagnation_pressure: float) -> float:
@@ -724,30 +721,6 @@ class Compressor(Stagnation):
         sos = self.speed_of_sound(gamma, stat_temp, molar_mass)
         mach_number = self.exit_mach_number(inlet_mach_number, inlet_stagnation_temperature, gamma)
         return mach_number * sos
-# ----------------------------------------------------------------------------
-
-    def exit_density(self, mass_flow_rate: float, inlet_stagnation_temperature: float,
-                     inlet_mach_number: float, molar_mass: float,
-                     gamma: float) -> float:
-        """
-
-        :param mass_flow_rate: The mass flow rate in units of kg/s
-        :param inlet_stagnation_temperature: The stagnation temperature at the
-                                             compressor inlet in units of Kelvins
-        :param inlet_mach_number: The Mach number at the compressor inlet
-        :param molar_mass: The molar mass of the fluid
-        :param gamma: The ratio of specific heats
-        :return density: The fluid density at the compressor outlet in
-                         units of kg per cubic meters
-
-        This function determines the fluid density via the equation shown below.
-
-        .. math::
-           \\rho = \\frac{\dot{m}}{uA}
-        """
-        velocity = self.exit_velocity(inlet_stagnation_temperature, gamma,
-                                      inlet_mach_number, molar_mass)
-        return mass_flow_rate / (velocity * self.exit_area)
 # ============================================================================
 # ============================================================================
 # - This class describes the performance of a heat source such as would
@@ -765,15 +738,12 @@ class HeatAddition(Stagnation):
     1. Hill, P. and Peterson, C., "Mechanics and Thermodynamics of Propulsion,"
        Addison Wesley Publishing Co., Reading, MA, 1992
     """
-    def __init__(self, efficiency: float, exit_area: float):
+    def __init__(self, efficiency: float):
         """
 
         :param efficiency: The isentropic efficiency of the heat exchanger
-        :param exit_area: The cross-sectional area of the heat addition
-                          component
         """
         self.efficiency = efficiency
-        self.exit_area = exit_area
 # ----------------------------------------------------------------------------
 
     def input_power(self, heat_addition: float) -> float:
@@ -1018,36 +988,6 @@ class HeatAddition(Stagnation):
                                                    inlet_mach_number)
         sos = self.speed_of_sound(gamma, static_temp, molar_mass)
         return exit_mach * sos
-# ----------------------------------------------------------------------------
-
-    def exit_density(self, inlet_stagnation_temperature: float,
-                     heat_addition: float, specific_heat: float,
-                     mass_flow_rate: float, inlet_mach_number: float,
-                     gamma: float, molar_mass: float) -> float:
-        """
-
-        :param inlet_stagnation_temperature: The stagnation temperature at the
-                                             heat addition inlet in units of Kelvins
-        :param heat_addition: The usable work extracted by the turbine in units
-                              of Watts
-        :param specific_heat: The fluid specific heat in units of J/kg-K
-        :param mass_flow_rate: The fluid mass flow rate in units of kg/s
-        :param inlet_mach_number: The Mach number at the inlet to the heat
-                                  addition component
-        :param gamma: The ratio of specific heats
-        :param molar_mass: The molar mass of the fluid
-        :return density: The fluid density at the heat addition outlet in
-                         units of kg per cubic meters
-
-        This function determines the fluid density via the equation shown below.
-
-        .. math::
-           \\rho = \\frac{\dot{m}}{uA}
-        """
-        velocity = self.exit_velocity(inlet_stagnation_temperature, heat_addition,
-                                      specific_heat, mass_flow_rate, inlet_mach_number,
-                                      gamma, molar_mass)
-        return mass_flow_rate / (velocity * self.exit_area)
 # ============================================================================
 # ============================================================================
 # This class describes the performance of a compressor
@@ -1064,15 +1004,12 @@ class Turbine(Stagnation):
     1. Hill, P. and Peterson, C., "Mechanics and Thermodynamics of Propulsion,"
        Addison Wesley Publishing Co., Reading, MA, 1992
     """
-    def __init__(self, efficiency: float, exit_area: float):
+    def __init__(self, efficiency: float):
         """
 
         :param efficiency: The isentropic efficiency of the turbine
-        :param exit_area: The cross-sectional area of the heat addition
-                          component
         """
         self.efficiency = efficiency
-        self.exit_area = exit_area
 # ----------------------------------------------------------------------------
 
     def work_extraction(self, turbine_work: float) -> float:
@@ -1295,34 +1232,6 @@ class Turbine(Stagnation):
                                           specific_heat, mass_flow_rate)
         sos = self.speed_of_sound(gamma, stat_temp, molar_mass)
         return sos * exit_mach
-# ----------------------------------------------------------------------------
-
-    def exit_density(self, inlet_stagnation_temperature: float,
-                     inlet_mach_number: float, gamma: float,
-                     turbine_work: float, specific_heat: float,
-                     mass_flow_rate: float, molar_mass: float) -> float:
-        """
-
-        :param inlet_stagnation_temperature: The stagnation temperature at the
-                                             heat addition inlet in units of Kelvins
-        :param inlet_mach_number: The Mach number at the turbine inlet
-        :param gamma: The ratio of specific heats
-        :param turbine_work: The usable work extracted by the turbine
-        :param specific_heat: The fluid specific heat in units of J/kg-K
-        :param mass_flow_rate: The fluid mass flow rate in units of kg/s
-        :param molar_mass: The molar mass of the fluid
-        :return density: The fluid density at the heat addition outlet in
-                         units of kg per cubic meters
-
-        This function determines the fluid density via the equation shown below.
-
-        .. math::
-           \\rho = \\frac{\dot{m}}{uA}
-        """
-        velocity = self.exit_velocity(inlet_stagnation_temperature, inlet_mach_number,
-                                      gamma, turbine_work, specific_heat,
-                                      mass_flow_rate, molar_mass)
-        return mass_flow_rate / (velocity * self.exit_area)
 # ============================================================================
 # ============================================================================
 
@@ -1338,14 +1247,12 @@ class Propeller(Stagnation):
     1. Hill, P. and Peterson, C., "Mechanics and Thermodynamics of Propulsion,"
        Addison Wesley Publishing Co., Reading, MA, 1992
     """
-    def __init__(self, efficiency: float, exit_area: float):
+    def __init__(self, efficiency: float):
         """
 
         :param efficiency: The isentropic efficiency of the propeller
-        :param exit_area: The cross-sectional area of the propeller
         """
         self.efficiency = efficiency
-        self.exit_area = exit_area
 # ----------------------------------------------------------------------------
 
     def propeller_work(self, extracted_work: float) -> float:
@@ -1573,38 +1480,6 @@ class Propeller(Stagnation):
                                      specific_heat, extracted_work,
                                      gamma)
         return sos * mach
-# ----------------------------------------------------------------------------
-
-    def exit_density(self, inlet_stagnation_temperature: float,
-                     inlet_mach_number, mass_flow_rate: float,
-                     specific_heat: float, extracted_work: float,
-                     gamma: float, molar_mass: float) -> float:
-        """
-
-        :param inlet_stagnation_temperature: The stagnation temperature at
-                                             the propeller inlet in units
-                                             of Kelvins
-        :param inlet_mach_number: The Mach number at the propeller inlet
-        :param mass_flow_rate: The mass flow rate in units of kg/s
-        :param specific_heat: The fluid specific heat in units of J/kg-K
-        :param extracted_work: The usable work extracted by the propeller
-                               in units of Watts
-        :param gamma: The ratio of specific heats
-        :param molar_mass: The molar mass in units of J/mol-K
-        :return density: The fluid density leaving the propeller
-                         in units of meters per second
-
-        This function determines the fluid density leaving the
-        propeller using the following equation
-
-        .. math::
-           \\rho = \\frac{\dot{m}}{uA}
-        """
-        velocity = self.exit_velocity(inlet_stagnation_temperature,
-                                      inlet_mach_number, mass_flow_rate,
-                                      specific_heat, extracted_work,
-                                      gamma, molar_mass)
-        return mass_flow_rate / (velocity * self.exit_area)
 # ============================================================================
 # ============================================================================
 
@@ -1691,18 +1566,14 @@ class CompressorComponent(Compressor):
     This class combined all functionality of the Compressor class
     into a single function for ease of user access
     """
-    def __init__(self, compression_ratio: float, efficiency: float,
-                 exit_area: float):
+    def __init__(self, compression_ratio: float, efficiency: float):
         """
 
         :param compression_ratio: The ratio of outlet stagnation pressure
                                   to the inlet stagnation pressure
         :param efficiency: The isentropic efficiency of the compressor
-        :param exit_area: The exit area of the compressor in units
-                          of square meters
         """
-        Compressor.__init__(self, compression_ratio, efficiency,
-                            exit_area)
+        Compressor.__init__(self, compression_ratio, efficiency)
 # ----------------------------------------------------------------------------
 
     def outlet_conditions(self, gamma: float, specific_heat: float,
@@ -1747,12 +1618,10 @@ class CompressorComponent(Compressor):
                                                       gamma, inlet_mach_number)
         exit_velocity = self.exit_velocity(inlet_stagnation_temperature, gamma,
                                            inlet_mach_number, molar_mass)
-        exit_density = self.exit_density(mass_flow_rate, inlet_stagnation_temperature,
-                                         inlet_mach_number, molar_mass, gamma)
         dictionary = {'static_pressure': exit_stat_pres, 'static_temperature': exit_stat_temp,
                       'stagnation_pressure': exit_stag_pres, 'stagnation_temperature': exit_stag_temp,
                       'velocity': exit_velocity, 'mach_number': exit_mach_number,
-                      'density': exit_density, 'work': comp_work}
+                      'work': comp_work}
         return dictionary
 # ============================================================================
 # ============================================================================
@@ -1764,15 +1633,13 @@ class HeatAdditionComponent(HeatAddition):
     This class combined all functionality of the Compressor class
     into a single function for ease of user access
     """
-    def __init__(self, efficiency: float, exit_area: float):
+    def __init__(self, efficiency: float):
         """
 
         :param efficiency: The isentropic efficiency of the heat
                            addition component
-        :param exit_area: The cross-sectional area of the heat addition
-                          component exit
         """
-        HeatAddition.__init__(self, efficiency, exit_area)
+        HeatAddition.__init__(self, efficiency)
 # ----------------------------------------------------------------------------
 
     def outlet_conditions(self, gamma: float, specific_heat: float,
@@ -1831,14 +1698,10 @@ class HeatAdditionComponent(HeatAddition):
                                            heat_addition, specific_heat,
                                            mass_flow_rate, inlet_mach_number,
                                            gamma, molar_mass)
-        exit_density = self.exit_density(inlet_stagnation_temperature,
-                                         heat_addition, specific_heat,
-                                         mass_flow_rate, inlet_mach_number,
-                                         gamma, molar_mass)
         dictionary = {'static_pressure': exit_stat_pres, 'static_temperature': exit_stat_temp,
                       'stagnation_pressure': exit_stag_pres, 'stagnation_temperature': exit_stag_temp,
                       'velocity': exit_velocity, 'mach_number': exit_mach_number,
-                      'density': exit_density, 'power': input_power}
+                      'power': input_power}
         return dictionary
 # ============================================================================
 # ============================================================================
@@ -1851,13 +1714,12 @@ class TurbineComponent(Turbine):
         into a single function for ease of user access
         """
 
-    def __init__(self, efficiency: float, exit_area: float):
+    def __init__(self, efficiency: float):
         """
 
         :param efficiency: The isentropic efficiency of the turbine
-        :param exit_area: The cross-sectional area of the turbine exit
         """
-        Turbine.__init__(self, efficiency, exit_area)
+        Turbine.__init__(self, efficiency)
 # ----------------------------------------------------------------------------
 
     def outlet_conditions(self, gamma: float, specific_heat: float,
@@ -1914,13 +1776,10 @@ class TurbineComponent(Turbine):
                                            inlet_mach_number, gamma,
                                            turbine_work, specific_heat,
                                            mass_flow_rate, molar_mass)
-        exit_density = self.exit_density(inlet_stagnation_temperature, inlet_mach_number,
-                                         gamma, turbine_work, specific_heat,
-                                         mass_flow_rate, molar_mass)
         dictionary = {'static_pressure': exit_stat_pres, 'static_temperature': exit_stat_temp,
                       'stagnation_pressure': exit_stag_pres, 'stagnation_temperature': exit_stag_temp,
                       'velocity': exit_velocity, 'mach_number': exit_mach_number,
-                      'density': exit_density, 'extracted_work': work_extracted}
+                      'extracted_work': work_extracted}
         return dictionary
 # ============================================================================
 # ============================================================================
@@ -1933,13 +1792,12 @@ class PropellerComponent(Propeller):
         into a single function for ease of user access
         """
 
-    def __init__(self, efficiency: float, exit_area: float):
+    def __init__(self, efficiency: float):
         """
 
         :param efficiency: The isentropic efficiency of the propeller
-        :param exit_area: The cross-sectional area of the propeller exit
         """
-        Propeller.__init__(self, efficiency, exit_area)
+        Propeller.__init__(self, efficiency)
 # ----------------------------------------------------------------------------
 
     def outlet_conditions(self, extracted_work: float,
@@ -1992,15 +1850,18 @@ class PropellerComponent(Propeller):
                                            inlet_mach_number, mass_flow_rate,
                                            specific_heat, extracted_work,
                                            gamma, molar_mass)
-        exit_density = self.exit_density(inlet_stagnation_temperature,
-                                         inlet_mach_number, mass_flow_rate,
-                                         specific_heat, extracted_work,
-                                         gamma, molar_mass)
         dictionary = {'static_pressure': exit_stat_pres, 'static_temperature': exit_stat_temp,
                       'stagnation_pressure': exit_stag_pres, 'stagnation_temperature': exit_stag_temp,
                       'velocity': exit_velocity, 'mach_number': exit_mach_number,
-                      'density': exit_density, 'total_work': total_work}
+                      'total_work': total_work}
         return dictionary
+# ============================================================================
+# ============================================================================
+
+
+#class RamJet:
+#    def __init__(self):
+#        self.diffuser = DiffuserNozzleComponent()
 # ============================================================================
 # ============================================================================
 # eof

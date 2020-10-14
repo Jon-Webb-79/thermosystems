@@ -248,8 +248,7 @@ inlet_stag_pressure = 6000000.0
 inlet_stag_temperature = 800.0
 efficiency = 0.9
 inlet_mach_number = 0.1
-exit_area = 1.0
-comp = Compressor(compressor_ratio, efficiency, exit_area)
+comp = Compressor(compressor_ratio, efficiency)
 
 
 def test_comp_exit_stag_pressure():
@@ -325,17 +324,6 @@ def test_comp_fluid_velocity():
     vel = comp.exit_velocity(inlet_stag_temperature, gamma, inlet_mach_number,
                              1.0)
     assert isclose(vel, 13.936, rel_tol=1.0e-3)
-# ------------------------------------------------------------------------------
-
-
-def test_comp_fluid_density():
-    """
-
-    This function tests the compressor exit_density() function
-    """
-    den = comp.exit_density(1.10, inlet_stag_temperature, inlet_mach_number, 1.0,
-                            gamma)
-    assert isclose(den, 0.07892, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # Test the HeatAddition class
@@ -343,7 +331,7 @@ def test_comp_fluid_density():
 
 heat = 1000000.0
 efficiency = 0.9
-he = HeatAddition(efficiency, 10.0)
+he = HeatAddition(efficiency)
 
 
 def test_he_input_power():
@@ -420,24 +408,13 @@ def test_he_exit_velocity():
     velocity = he.exit_velocity(inlet_stag_temperature, heat, 1.0,
                                 1000.0, inlet_mach_number, gamma, 1.0)
     assert isclose(velocity, 22.029, rel_tol=1.0e-3)
-# ------------------------------------------------------------------------------
-
-
-def test_he_exit_density():
-    """
-
-    This function tests the exit_density() function
-    """
-    density = he.exit_density(inlet_stag_temperature, heat, 1.0,
-                              1000.0, inlet_mach_number, gamma, 1.0)
-    assert isclose(density, 4.539, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # Test Turbine class
 
 
 work = 1000.0
-turb = Turbine(0.9, 10.0)
+turb = Turbine(0.9)
 
 
 def test_turbine_work():
@@ -512,29 +489,19 @@ def test_turbine_exit_velocity():
     vel = turb.exit_velocity(inlet_stag_temperature, inlet_mach_number, gamma,
                              work, 1.0, 1000.0, 1.0)
     assert isclose(vel, 9.626, rel_tol=1.0e-3)
-# ------------------------------------------------------------------------------
-
-
-def test_turbine_exit_density():
-    """
-
-    This function tests the exit_density() function
-    """
-    den = turb.exit_density(inlet_stag_temperature, inlet_mach_number, gamma,
-                             work, 1.0, 1000.0, 1.0)
-    assert isclose(10.387, den, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # Test the Propeller class
 
 
 efficiency = 0.9
-prop = Propeller(efficiency, 10.0)
+prop = Propeller(efficiency)
 inlet_stag_temp = 345.0
 inlet_stag_pres = 101325.0
 usable_work = 1000.0
 mass_flow_rate = 100.0
 specific_heat = 1.0
+
 
 def test_propeller_work():
     """
@@ -614,18 +581,6 @@ def test_propeller_exit_velocity():
                                   mass_flow_rate, specific_heat,
                                   work, gamma, 1.0)
     assert isclose(velocity, 6.537, rel_tol=1.0e-3)
-# ------------------------------------------------------------------------------
-
-
-def test_propeller_exit_density():
-    """
-
-    This function tests the exit_density() function
-    """
-    density = prop.exit_density(inlet_stag_temp, inlet_mach_number,
-                                mass_flow_rate, specific_heat,
-                                work, gamma, 1.0)
-    assert isclose(density, 1.5297, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # Test the DiffuserNozzleComponent class
@@ -676,7 +631,7 @@ def test_compressor_component():
     specific_heat = 1.0
     molar_mass = 1.0
 
-    comp = CompressorComponent(compressor_ratio, efficiency, exit_area)
+    comp = CompressorComponent(compressor_ratio, efficiency)
     exit_cond = comp.outlet_conditions(gamma, specific_heat, molar_mass,
                                        inlet_mach_number, mass_flow_rate,
                                        inlet_stag_pressure,
@@ -688,7 +643,6 @@ def test_compressor_component():
     assert isclose(exit_cond['stagnation_temperature'], 1150.4, rel_tol=1.0e-3)
     assert isclose(exit_cond['velocity'], 13.936, rel_tol=1.0e-3)
     assert isclose(exit_cond['mach_number'], 0.120615, rel_tol=1.0e-3)
-    assert isclose(exit_cond['density'], 0.07892, rel_tol=1.0e-3)
     assert isclose(exit_cond['work'], 428.278, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
@@ -703,13 +657,12 @@ def test_heataddition_component():
     heat = 1000000.0
     efficiency = 0.9
     inlet_mach_number = 0.1
-    exit_area = 10.0
     gamma = 1.4
     mass_flow_rate = 1000.0
     specific_heat = 1.0
     molar_mass = 1.0
 
-    he = HeatAdditionComponent(efficiency, exit_area)
+    he = HeatAdditionComponent(efficiency)
     exit_cond = he.outlet_conditions(gamma, specific_heat, molar_mass,
                                      inlet_mach_number, mass_flow_rate,
                                      inlet_stag_pressure,
@@ -722,7 +675,6 @@ def test_heataddition_component():
     assert isclose(exit_cond['stagnation_temperature'], 1800.0, rel_tol=1.0e-3)
     assert isclose(exit_cond['velocity'], 22.029, rel_tol=1.0e-3)
     assert isclose(exit_cond['mach_number'], 0.1525, rel_tol=1.0e-3)
-    assert isclose(exit_cond['density'], 4.539, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 
@@ -735,13 +687,12 @@ def test_turbine_component():
     turbine_work = 1000.0
     efficiency = 0.9
     inlet_mach_number = 0.1
-    exit_area = 10.0
     gamma = 1.4
     mass_flow_rate = 1000.0
     specific_heat = 1.0
     molar_mass = 1.0
 
-    turb = TurbineComponent(efficiency, exit_area)
+    turb = TurbineComponent(efficiency)
     exit_cond = turb.outlet_conditions(gamma, specific_heat, molar_mass,
                                        inlet_mach_number, mass_flow_rate,
                                        inlet_stag_pressure,
@@ -754,7 +705,6 @@ def test_turbine_component():
     assert isclose(exit_cond['stagnation_temperature'], 798.88, rel_tol=1.0e-3)
     assert isclose(exit_cond['velocity'], 9.626, rel_tol=1.0e-3)
     assert isclose(exit_cond['mach_number'], 0.099928707, rel_tol=1.0e-3)
-    assert isclose(exit_cond['density'], 10.387, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 
@@ -766,7 +716,6 @@ def test_propeller_component():
     """
     efficiency = 0.9
     inlet_mach_number = 0.1
-    exit_area = 10.0
     gamma = 1.4
     mass_flow_rate = 100.0
     specific_heat = 1.0
@@ -776,7 +725,7 @@ def test_propeller_component():
     inlet_stag_pressure = 101325.0
 
 
-    propc = PropellerComponent(efficiency, exit_area)
+    propc = PropellerComponent(efficiency)
     exit_cond = propc.outlet_conditions(work, inlet_stag_temperature,
                                         mass_flow_rate, specific_heat,
                                         inlet_stag_pressure, gamma,
@@ -788,7 +737,6 @@ def test_propeller_component():
     assert isclose(exit_cond['stagnation_temperature'], 356.11, rel_tol=1.0e-3)
     assert isclose(exit_cond['velocity'], 6.537, rel_tol=1.0e-3)
     assert isclose(exit_cond['mach_number'], 0.1016405, rel_tol=1.0e-3)
-    assert isclose(exit_cond['density'], 1.5297, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # eof
