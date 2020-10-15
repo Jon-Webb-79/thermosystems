@@ -1,6 +1,7 @@
 # Import necessary packages here
 from scipy.optimize import bisect
-from typing import Dict
+from typing import Dict, Tuple
+from src.therm_prop import ThermProps
 
 # ============================================================================
 # ============================================================================
@@ -176,7 +177,7 @@ class Stagnation:
 
         :param gamma: The ratio of specific heat
         :param static_temperature: The static temperature in units of Kelvins
-        :param molar_mass: Molar mass of the fluid in units of J/mol-K
+        :param molar_mass: Molar mass of the fluid in units of g/mol
         :return sos: The speed of sound in meters per second
 
         This function determines the speed of sound
@@ -187,7 +188,7 @@ class Stagnation:
            a = \sqrt[]{\gamma R T}
         """
         universal_gas_constant = 8.314  # J/K-mol
-        gas_constant = universal_gas_constant / molar_mass
+        gas_constant = 1000.0 * (universal_gas_constant / molar_mass)
         return (gamma * gas_constant * static_temperature) ** 0.5
 # ----------------------------------------------------------------------------
 
@@ -417,7 +418,7 @@ class DiffuserNozzle(Stagnation):
                                                      inlet_static_pres,
                                                      inlet_mach_number)
         velocity = self.exit_velocity(inlet_velocity)
-        return stag_temp - ((velocity ** 2) / 2 * specific_heat)
+        return stag_temp - ((velocity ** 2) / (2 * specific_heat))
 # ----------------------------------------------------------------------------
 
     def exit_mach_number(self, specific_heat: float, gamma: float,
@@ -1859,9 +1860,79 @@ class PropellerComponent(Propeller):
 # ============================================================================
 
 
-#class RamJet:
-#    def __init__(self):
-#        self.diffuser = DiffuserNozzleComponent()
+class RamJet:
+    def __init__(self, dif_eff: float, dif_inlet_area: float, dif_exit_area: float,
+                 heat_eff: float, noz_eff: float, noz_inlet_area: float,
+                 noz_exit_area: float, species: str):
+        """
+
+        :param dif_eff: The diffuser isentropic efficiency
+        :param dif_inlet_area: The diffuser inlet area in square meters
+        :param dif_exit_area: The diffuser exit area in square meters
+        :param heat_eff: The head addition isentropic efficiency
+        :param noz_eff: The nozzle isentropic efficiency
+        :param noz_inlet_area: The nozzle inlet area in square meters
+        :param noz_exit_area: The nozzle exit area in square meters
+        :param species: The gas species
+        """
+        self.diffuser = DiffuserNozzleComponent(dif_eff, dif_inlet_area, dif_exit_area)
+        self.heat = HeatAdditionComponent(heat_eff)
+        self.nozzle = DiffuserNozzleComponent(noz_eff, noz_inlet_area, noz_exit_area)
+        self.gas = ThermProps(species)
+# ----------------------------------------------------------------------------
+
+    def performance(self, inlet_static_temp: float, inlet_static_pressure: float,
+                    inlet_mach_number: float, inlet_velocity: float,
+                    mass_flow_rate: float, heat_addition: float) -> Tuple[Dict[str, float],
+                                                                          Dict[str, float],
+                                                                          Dict[str, float]]:
+        """
+
+        :param inlet_static_temp: The inlet static temperature in units of Kelvins
+        :param inlet_static_pressure: The inlet static pressure in units of Pascals
+        :param inlet_mach_number: The inlet mach number
+        :param inlet_velocity: The inlet flow velocity
+        :param mass_flow_rate: The inlet mass flow rate
+        :param heat_addition: The work added to the heat addition chamber in units
+                              of Watts
+        :return dictionary: A Tuple of three dictionaries containing the
+                            gas properties at the exit to each component of
+                            the ram jet
+        """
+        cp = self.gas.spec_heat_const_pressure(inlet_static_temp, inlet_static_pressure)
+        gamma = self.gas.ratio_specific_heats(inlet_static_temp, inlet_static_pressure)
+        mw = self.gas.molar_mass(inlet_static_temp, inlet_static_pressure)
+
+        # Calculate diffuser properties
+        dif_prop = self.diffuser.outlet_conditions(gamma, cp, mw,
+                                                   inlet_static_temp,
+                                                   inlet_static_pressure,
+                                                   inlet_mach_number, mass_flow_rate,
+                                                   inlet_velocity)
+        cp = self.gas.spec_heat_const_pressure(dif_prop['static_temperature'],
+                                               dif_prop['static_pressure'])
+        gamma = self.gas.ratio_specific_heats(dif_prop['static_temperature'],
+                                              dif_prop['static_pressure'])
+        mw = self.gas.molar_mass(dif_prop['static_temperature'],
+                                 dif_prop['static_pressure'])
+        # Calculate heat addition properties
+        he_props = self.heat.outlet_conditions(gamma, cp, mw, dif_prop['mach_number'],
+                                               mass_flow_rate, dif_prop['stagnation_pressure'],
+                                               dif_prop['stagnation_temperature'],
+                                               heat_addition)
+        cp = self.gas.spec_heat_const_pressure(dif_prop['static_temperature'],
+                                               dif_prop['static_pressure'])
+        gamma = self.gas.ratio_specific_heats(dif_prop['static_temperature'],
+                                              dif_prop['static_pressure'])
+        mw = self.gas.molar_mass(dif_prop['static_temperature'],
+                                 dif_prop['static_pressure'])
+
+        # Calculate nozzle properties
+        noz_props = self.nozzle.outlet_conditions(gamma, cp, mw, he_props['static_temperature'],
+                                                  he_props['static_pressure'],
+                                                  he_props['mach_number'],
+                                                  mass_flow_rate, he_props['velocity'])
+        return dif_prop, he_props, noz_props
 # ============================================================================
 # ============================================================================
 # eof

@@ -7,5 +7,5 @@ to the determination of exit properties for a fluid leaving
 a diffuser or a nozzle.  This class assumes sub-sonic, incompressible
 gas flow.
 
-.. autoclass:: isentropic_models.CompressorComponent
+.. autoclass:: src.isentropic_models.CompressorComponent
    :members:

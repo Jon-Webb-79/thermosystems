@@ -7,5 +7,5 @@ to the determination of exit properties for a fluid leaving
 a Heat Exchanger or a Combustion Chamber.  
 This class assumes sub-sonic, incompressible gas flow.
 
-.. autoclass:: isentropic_models.HeatAddition
+.. autoclass:: src.isentropic_models.HeatAddition
    :members:

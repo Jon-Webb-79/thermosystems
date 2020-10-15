@@ -9,5 +9,5 @@ gas flow.  This class reduces the complexity of using the DiffuserNozzle
 class by allowing a user to obtain all outlet properties with a single
 function call.
 
-.. autoclass:: isentropic_models.HeatAdditionComponent
+.. autoclass:: src.isentropic_models.HeatAdditionComponent
    :members:

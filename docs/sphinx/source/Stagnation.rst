@@ -8,5 +8,5 @@ owing to the fact that they share no data or functionality with
 other member functions, but need to be in a class to allow for
 proper inheretance in other classes.
 
-.. autoclass:: isentropic_models.Stagnation
+.. autoclass:: src.isentropic_models.Stagnation
    :members:

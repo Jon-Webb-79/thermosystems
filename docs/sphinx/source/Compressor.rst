@@ -7,5 +7,5 @@ to the determination of exit properties for a fluid leaving
 a Compressor  This class assumes sub-sonic, incompressible
 gas flow.
 
-.. autoclass:: isentropic_models.Compressor
+.. autoclass:: src.isentropic_models.Compressor
    :members:

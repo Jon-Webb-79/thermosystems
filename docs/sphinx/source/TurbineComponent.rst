@@ -8,5 +8,5 @@ a Turbine.
 This class assumes sub-sonic, incompressible gas flow.
 
 
-.. autoclass:: isentropic_models.TurbineComponent
+.. autoclass:: src.isentropic_models.TurbineComponent
    :members:

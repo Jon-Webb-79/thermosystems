@@ -3,7 +3,9 @@ from src.isentropic_models import DiffuserNozzle, Stagnation, Compressor
 from src.isentropic_models import HeatAddition, Turbine, DiffuserNozzleComponent
 from src.isentropic_models import CompressorComponent, HeatAdditionComponent
 from src.isentropic_models import TurbineComponent, Propeller, PropellerComponent
+from src.isentropic_models import RamJet
 
+from thermo.chemical import Chemical
 from math import isclose
 # ==============================================================================
 # ==============================================================================
@@ -97,9 +99,9 @@ def test_speed_of_sound():
 
     This function tests the speed_of_sound() function
     """
-    temp = 273.0
-    sos = Stagnation.speed_of_sound(gamma, temp, 0.0289645)
-    assert isclose(331.22, sos, rel_tol=1.0e-3)
+    temp = 800.0
+    sos = Stagnation.speed_of_sound(gamma, temp, 28.014)
+    assert isclose(576.53, sos, rel_tol=1.0e-3)
 # ------------------------------------------------------------------------------
 
 
@@ -108,11 +110,11 @@ def test_mach_number():
 
     This function tests the mach_number() function
     """
-    temp = 273.0
-    velocity = 662.44
-    molar_mass = 0.0289645
+    temp = 800.0
+    velocity = 600.0
+    molar_mass = 28.014
     mach = Stagnation.mach_number(gamma, temp, molar_mass, velocity)
-    assert isclose(2.0, mach, rel_tol=1.0e-2)
+    assert isclose(1.04, mach, rel_tol=1.0e-2)
 # ------------------------------------------------------------------------------
 
 
@@ -153,7 +155,7 @@ inlet_static_pressure = 6000000.0
 inlet_static_temperature = 800.0
 inlet_area = 1.8241
 exit_area = 7.2965
-inlet_velocity = 3.4
+inlet_velocity = 86.5
 diff = DiffuserNozzle(efficiency, inlet_area, exit_area)
 
 
@@ -185,7 +187,7 @@ def test_diff_exit_velocity():
     Test the exit_velocity() function for the Diffuser class
     """
     exit_velocity = diff.exit_velocity(inlet_velocity)
-    assert isclose(0.8499, exit_velocity, rel_tol=1.0e-3)
+    assert isclose(21.624, exit_velocity, rel_tol=1.0e-3)
 # ------------------------------------------------------------------------------
 
 
@@ -194,11 +196,11 @@ def test_diff_exit_stat_temp():
 
     This function tests the exit_static_temperature() function
     """
-    cp = 1.0
+    cp = 1030
     stat_temp = diff.exit_static_temperature(cp, gamma, inlet_static_temperature,
                                              inlet_static_pressure, mach_number,
                                              inlet_velocity)
-    assert isclose(stat_temp, 803.022, rel_tol=1.0e-4)
+    assert isclose(stat_temp, 803.157, rel_tol=1.0e-4)
 # ------------------------------------------------------------------------------
 
 
@@ -207,12 +209,12 @@ def test_diff_exit_mach_number():
 
     This function tests the exit_mach_number() function
     """
-    cp = 1.0
-    molar_mass = 0.0289645
+    cp = 1030.0
+    molar_mass = 28.014
     mach_num = diff.exit_mach_number(cp, gamma, inlet_static_temperature,
                                      inlet_static_pressure, mach_number,
                                      inlet_velocity, molar_mass)
-    assert isclose(mach_num, 0.001496, rel_tol=1.0e-3)
+    assert isclose(mach_num, 0.03743, rel_tol=1.0e-3)
 # ------------------------------------------------------------------------------
 
 
@@ -221,12 +223,12 @@ def test_diff_exit_static_pressure():
 
     This function tests the exit_static_pressure() function
     """
-    cp = 1.0
-    molar_mass = 0.0289645
+    cp = 1030.0
+    molar_mass = 28.014
     stat_pres = diff.exit_static_pressure(gamma, inlet_static_pressure,
                                           mach_number, cp, inlet_static_temperature,
                                           inlet_velocity, molar_mass)
-    assert isclose(stat_pres, 6089291.0, rel_tol=1.0e-3)
+    assert isclose(stat_pres, 6083331.69, rel_tol=1.0e-3)
 # ------------------------------------------------------------------------------
 
 
@@ -237,7 +239,7 @@ def test_diff_exit_density():
     """
     mass_flow_rate = 3.0
     density = diff.exit_density(inlet_velocity, mass_flow_rate)
-    assert isclose(0.4837, density, rel_tol=1.0e-3)
+    assert isclose(0.01901, density, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # Test the Compressor class
@@ -323,7 +325,7 @@ def test_comp_fluid_velocity():
     """
     vel = comp.exit_velocity(inlet_stag_temperature, gamma, inlet_mach_number,
                              1.0)
-    assert isclose(vel, 13.936, rel_tol=1.0e-3)
+    assert isclose(vel, 440.72, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # Test the HeatAddition class
@@ -349,8 +351,8 @@ def test_he_exit_stagnation_temperature():
 
     This function tests the exit_stagnation_temperature() function
     """
-    stag_temp = he.exit_stagnation_temperature(inlet_stag_temperature, heat, 1.0, 1000.0)
-    assert isclose(1800.0, stag_temp, rel_tol=1.0e-3)
+    stag_temp = he.exit_stagnation_temperature(803.384, heat, 1030.0, 3.0)
+    assert isclose(1127.0, stag_temp, rel_tol=1.0e-3)
 # ------------------------------------------------------------------------------
 
 
@@ -359,9 +361,9 @@ def test_he_exit_mach_number():
 
     This function tests the exit_mach_number() function
     """
-    mach = he.exit_mach_number(inlet_stag_temperature, heat, 1.0, 1000.0,
-                               inlet_mach_number, gamma)
-    assert isclose(mach, 0.1525, rel_tol=1.0e-3)
+    mach = he.exit_mach_number(803.384, heat, 1030.0, 3.0,
+                               0.03743, gamma)
+    assert isclose(mach, 0.044365, rel_tol=1.0e-3)
 # ------------------------------------------------------------------------------
 
 
@@ -370,11 +372,11 @@ def test_he_exit_stagnation_pressure():
 
     This function tests the exit_stagnation_pressure() function
     """
-    stag_pres = he.exit_stagnation_pressure(inlet_stag_pressure,
-                                            inlet_stag_temperature,
-                                            heat, 1.0, 1000.0,
-                                            inlet_mach_number, gamma)
-    assert isclose(stag_pres, 5946850.0, rel_tol=1.0e-3)
+    stag_pres = he.exit_stagnation_pressure(6089300.0,
+                                            803.384,
+                                            heat, 1030.0, 3.0,
+                                            0.03743, gamma)
+    assert isclose(stag_pres, 6086893.10, rel_tol=1.0e-3)
 # ------------------------------------------------------------------------------
 
 
@@ -383,9 +385,9 @@ def test_he_exit_static_temperature():
 
     This function tests the exit_static_temperature() function
     """
-    stat_temp = he.exit_static_temperature(inlet_stag_temperature, heat, 1.0,
-                                           1000.0, gamma, inlet_mach_number)
-    assert isclose(stat_temp, 1791.6, rel_tol=1.0e-3)
+    stat_temp = he.exit_static_temperature(803.384, heat, 1030.0,
+                                           3.0, gamma, 0.03743)
+    assert isclose(stat_temp, 1126.565, rel_tol=1.0e-3)
 # ------------------------------------------------------------------------------
 
 
@@ -394,9 +396,9 @@ def test_he_exit_static_pressure():
 
     This function tests the exit_static_pressure() function
     """
-    stat_pres = he.exit_static_pressure(inlet_stag_pressure, inlet_stag_temperature,
-                                        heat, 1.0, 1000.0, gamma, inlet_mach_number)
-    assert isclose(5903279.0, stat_pres, rel_tol=1.0e-3)
+    stat_pres = he.exit_static_pressure(6089300.0, 803.384,
+                                        heat, 1030.0, 3.0, gamma, 0.03743)
+    assert isclose(6080917.69, stat_pres, rel_tol=1.0e-3)
 # ------------------------------------------------------------------------------
 
 
@@ -405,9 +407,9 @@ def test_he_exit_velocity():
 
     This function tests the exit_velocity() function
     """
-    velocity = he.exit_velocity(inlet_stag_temperature, heat, 1.0,
-                                1000.0, inlet_mach_number, gamma, 1.0)
-    assert isclose(velocity, 22.029, rel_tol=1.0e-3)
+    velocity = he.exit_velocity(803.384, heat, 1030.0,
+                                3.0, 0.03743, gamma, 28.014)
+    assert isclose(velocity, 30.352, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # Test Turbine class
@@ -488,7 +490,7 @@ def test_turbine_exit_velocity():
     """
     vel = turb.exit_velocity(inlet_stag_temperature, inlet_mach_number, gamma,
                              work, 1.0, 1000.0, 1.0)
-    assert isclose(vel, 9.626, rel_tol=1.0e-3)
+    assert isclose(vel, 304.417, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # Test the Propeller class
@@ -580,7 +582,7 @@ def test_propeller_exit_velocity():
     velocity = prop.exit_velocity(inlet_stag_temp, inlet_mach_number,
                                   mass_flow_rate, specific_heat,
                                   work, gamma, 1.0)
-    assert isclose(velocity, 6.537, rel_tol=1.0e-3)
+    assert isclose(velocity, 206.719, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # Test the DiffuserNozzleComponent class
@@ -599,19 +601,19 @@ def test_diffusernozzle_component():
     inlet_static_temperature = 800.0
     inlet_area = 1.8241
     exit_area = 7.2965
-    inlet_velocity = 3.4
-    molar_mass = 0.0289645
+    inlet_velocity = 86.5
+    molar_mass = 28.014
     diff_comp = DiffuserNozzleComponent(efficiency, inlet_area, exit_area)
-    exit_cond = diff_comp.outlet_conditions(gamma, 1.0, molar_mass, inlet_static_temperature,
+    exit_cond = diff_comp.outlet_conditions(gamma, 1030.0, molar_mass, inlet_static_temperature,
                                             inlet_static_pressure, mach_number,
                                             mass_flow_rate, inlet_velocity)
-    assert isclose(exit_cond['static_pressure'], 6088971.0, rel_tol=1.0e-3)
-    assert isclose(exit_cond['static_temperature'], 803.022, rel_tol=1.0e-3)
+    assert isclose(exit_cond['static_pressure'], 6083331.69, rel_tol=1.0e-3)
+    assert isclose(exit_cond['static_temperature'], 803.157, rel_tol=1.0e-3)
     assert isclose(exit_cond['stagnation_pressure'], 6089300.0, rel_tol=1.0e-3)
     assert isclose(exit_cond['stagnation_temperature'], 803.384, rel_tol=1.0e-3)
-    assert isclose(exit_cond['velocity'], 0.8499, rel_tol=1.0e-3)
-    assert isclose(exit_cond['mach_number'], 0.001496, rel_tol=1.0e-3)
-    assert isclose(exit_cond['density'], 0.4837, rel_tol=1.0e-3)
+    assert isclose(exit_cond['velocity'], 21.624, rel_tol=1.0e-3)
+    assert isclose(exit_cond['mach_number'], 0.03743, rel_tol=1.0e-3)
+    assert isclose(exit_cond['density'], 0.01901, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # Test the DiffuserNozzleComponent class
@@ -636,12 +638,11 @@ def test_compressor_component():
                                        inlet_mach_number, mass_flow_rate,
                                        inlet_stag_pressure,
                                        inlet_stag_temperature)
-
     assert isclose(exit_cond['static_pressure'], 19005747.0, rel_tol=1.0e-3)
     assert isclose(exit_cond['static_temperature'], 1147.07, rel_tol=1.0e-3)
     assert isclose(exit_cond['stagnation_pressure'], 19200000.0, rel_tol=1.0e-3)
     assert isclose(exit_cond['stagnation_temperature'], 1150.4, rel_tol=1.0e-3)
-    assert isclose(exit_cond['velocity'], 13.936, rel_tol=1.0e-3)
+    assert isclose(exit_cond['velocity'], 440.72, rel_tol=1.0e-3)
     assert isclose(exit_cond['mach_number'], 0.120615, rel_tol=1.0e-3)
     assert isclose(exit_cond['work'], 428.278, rel_tol=1.0e-3)
 # ==============================================================================
@@ -656,25 +657,23 @@ def test_heataddition_component():
     """
     heat = 1000000.0
     efficiency = 0.9
-    inlet_mach_number = 0.1
+    inlet_mach_number = 0.03743
     gamma = 1.4
-    mass_flow_rate = 1000.0
-    specific_heat = 1.0
-    molar_mass = 1.0
+    mass_flow_rate = 3.0
+    specific_heat = 1030.0
+    molar_mass = 28.014
 
     he = HeatAdditionComponent(efficiency)
     exit_cond = he.outlet_conditions(gamma, specific_heat, molar_mass,
                                      inlet_mach_number, mass_flow_rate,
-                                     inlet_stag_pressure,
-                                     inlet_stag_temperature, heat)
-
+                                     6089300.0, 803.384, heat)
     assert isclose(exit_cond['power'], 1111111.11, rel_tol=1.0e-3)
-    assert isclose(exit_cond['static_temperature'], 1791.6, rel_tol=1.0e-3)
-    assert isclose(exit_cond['static_pressure'], 5903279.0, rel_tol=1.0e-3)
-    assert isclose(exit_cond['stagnation_pressure'], 5946850.0, rel_tol=1.0e-3)
-    assert isclose(exit_cond['stagnation_temperature'], 1800.0, rel_tol=1.0e-3)
-    assert isclose(exit_cond['velocity'], 22.029, rel_tol=1.0e-3)
-    assert isclose(exit_cond['mach_number'], 0.1525, rel_tol=1.0e-3)
+    assert isclose(exit_cond['static_temperature'], 1126.565, rel_tol=1.0e-3)
+    assert isclose(exit_cond['static_pressure'], 6080917.69, rel_tol=1.0e-3)
+    assert isclose(exit_cond['stagnation_pressure'], 6086893.14, rel_tol=1.0e-3)
+    assert isclose(exit_cond['stagnation_temperature'], 1127.008, rel_tol=1.0e-3)
+    assert isclose(exit_cond['velocity'], 30.352, rel_tol=1.0e-3)
+    assert isclose(exit_cond['mach_number'], 0.044365, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 
@@ -703,7 +702,7 @@ def test_turbine_component():
     assert isclose(exit_cond['static_pressure'], 5958247.0, rel_tol=1.0e-3)
     assert isclose(exit_cond['stagnation_pressure'], 5967655.0, rel_tol=1.0e-3)
     assert isclose(exit_cond['stagnation_temperature'], 798.88, rel_tol=1.0e-3)
-    assert isclose(exit_cond['velocity'], 9.626, rel_tol=1.0e-3)
+    assert isclose(exit_cond['velocity'], 304.417, rel_tol=1.0e-3)
     assert isclose(exit_cond['mach_number'], 0.099928707, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
@@ -724,7 +723,6 @@ def test_propeller_component():
     inlet_stag_temperature = 345.0
     inlet_stag_pressure = 101325.0
 
-
     propc = PropellerComponent(efficiency)
     exit_cond = propc.outlet_conditions(work, inlet_stag_temperature,
                                         mass_flow_rate, specific_heat,
@@ -735,8 +733,66 @@ def test_propeller_component():
     assert isclose(exit_cond['static_pressure'], 91050.91, rel_tol=1.0e-3)
     assert isclose(exit_cond['stagnation_pressure'], 91711.0, rel_tol=1.0e-3)
     assert isclose(exit_cond['stagnation_temperature'], 356.11, rel_tol=1.0e-3)
-    assert isclose(exit_cond['velocity'], 6.537, rel_tol=1.0e-3)
+    assert isclose(exit_cond['velocity'], 206.719, rel_tol=1.0e-3)
     assert isclose(exit_cond['mach_number'], 0.1016405, rel_tol=1.0e-3)
+# ==============================================================================
+# ==============================================================================
+# Test RamJet
+
+
+species = 'nitrogen'
+gas = Chemical(species)
+
+dif_eff = 0.95
+diff_inlet_area = 0.0729
+diff_outlet_area = 0.462
+heat_eff = 0.98
+nozzle_eff = 0.95
+nozzle_inlet_area = 0.462
+nozzle_outlet_area = 0.074
+temp = 81.05  # Kelvins
+pres = 49300.0  # Pascals
+gas.calculate(T=temp, P=pres)
+density = gas.rho
+gamma1 = gas.Cp / gas.Cvg
+mw = gas.MW
+sos = (gamma1 * ((1000.0 * 8.314) / mw) * temp) ** 0.5
+velocity = 400.0  # m/s
+mach = velocity / sos
+mdot = density * velocity * diff_inlet_area  # kg/s
+jet = RamJet(dif_eff, diff_inlet_area, diff_outlet_area, heat_eff,
+             nozzle_eff, nozzle_inlet_area, nozzle_outlet_area, species)
+
+
+def test_ram_jet():
+    """
+
+    This function tests teh RamJet class
+    """
+    dif, heat, noz = jet.performance(temp, pres, mach, velocity, mdot, 100000.0)
+    assert isclose(dif['static_temperature'], 152.29, rel_tol=1.0e-3)
+    assert isclose(dif['static_pressure'], 448365.0, rel_tol=1.0e-3)
+    assert isclose(dif['stagnation_pressure'], 468436.0, rel_tol=1.0e-3)
+    assert isclose(dif['stagnation_temperature'], 154.21, rel_tol=1.0e-3)
+    assert isclose(dif['velocity'], 63.116, rel_tol=1.0e-3)
+    assert isclose(dif['mach_number'], 0.2509, rel_tol=1.0e-3)
+    assert isclose(dif['density'], 2.0858, rel_tol=1.0e-3)
+
+    assert isclose(heat['static_temperature'], 153.836, rel_tol=1.0e-3)
+    assert isclose(heat['static_pressure'], 448129.54, rel_tol=1.0e-3)
+    assert isclose(heat['stagnation_pressure'], 468224.95, rel_tol=1.0e-3)
+    assert isclose(heat['stagnation_temperature'], 155.797, rel_tol=1.0e-3)
+    assert isclose(heat['velocity'], 63.817, rel_tol=1.0e-3)
+    assert isclose(heat['mach_number'], 0.2524, rel_tol=1.0e-3)
+    assert isclose(heat['power'], 102040.81, rel_tol=1.0e-3)
+
+    assert isclose(noz['static_temperature'], 79.29, rel_tol=1.0e-3)
+    assert isclose(noz['static_pressure'], 44051.23, rel_tol=1.0e-3)
+    assert isclose(noz['stagnation_pressure'], 467406.27, rel_tol=1.0e-3)
+    assert isclose(noz['stagnation_temperature'], 155.699, rel_tol=1.0e-3)
+    assert isclose(noz['velocity'], 398.42, rel_tol=1.0e-3)
+    assert isclose(noz['mach_number'], 2.1958, rel_tol=1.0e-3)
+    assert isclose(noz['density'], 2.0629, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # eof
