@@ -23,6 +23,7 @@ Welcome to thermosystems's documentation!
    TurbineComponent
    PropComp
    RamJet
+   TurboJet
 
 Indices and tables
 ==================
