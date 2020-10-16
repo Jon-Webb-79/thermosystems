@@ -24,6 +24,7 @@ Welcome to thermosystems's documentation!
    PropComp
    RamJet
    TurboJet
+   TurboProp
 
 Indices and tables
 ==================

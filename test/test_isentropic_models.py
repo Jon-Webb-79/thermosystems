@@ -3,7 +3,7 @@ from src.isentropic_models import DiffuserNozzle, Stagnation, Compressor
 from src.isentropic_models import HeatAddition, Turbine, DiffuserNozzleComponent
 from src.isentropic_models import CompressorComponent, HeatAdditionComponent
 from src.isentropic_models import TurbineComponent, Propeller, PropellerComponent
-from src.isentropic_models import RamJet, TurboJet
+from src.isentropic_models import RamJet, TurboJet, TurboProp
 
 from thermo.chemical import Chemical
 from math import isclose
@@ -871,6 +871,100 @@ def test_turbo_jet():
     assert isclose(noz['velocity'], 28.24, rel_tol=1.0e-3)
     assert isclose(noz['mach_number'], 0.1588, rel_tol=1.0e-3)
     assert isclose(noz['density'], 2.243, rel_tol=1.0e-3)
+# ==============================================================================
+# ==============================================================================
+# Test TurbozProp
+
+
+def test_turbo_prop():
+    species = 'nitrogen'
+    gas = Chemical(species)
+
+    prop_eff = 0.98
+    prop_work = 200000.0
+
+    dif_eff = 0.95
+    diff_inlet_area = 0.0729
+    diff_outlet_area = 0.2
+
+    comp_ratio = 2.5
+    comp_eff = 0.9
+
+    heat_eff = 0.98
+    nozzle_eff = 0.95
+
+    turb_eff = 0.95
+    turb_work = 89286.33
+
+    nozzle_inlet_area = 0.462
+    nozzle_outlet_area = 0.23
+
+    temp = 81.05  # Kelvins
+    pres = 49300.0  # Pascals
+    gas.calculate(T=temp, P=pres)
+    density = gas.rho
+    gamma1 = gas.Cp / gas.Cvg
+    mw = gas.MW
+    sos = (gamma1 * ((1000.0 * 8.314) / mw) * temp) ** 0.5
+    velocity = 100.0  # m/s
+    mach = velocity / sos
+    mdot = density * velocity * diff_inlet_area  # kg/s
+    stat_temp = Stagnation.static_temperature(temp, mach, gamma1)
+    stat_pres = Stagnation.static_pressure(pres, mach, gamma1)
+
+    jet = TurboProp(dif_eff, diff_inlet_area, diff_outlet_area, comp_ratio, comp_eff,
+                   heat_eff, turb_eff, nozzle_eff, nozzle_inlet_area, nozzle_outlet_area,
+                   prop_eff, species)
+    prop, dif, comp, heat, turb, noz = jet.performance(prop_work, temp, mdot, pres,
+                                                       mach, stat_temp, stat_pres,
+                                                       10000.0, turb_work)
+    assert isclose(prop['static_temperature'], 86.526, rel_tol=1.0e-3)
+    assert isclose(prop['static_pressure'], 22255.00, rel_tol=1.0e-3)
+    assert isclose(prop['stagnation_temperature'], 93.969, rel_tol=1.0e-3)
+    assert isclose(prop['stagnation_pressure'], 29707.25, rel_tol=1.0e-3)
+    assert isclose(prop['velocity'], 124.35, rel_tol=1.0e-3)
+    assert isclose(prop['mach_number'], 0.6558, rel_tol=1.0e-3)
+    assert isclose(prop['total_work'], 204081.63, rel_tol= 1.0e-3)
+
+    assert isclose(dif['static_temperature'], 92.608, rel_tol=1.0e-3)
+    assert isclose(dif['stagnation_pressure'], 29297.508, rel_tol=1.0e-3)
+    assert isclose(dif['static_pressure'], 28228.34, rel_tol=1.0e-3)
+    assert isclose(dif['stagnation_temperature'], 93.597, rel_tol=1.0e-3)
+    assert isclose(dif['velocity'], 45.326, rel_tol=1.0e-3)
+    assert isclose(dif['mach_number'], 0.2310, rel_tol=1.0e-3)
+    assert isclose(dif['density'], 1.6773, rel_tol=1.0e-3)
+
+    assert isclose(comp['static_temperature'], 122.88, rel_tol=1.0e-3)
+    assert isclose(comp['stagnation_pressure'], 73243.77, rel_tol=1.0e-3)
+    assert isclose(comp['static_pressure'], 69531.38, rel_tol=1.0e-3)
+    assert isclose(comp['stagnation_temperature'], 124.72, rel_tol=1.0e-3)
+    assert isclose(comp['velocity'], 61.82, rel_tol=1.0e-3)
+    assert isclose(comp['mach_number'], 0.2736, rel_tol=1.0e-3)
+    assert isclose(comp['work'], 546239.28, rel_tol=1.0e-3)
+
+    assert isclose(heat['static_temperature'], 123.49, rel_tol=1.0e-3)
+    assert isclose(heat['stagnation_pressure'], 73224.28, rel_tol=1.0e-3)
+    assert isclose(heat['static_pressure'], 69509.28, rel_tol=1.0e-3)
+    assert isclose(heat['stagnation_temperature'], 125.35, rel_tol=1.0e-3)
+    assert isclose(heat['velocity'], 62.16, rel_tol=1.0e-3)
+    assert isclose(heat['mach_number'], 0.2744, rel_tol=1.0e-3)
+    assert isclose(heat['power'], 10204.08, rel_tol=1.0e-3)
+
+    assert isclose(turb['static_temperature'], 117.73, rel_tol=1.0e-3)
+    assert isclose(turb['stagnation_pressure'], 61199.27, rel_tol=1.0e-3)
+    assert isclose(turb['static_pressure'], 58251.17, rel_tol=1.0e-3)
+    assert isclose(turb['stagnation_temperature'], 119.40, rel_tol=1.0e-3)
+    assert isclose(turb['velocity'], 58.94, rel_tol=1.0e-3)
+    assert isclose(turb['mach_number'], 0.2665, rel_tol=1.0e-3)
+    assert isclose(turb['extracted_work'], 93985.61, rel_tol=1.0e-3)
+
+    assert isclose(noz['static_temperature'], 112.57, rel_tol=1.0e-3)
+    assert isclose(noz['stagnation_pressure'], 61049.38, rel_tol=1.0e-3)
+    assert isclose(noz['static_pressure'], 49795.29, rel_tol=1.0e-3)
+    assert isclose(noz['stagnation_temperature'], 119.31, rel_tol=1.0e-3)
+    assert isclose(noz['velocity'], 118.40, rel_tol=1.0e-3)
+    assert isclose(noz['mach_number'], 0.5474, rel_tol=1.0e-3)
+    assert isclose(noz['density'], 0.5583, rel_tol=1.0e-3)
 # ==============================================================================
 # ==============================================================================
 # eof

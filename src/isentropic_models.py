@@ -2132,4 +2132,201 @@ class TurboJet:
         return dif_prop, comp_prop, he_prop, turb_prop, noz_prop
 # ============================================================================
 # ============================================================================
+
+
+class TurboProp:
+    def __init__(self, dif_eff: float, dif_inlet_area: float, dif_exit_area: float,
+                 comp_ratio: float, comp_eff: float, heat_eff: float, turb_eff: float,
+                 noz_eff: float, noz_inlet_area: float, noz_exit_area: float,
+                 prop_eff: float, species: str):
+        """
+
+        :param dif_eff: The diffuser isentropic efficiency
+        :param dif_inlet_area: The diffuser inlet area in units of square meters
+        :param dif_exit_area: The diffuser exit area in units of square meters
+        :param comp_ratio: The compressor ratio
+        :param comp_eff: The compressor isentropic efficiency
+        :param heat_eff: The heat addition component isentropic efficiency
+        :param turb_eff: The turbine isentropic efficiency
+        :param noz_eff: The nozzle isentropic efficiency
+        :param noz_inlet_area: The nozzle inlet area in units of square meters
+        :param noz_exit_area: The nozzle exit area in units of square meters
+        :param species: The gas species
+        """
+        self.propeller = PropellerComponent(prop_eff)
+        self.diffuser = DiffuserNozzleComponent(dif_eff, dif_inlet_area, dif_exit_area)
+        self.compressor = CompressorComponent(comp_ratio, comp_eff)
+        self.heat = HeatAdditionComponent(heat_eff)
+        self.turbine = TurbineComponent(turb_eff)
+        self.nozzle = DiffuserNozzleComponent(noz_eff, noz_inlet_area, noz_exit_area)
+        self.gas = ThermProps(species)
+# ----------------------------------------------------------------------------
+
+    def performance(self, work: float, inlet_stagnation_temperature: float,
+                    mass_flow_rate: float, inlet_stagnation_pressure: float,
+                    inlet_mach_number: float, inlet_static_temp: float,
+                    inlet_static_pressure: float, heat_addition: float,
+                    turbine_work: float) -> Tuple[Dict[str, float],
+                                                  Dict[str, float],
+                                                  Dict[str, float],
+                                                  Dict[str, float],
+                                                  Dict[str, float],
+                                                  Dict[str, float]]:
+        """
+
+        :param work: The work done by the propeller in units of Watts
+        :param inlet_stagnation_temperature: The stagnation temperature
+                                             at the propeller inlet in
+                                             units of Kelvins
+        :param mass_flow_rate: The mass flow rate in units of kg/s
+        :param inlet_stagnation_pressure: The stagnation pressure in units
+                                          of Pascals
+        :param inlet_mach_number: The inlet mach number
+        :param inlet_static_temp: The static temperature in units of Kelvins
+        :param inlet_static_pressure: The inlet static pressure in units of
+                                      Pascals
+        :param heat_addition: The heat added in the head addition chamber in
+                              units of Watts
+        turb_work: The work extracted by the turbine in units of Watts
+        :return: A tuple containing six dictionaries
+
+        The first dictionary representing the propeller exit conditions
+        contains the following key words
+
+        * **static_temperature** in units of Kelvins
+        * **static_pressure** in units of Pascals
+        * **stagnation_temperature** in units of Kelvins
+        * **stagnation_pressure** in units of Pascals
+        * **velocity** in units of meters per second
+        * **mach_number**
+        * **total_work** The total work done by the propeller in units of Watts
+
+        The second dictionary for the diffuser contains the following key words
+
+        * **static_temperature** in units of Kelvins
+        * **static_pressure** in units of Pascals
+        * **stagnation_temperature** in units of Kelvins
+        * **stagnation_pressure** in units of Pascals
+        * **velocity** in units of meters per second
+        * **mach_number**
+        * **density** in units of g/cc
+
+        The third dictionary represents compressor parameters and contains
+        the following key words
+
+        * **static_temperature** in units of Kelvins
+        * **static_pressure** in units of Pascals
+        * **stagnation_temperature** in units of Kelvins
+        * **stagnation_pressure** in units of Pascals
+        * **velocity** in units of meters per second
+        * **mach_number**
+        * **work** in units of Watts
+
+        The fourth dictionary contains heat exchanger parameters and
+        contains the following key words
+
+        * **static_temperature** in units of Kelvins
+        * **static_pressure** in units of Pascals
+        * **stagnation_temperature** in units of Kelvins
+        * **stagnation_pressure** in units of Pascals
+        * **velocity** in units of meters per second
+        * **mach_number**
+        * **power** in units of Watts
+
+        The fifth dictionary represents turbine parameters and contains the
+        following key words
+
+        * **static_temperature** in units of Kelvins
+        * **static_pressure** in units of Pascals
+        * **stagnation_temperature** in units of Kelvins
+        * **stagnation_pressure** in units of Pascals
+        * **velocity** in units of meters per second
+        * **mach_number**
+        * **extracted_work** in units of Watts
+
+        The final dictionary for the nozzle contains the following
+        key words
+
+        * **static_temperature** in units of Kelvins
+        * **static_pressure** in units of Pascals
+        * **stagnation_temperature** in units of Kelvins
+        * **stagnation_pressure** in units of Pascals
+        * **velocity** in units of meters per second
+        * **mach_number**
+        * **density** in units of g/cc
+        """
+        # Calculate propeller outlet conditions
+        cp = self.gas.spec_heat_const_pressure(inlet_static_temp, inlet_static_pressure)
+        gamma = self.gas.ratio_specific_heats(inlet_static_temp, inlet_static_pressure)
+        mw = self.gas.molar_mass(inlet_static_temp, inlet_static_pressure)
+        prop_prop = self.propeller.outlet_conditions(work, inlet_stagnation_temperature,
+                                                     mass_flow_rate, cp,
+                                                     inlet_stagnation_pressure, gamma,
+                                                     inlet_mach_number, mw)
+        # Calculate Diffuser properties
+        cp = self.gas.spec_heat_const_pressure(prop_prop['static_temperature'],
+                                               prop_prop['static_pressure'])
+        gamma = self.gas.ratio_specific_heats(prop_prop['static_temperature'],
+                                              prop_prop['static_pressure'])
+        mw = self.gas.molar_mass(prop_prop['static_temperature'],
+                                 prop_prop['static_pressure'])
+        diff_prop = self.diffuser.outlet_conditions(gamma, cp, mw,
+                                                    prop_prop['static_temperature'],
+                                                    prop_prop['static_pressure'],
+                                                    prop_prop['mach_number'],
+                                                    mass_flow_rate,
+                                                    prop_prop['velocity'])
+        # Calculate Compressor properties
+        cp = self.gas.spec_heat_const_pressure(diff_prop['static_temperature'],
+                                               diff_prop['static_pressure'])
+        gamma = self.gas.ratio_specific_heats(diff_prop['static_temperature'],
+                                              diff_prop['static_pressure'])
+        mw = self.gas.molar_mass(diff_prop['static_temperature'],
+                                 diff_prop['static_pressure'])
+        comp_prop = self.compressor.outlet_conditions(gamma, cp, mw,
+                                                      diff_prop['mach_number'],
+                                                      mass_flow_rate,
+                                                      diff_prop['stagnation_pressure'],
+                                                      diff_prop['stagnation_temperature'])
+        # Calculate heat addition properties
+        cp = self.gas.spec_heat_const_pressure(comp_prop['static_temperature'],
+                                               comp_prop['static_pressure'])
+        gamma = self.gas.ratio_specific_heats(comp_prop['static_temperature'],
+                                              comp_prop['static_pressure'])
+        mw = self.gas.molar_mass(comp_prop['static_temperature'],
+                                 comp_prop['static_pressure'])
+
+        he_prop = self.heat.outlet_conditions(gamma, cp, mw, comp_prop['mach_number'],
+                                              mass_flow_rate, comp_prop['stagnation_pressure'],
+                                              comp_prop['stagnation_temperature'],
+                                              heat_addition)
+        # Calculate turbine properties
+        cp = self.gas.spec_heat_const_pressure(he_prop['static_temperature'],
+                                               he_prop['static_pressure'])
+        gamma = self.gas.ratio_specific_heats(he_prop['static_temperature'],
+                                              he_prop['static_pressure'])
+        mw = self.gas.molar_mass(he_prop['static_temperature'],
+                                 he_prop['static_pressure'])
+        turb_prop = self.turbine.outlet_conditions(gamma, cp, mw,
+                                                   he_prop['mach_number'],
+                                                   mass_flow_rate,
+                                                   he_prop['stagnation_pressure'],
+                                                   he_prop['stagnation_temperature'],
+                                                   turbine_work)
+        # Calculate nozzle properties
+        cp = self.gas.spec_heat_const_pressure(turb_prop['static_temperature'],
+                                               turb_prop['static_pressure'])
+        gamma = self.gas.ratio_specific_heats(turb_prop['static_temperature'],
+                                              turb_prop['static_pressure'])
+        mw = self.gas.molar_mass(turb_prop['static_temperature'],
+                                 turb_prop['static_pressure'])
+        noz_prop = self.nozzle.outlet_conditions(gamma, cp, mw,
+                                                 turb_prop['static_temperature'],
+                                                 turb_prop['static_pressure'],
+                                                 turb_prop['mach_number'],
+                                                 mass_flow_rate,
+                                                 turb_prop['velocity'])
+        return prop_prop, diff_prop, comp_prop, he_prop, turb_prop, noz_prop
+# ============================================================================
+# ============================================================================
 # eof
