@@ -3,7 +3,7 @@ from src.isentropic_models import DiffuserNozzle, Stagnation, Compressor
 from src.isentropic_models import HeatAddition, Turbine, DiffuserNozzleComponent
 from src.isentropic_models import CompressorComponent, HeatAdditionComponent
 from src.isentropic_models import TurbineComponent, Propeller, PropellerComponent
-from src.isentropic_models import RamJet, TurboJet, TurboProp
+from src.isentropic_models import RamJet, TurboJet, TurboProp, ReactorLoop
 
 from thermo.chemical import Chemical
 from math import isclose
@@ -965,6 +965,47 @@ def test_turbo_prop():
     assert isclose(noz['velocity'], 118.40, rel_tol=1.0e-3)
     assert isclose(noz['mach_number'], 0.5474, rel_tol=1.0e-3)
     assert isclose(noz['density'], 0.5583, rel_tol=1.0e-3)
+# ==============================================================================
+# ==============================================================================
+
+
+def test_reactor_loop():
+    elec_power = 50000.0
+    species = 'nitrogen'
+    gas = Chemical(species)
+
+    heat_eff = 0.90
+    turb_eff = 0.90
+    comp_rat_guess = 1.18
+    comp_eff = 0.90
+    conv_eff = 0.25
+
+    inlet_stat_temp = 800.0  # Kelvins
+    inlet_stat_pres = 6000000.0  # Pascals
+
+    gas.calculate(T=inlet_stat_temp, P=inlet_stat_pres)
+    mw = gas.MW
+    gamma1 = gas.Cp / gas.Cvg
+    cp = gas.Cp
+    inlet_mach_number = 0.1
+    inlet_stag_temp = Stagnation.stagnation_temperature(inlet_stat_temp,
+                                                        inlet_mach_number, gamma1)
+    inlet_stag_pres = Stagnation.stagnation_pressure(inlet_stat_pres,
+                                                     inlet_mach_number, gamma1)
+    deltat = 50.0  # Kelvins
+    mdot = (elec_power / conv_eff) / (cp * deltat)
+    reac = ReactorLoop(heat_eff, turb_eff, species)
+    dicts = reac.performance(inlet_stag_temp, inlet_stag_pres, inlet_mach_number, inlet_stat_temp,
+                            inlet_stat_pres, elec_power, comp_rat_guess, comp_eff,
+                            conv_eff, mdot)
+    print('Compressor')
+    print(dicts[0])
+    print('Heat')
+    print(dicts[1])
+    print('Turbine')
+    print(dicts[2])
+    print('Rejection')
+    print(dicts[3])
 # ==============================================================================
 # ==============================================================================
 # eof

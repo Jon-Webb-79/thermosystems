@@ -1004,6 +1004,8 @@ class Turbine(Stagnation):
 
     1. Hill, P. and Peterson, C., "Mechanics and Thermodynamics of Propulsion,"
        Addison Wesley Publishing Co., Reading, MA, 1992
+
+    This class can also be used to model a heat sink.
     """
     def __init__(self, efficiency: float):
         """
@@ -1526,10 +1528,15 @@ class DiffuserNozzleComponent(DiffuserNozzle):
         :return dict: A dictionary containing all fluid exit
                       properties
 
-        This function simplifies the DiffuserNozzle class so the user can merely
-        call one function and obtain out outlet properties as a dictionary with
-        keywords `static_pressure`, `static_temperature`, `stagnation_pressure`,
-        `stagnation_temperature`, `velocity`, `mach_number`, `density`.
+        The dictionary for the diffuser contains the following key words
+
+        * **static_temperature** in units of Kelvins
+        * **static_pressure** in units of Pascals
+        * **stagnation_temperature** in units of Kelvins
+        * **stagnation_pressure** in units of Pascals
+        * **velocity** in units of meters per second
+        * **mach_number**
+        * **density** in units of g/cc
         """
         exit_stag_pres = self.exit_stagnation_pressure(gamma, inlet_static_pressure,
                                                        inlet_mach_number)
@@ -1599,10 +1606,16 @@ class CompressorComponent(Compressor):
         :return dict: A dictionary containing all fluid exit
                       properties
 
-        This function simplifies the Compressor class so the user can merely
-        call one function and obtain out outlet properties as a dictionary with
-        keywords `static_pressure`, `static_temperature`, `stagnation_pressure`,
-        `stagnation_temperature`, `velocity`, `mach_number`, `density`, `work`.
+        The dictionary representing compressor contains
+        the following key words
+
+        * **static_temperature** in units of Kelvins
+        * **static_pressure** in units of Pascals
+        * **stagnation_temperature** in units of Kelvins
+        * **stagnation_pressure** in units of Pascals
+        * **velocity** in units of meters per second
+        * **mach_number**
+        * **work** in units of Watts
         """
         exit_stag_pres = self.exit_stagnation_pressure(inlet_stagnation_pressure)
         exit_stag_temp = self.exit_stagnation_temperature(inlet_stagnation_temperature,
@@ -1668,10 +1681,16 @@ class HeatAdditionComponent(HeatAddition):
         :return dict: A dictionary containing all fluid exit
                       properties
 
-        This function simplifies the HeatAddition class so the user can merely
-        call one function and obtain out outlet properties as a dictionary with
-        keywords `static_pressure`, `static_temperature`, `stagnation_pressure`,
-        `stagnation_temperature`, `velocity`, `mach_number`, `density`, and `power`.
+        The dictionary containing the heat exchanger parameters
+        contains the following key words
+
+        * **static_temperature** in units of Kelvins
+        * **static_pressure** in units of Pascals
+        * **stagnation_temperature** in units of Kelvins
+        * **stagnation_pressure** in units of Pascals
+        * **velocity** in units of meters per second
+        * **mach_number**
+        * **power** in units of Watts
         """
         input_power = self.input_power(heat_addition)
         exit_stag_temp = self.exit_stagnation_temperature(inlet_stagnation_temperature,
@@ -1712,7 +1731,8 @@ class TurbineComponent(Turbine):
     """
 
         This class combined all functionality of the Turbine class
-        into a single function for ease of user access
+        into a single function for ease of user access.  This class can
+        also be used to model a heat sink.
         """
 
     def __init__(self, efficiency: float):
@@ -1746,11 +1766,16 @@ class TurbineComponent(Turbine):
         :return dict: A dictionary containing all fluid exit
                       properties
 
-        This function simplifies the Turbine class so the user can merely
-        call one function and obtain out outlet properties as a dictionary with
-        keywords `static_pressure`, `static_temperature`, `stagnation_pressure`,
-        `stagnation_temperature`, `velocity`, `mach_number`, `density`,
-        and `extracted_work`.
+        The dictionary representing the turbine parameters contains the
+        following key words
+
+        * **static_temperature** in units of Kelvins
+        * **static_pressure** in units of Pascals
+        * **stagnation_temperature** in units of Kelvins
+        * **stagnation_pressure** in units of Pascals
+        * **velocity** in units of meters per second
+        * **mach_number**
+        * **extracted_work** in units of Watts
         """
         work_extracted = self.work_extraction(turbine_work)
         exit_stag_temp = self.exit_stagnation_temperature(turbine_work, specific_heat,
@@ -1822,11 +1847,16 @@ class PropellerComponent(Propeller):
         :param molar_mass: The fluid molar mass
         :return dict: A dictionary containing all fluid exit properties
 
-        This function simplifies the Propeller class so the user can merely
-        call one function and obtain out outlet properties as a dictionary with
-        keywords `static_pressure`, `static_temperature`, `stagnation_pressure`,
-        `stagnation_temperature`, `velocity`, `mach_number`, `density`,
-        and `total_work`.
+        The dictionary representing the propeller exit conditions
+        contains the following key words
+
+        * **static_temperature** in units of Kelvins
+        * **static_pressure** in units of Pascals
+        * **stagnation_temperature** in units of Kelvins
+        * **stagnation_pressure** in units of Pascals
+        * **velocity** in units of meters per second
+        * **mach_number**
+        * **total_work** The total work done by the propeller in units of Watts
         """
         total_work = self.propeller_work(extracted_work)
         exit_stag_temp = self.exit_stagnation_temperature(inlet_stagnation_temperature,
@@ -2327,6 +2357,90 @@ class TurboProp:
                                                  mass_flow_rate,
                                                  turb_prop['velocity'])
         return prop_prop, diff_prop, comp_prop, he_prop, turb_prop, noz_prop
+# ============================================================================
+# ============================================================================
+
+
+class ReactorLoop:
+    def __init__(self, heat_eff: float, turb_eff: float, species: str,
+                 sink_eff: float = 1):
+        """
+
+        :param heat_eff: The heat addition efficiency
+        :param turb_eff: The turbine efficiency
+        :param sink_eff: The heat sink efficiency
+        :param species: The gas species
+        """
+        self.heat = HeatAdditionComponent(heat_eff)
+        self.turbine = TurbineComponent(turb_eff)
+        self.sink = Turbine(sink_eff)
+        self.gas = ThermProps(species)
+        self.turb_eff = turb_eff
+        self.heat_eff = heat_eff
+# ----------------------------------------------------------------------------
+
+    def performance(self, inlet_stag_temp: float, inlet_stag_pres: float,
+                   inlet_mach_number: float, inlet_stat_temp: float,
+                   inlet_stat_pres: float, elec_power: float,
+                   comp_ratio_guess: float, comp_eff: float,
+                   conv_eff: float, mass_flow_rate) -> Tuple[Dict[str, float],
+                                                             Dict[str, float],
+                                                             Dict[str, float],
+                                                             Dict[str, float]]:
+
+        # Calculate compressor fluid properties
+        cp = self.gas.spec_heat_const_pressure(inlet_stat_temp, inlet_stat_pres)
+        gamma = self.gas.ratio_specific_heats(inlet_stat_temp, inlet_stat_pres)
+        mw = self.gas.molar_mass(inlet_stat_temp, inlet_stat_pres)
+        compressor = CompressorComponent(comp_ratio_guess, comp_eff)
+        comp_prop = compressor.outlet_conditions(gamma, cp, mw, inlet_mach_number,
+                                                 mass_flow_rate, inlet_stag_pres,
+                                                 inlet_stag_temp)
+
+        extract_power = (elec_power + comp_prop['work']) / self.heat_eff
+        total_power = extract_power / conv_eff
+        # Calculate reactor fluid properties
+        cp = self.gas.spec_heat_const_pressure(comp_prop['static_temperature'],
+                                               comp_prop['static_pressure'])
+        gamma = self.gas.ratio_specific_heats(comp_prop['static_temperature'],
+                                              comp_prop['static_pressure'])
+        mw = self.gas.molar_mass(comp_prop['static_temperature'],
+                                 comp_prop['static_pressure'])
+        he_prop = self.heat.outlet_conditions(gamma, cp, mw, comp_prop['mach_number'],
+                                              mass_flow_rate, comp_prop['stagnation_pressure'],
+                                              comp_prop['stagnation_temperature'],
+                                              total_power)
+
+        # Calculate turbine fluid properties
+        cp = self.gas.spec_heat_const_pressure(he_prop['static_temperature'],
+                                               he_prop['static_pressure'])
+        gamma = self.gas.ratio_specific_heats(he_prop['static_temperature'],
+                                              he_prop['static_pressure'])
+        mw = self.gas.molar_mass(he_prop['static_temperature'],
+                                 he_prop['static_pressure'])
+        turb_prop = self.turbine.outlet_conditions(gamma, cp, mw,
+                                                   he_prop['mach_number'],
+                                                   mass_flow_rate,
+                                                   he_prop['stagnation_pressure'],
+                                                   he_prop['stagnation_temperature'],
+                                                   extract_power)
+        # Calculate turbine fluid properties
+        cp = self.gas.spec_heat_const_pressure(turb_prop['static_temperature'],
+                                               turb_prop['static_pressure'])
+        gamma = self.gas.ratio_specific_heats(turb_prop['static_temperature'],
+                                              turb_prop['static_pressure'])
+        mw = self.gas.molar_mass(turb_prop['static_temperature'],
+                                 turb_prop['static_pressure'])
+
+        # calculate rejected power
+        reject = he_prop['power'] - turb_prop['extracted_work']
+        reject_prop = self.turbine.outlet_conditions(gamma, cp, mw,
+                                                     turb_prop['mach_number'],
+                                                     mass_flow_rate,
+                                                     turb_prop['stagnation_pressure'],
+                                                     turb_prop['stagnation_temperature'],
+                                                     reject)
+        return comp_prop, he_prop, turb_prop, reject_prop
 # ============================================================================
 # ============================================================================
 # eof
